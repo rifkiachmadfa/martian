@@ -471,6 +471,7 @@ MonoBehaviour:
   dayDurationSeconds: 600
   totalDays: 7
   dialogueUI: {fileID: 1505348185}
+  pauseDuringDialogue: 0
 --- !u!4 &202980129
 Transform:
   m_ObjectHideFlags: 0
@@ -15133,7 +15134,10 @@ MonoBehaviour:
   dialogueRoot: {fileID: 1217888020}
   speakerText: {fileID: 1891779884}
   lineText: {fileID: 1740558588}
+  closeButton: {fileID: 0}
   advanceKey: 101
+  alternateAdvanceKey: 32
+  clickAnywhereToAdvance: 1
 --- !u!114 &1505348186
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18009,12 +18013,28 @@ MonoBehaviour:
   dialogueLines:
   - Selamat datang kembali. Saya TARS, asisten habitat ini.
   - Saya memantau kondisi habitat dan akan memberi pengingat bila perlu.
-  spriteRenderer: {fileID: 0}
+  spriteRenderer: {fileID: 2003854076}
   framesPerSecond: 6
-  downFrames: []
-  upFrames: []
-  leftFrames: []
-  rightFrames: []
+  downFrames:
+  - {fileID: 21300000, guid: 04f850e5f0ed4cb459b67fb70460f6df, type: 3}
+  - {fileID: 21300000, guid: e0ae88d3b09ce314ba81fe7c9edeeeef, type: 3}
+  - {fileID: 21300000, guid: a3f457c2042bcab4999785d8ab5c7380, type: 3}
+  - {fileID: 21300000, guid: e0ae88d3b09ce314ba81fe7c9edeeeef, type: 3}
+  upFrames:
+  - {fileID: 21300000, guid: 0c1871e1965e3b441860122421546704, type: 3}
+  - {fileID: 21300000, guid: b52028b5bd980f148aacac7a7d2dbb71, type: 3}
+  - {fileID: 21300000, guid: 9d70d6cd981219c4b8a01df0b66bd0b9, type: 3}
+  - {fileID: 21300000, guid: b52028b5bd980f148aacac7a7d2dbb71, type: 3}
+  leftFrames:
+  - {fileID: 21300000, guid: 3ced64e2a068cf74081cce838f635fc6, type: 3}
+  - {fileID: 21300000, guid: 1c054d8dc91ed2140b6e7b8d292dc38a, type: 3}
+  - {fileID: 21300000, guid: 2103bc037c0e7d2448943d439608c4ba, type: 3}
+  - {fileID: 21300000, guid: 1c054d8dc91ed2140b6e7b8d292dc38a, type: 3}
+  rightFrames:
+  - {fileID: 21300000, guid: a6ce84675403c484380a71bfac8f4aa9, type: 3}
+  - {fileID: 21300000, guid: f763e271bd2a8f54ebe952f88fe6d433, type: 3}
+  - {fileID: 21300000, guid: 2f5597d76125459459faafd2ea776880, type: 3}
+  - {fileID: 21300000, guid: f763e271bd2a8f54ebe952f88fe6d433, type: 3}
 --- !u!61 &2003854074
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -18053,8 +18073,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.24, y: 0.28}
-    newSize: {x: 0.24, y: 0.28}
+    oldSize: {x: 0.32, y: 0.32}
+    newSize: {x: 0.32, y: 0.32}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -18137,12 +18157,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -2893601810926486767, guid: 2b48503b81b999947a3a50bfd757a0fb, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 04f850e5f0ed4cb459b67fb70460f6df, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.24, y: 0.28}
+  m_Size: {x: 0.32, y: 0.32}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
