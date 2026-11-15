@@ -1,0 +1,291 @@
+diff --git a/Assets/Editor/MarsUISetup.cs b/Assets/Editor/MarsUISetup.cs
+index dfe4cb26..0f8425d6 100644
+--- a/Assets/Editor/MarsUISetup.cs
++++ b/Assets/Editor/MarsUISetup.cs
+@@ -1,26 +1,23 @@
+ #if UNITY_EDITOR
++using System.Text;
+ using UnityEditor;
+ using UnityEditor.SceneManagement;
+ using UnityEngine;
+ using UnityEngine.UI;
+ 
+ /// <summary>
+-/// Menu Editor: membuat Canvas, kotak dialog, dan prompt interaksi lalu menyambungkannya
+-/// ke TARS dan Player dengan sekali klik. Mars > Setup Dialogue and Prompt UI
++/// Menu Editor: membuat/memperbaiki Canvas, kotak dialog, dan prompt interaksi lalu
++/// menyambungkannya ke TARS dan Player. Aman dijalankan berulang kali.
++/// Mars > Setup Dialogue and Prompt UI
+ /// </summary>
+ public static class MarsUISetup
+ {
+     [MenuItem("Mars/Setup Dialogue and Prompt UI")]
+     public static void Setup()
+     {
+-        if (Object.FindFirstObjectByType<DialogueUI>() != null)
+-        {
+-            EditorUtility.DisplayDialog("Mars Setup",
+-                "DialogueUI sudah ada di scene ini. Tidak ada yang dibuat ulang.", "OK");
+-            return;
+-        }
++        StringBuilder report = new StringBuilder();
+ 
+-        // 1. Canvas (pakai yang sudah ada jika ada)
++        // 1. Canvas
+         Canvas canvas = Object.FindFirstObjectByType<Canvas>();
+         if (canvas == null)
+         {
+@@ -33,89 +30,182 @@ public static class MarsUISetup
+             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+             scaler.referenceResolution = new Vector2(1920, 1080);
+             scaler.matchWidthOrHeight = 0.5f;
++            report.AppendLine("- Canvas dibuat.");
++        }
++
++        // 2. Dialog
++        DialogueUI dialogueUI = null;
++        int removedDialogue = 0;
++        foreach (DialogueUI candidate in Object.FindObjectsByType<DialogueUI>(FindObjectsSortMode.None))
++        {
++            if (dialogueUI == null && IsConfigured(candidate, "dialogueRoot", "lineText"))
++                dialogueUI = candidate;
++        }
++        foreach (DialogueUI candidate in Object.FindObjectsByType<DialogueUI>(FindObjectsSortMode.None))
++        {
++            if (candidate != dialogueUI && !IsConfigured(candidate, "dialogueRoot", "lineText"))
++            {
++                Undo.DestroyObjectImmediate(candidate);
++                removedDialogue++;
++            }
+         }
+ 
+-        // 2. Kotak dialog
+-        GameObject dialogueRoot = CreatePanel(canvas.transform, "DialogueRoot");
+-        RectTransform dialogueRect = dialogueRoot.GetComponent<RectTransform>();
+-        dialogueRect.anchorMin = new Vector2(0.1f, 0f);
+-        dialogueRect.anchorMax = new Vector2(0.9f, 0f);
+-        dialogueRect.pivot = new Vector2(0.5f, 0f);
+-        dialogueRect.anchoredPosition = new Vector2(0f, 30f);
+-        dialogueRect.sizeDelta = new Vector2(0f, 180f);
+-
+-        Text speakerText = CreateText(dialogueRoot.transform, "SpeakerText", "TARS", 34,
+-            new Color(1f, 0.85f, 0.3f), TextAnchor.UpperLeft);
+-        RectTransform speakerRect = speakerText.rectTransform;
+-        speakerRect.anchorMin = new Vector2(0f, 1f);
+-        speakerRect.anchorMax = new Vector2(1f, 1f);
+-        speakerRect.pivot = new Vector2(0.5f, 1f);
+-        speakerRect.anchoredPosition = new Vector2(0f, -12f);
+-        speakerRect.sizeDelta = new Vector2(-40f, 44f);
+-        speakerText.fontStyle = FontStyle.Bold;
+-
+-        Text lineText = CreateText(dialogueRoot.transform, "LineText", "Isi dialog", 30,
+-            Color.white, TextAnchor.UpperLeft);
+-        RectTransform lineRect = lineText.rectTransform;
+-        lineRect.anchorMin = Vector2.zero;
+-        lineRect.anchorMax = Vector2.one;
+-        lineRect.offsetMin = new Vector2(20f, 15f);
+-        lineRect.offsetMax = new Vector2(-20f, -60f);
+-
+-        // 3. Prompt interaksi
+-        GameObject promptRoot = CreatePanel(canvas.transform, "PromptRoot");
+-        RectTransform promptRect = promptRoot.GetComponent<RectTransform>();
+-        promptRect.anchorMin = new Vector2(0.5f, 0f);
+-        promptRect.anchorMax = new Vector2(0.5f, 0f);
+-        promptRect.pivot = new Vector2(0.5f, 0f);
+-        promptRect.anchoredPosition = new Vector2(0f, 240f);
+-        promptRect.sizeDelta = new Vector2(520f, 60f);
+-
+-        Text promptText = CreateText(promptRoot.transform, "PromptText", "[E] Interaksi", 30,
+-            Color.white, TextAnchor.MiddleCenter);
+-        RectTransform promptTextRect = promptText.rectTransform;
+-        promptTextRect.anchorMin = Vector2.zero;
+-        promptTextRect.anchorMax = Vector2.one;
+-        promptTextRect.offsetMin = Vector2.zero;
+-        promptTextRect.offsetMax = Vector2.zero;
+-
+-        // 4. Komponen skrip di Canvas + isi field
+-        DialogueUI dialogueUI = Undo.AddComponent<DialogueUI>(canvas.gameObject);
+-        SetRef(dialogueUI, "dialogueRoot", dialogueRoot);
+-        SetRef(dialogueUI, "speakerText", speakerText);
+-        SetRef(dialogueUI, "lineText", lineText);
++        if (dialogueUI == null)
++        {
++            bool created;
++            GameObject dialogueRoot = GetOrCreatePanel(canvas.transform, "DialogueRoot", out created);
++            if (created)
++            {
++                RectTransform r = dialogueRoot.GetComponent<RectTransform>();
++                r.anchorMin = new Vector2(0.1f, 0f);
++                r.anchorMax = new Vector2(0.9f, 0f);
++                r.pivot = new Vector2(0.5f, 0f);
++                r.anchoredPosition = new Vector2(0f, 30f);
++                r.sizeDelta = new Vector2(0f, 180f);
++            }
++
++            Text speakerText = GetOrCreateText(dialogueRoot.transform, "SpeakerText", "TARS", 34,
++                new Color(1f, 0.85f, 0.3f), TextAnchor.UpperLeft, out created);
++            if (created)
++            {
++                RectTransform r = speakerText.rectTransform;
++                r.anchorMin = new Vector2(0f, 1f);
++                r.anchorMax = new Vector2(1f, 1f);
++                r.pivot = new Vector2(0.5f, 1f);
++                r.anchoredPosition = new Vector2(0f, -12f);
++                r.sizeDelta = new Vector2(-40f, 44f);
++                speakerText.fontStyle = FontStyle.Bold;
++            }
++
++            Text lineText = GetOrCreateText(dialogueRoot.transform, "LineText", "Isi dialog", 30,
++                Color.white, TextAnchor.UpperLeft, out created);
++            if (created)
++            {
++                RectTransform r = lineText.rectTransform;
++                r.anchorMin = Vector2.zero;
++                r.anchorMax = Vector2.one;
++                r.offsetMin = new Vector2(20f, 15f);
++                r.offsetMax = new Vector2(-20f, -60f);
++            }
++
++            dialogueUI = canvas.GetComponent<DialogueUI>();
++            if (dialogueUI == null) dialogueUI = Undo.AddComponent<DialogueUI>(canvas.gameObject);
++
++            SetRef(dialogueUI, "dialogueRoot", dialogueRoot);
++            SetRef(dialogueUI, "speakerText", speakerText);
++            SetRef(dialogueUI, "lineText", lineText);
++            report.AppendLine("- DialogueUI dibuat/diperbaiki di: " + dialogueUI.gameObject.name);
++        }
++        else
++        {
++            report.AppendLine("- DialogueUI sudah lengkap di: " + dialogueUI.gameObject.name);
++        }
++        if (removedDialogue > 0)
++            report.AppendLine("- " + removedDialogue + " komponen DialogueUI kosong (duplikat) dihapus.");
+ 
++        // 3. Prompt
+         InteractionDetector detector = Object.FindFirstObjectByType<InteractionDetector>();
+-        InteractionPromptUI promptUI = canvas.GetComponent<InteractionPromptUI>();
+-        if (promptUI == null) promptUI = Undo.AddComponent<InteractionPromptUI>(canvas.gameObject);
+-        SetRef(promptUI, "detector", detector);
+-        SetRef(promptUI, "promptRoot", promptRoot);
+-        SetRef(promptUI, "promptText", promptText);
++        InteractionPromptUI promptUI = Object.FindFirstObjectByType<InteractionPromptUI>();
++
++        if (promptUI != null && IsConfigured(promptUI, "detector", "promptRoot", "promptText"))
++        {
++            report.AppendLine("- Prompt sudah lengkap.");
++        }
++        else
++        {
++            bool created;
++            GameObject promptRoot = GetOrCreatePanel(canvas.transform, "PromptRoot", out created);
++            if (created)
++            {
++                RectTransform r = promptRoot.GetComponent<RectTransform>();
++                r.anchorMin = new Vector2(0.5f, 0f);
++                r.anchorMax = new Vector2(0.5f, 0f);
++                r.pivot = new Vector2(0.5f, 0f);
++                r.anchoredPosition = new Vector2(0f, 240f);
++                r.sizeDelta = new Vector2(520f, 60f);
++            }
++
++            Text promptText = GetOrCreateText(promptRoot.transform, "PromptText", "[E] Interaksi", 30,
++                Color.white, TextAnchor.MiddleCenter, out created);
++            if (created)
++            {
++                RectTransform r = promptText.rectTransform;
++                r.anchorMin = Vector2.zero;
++                r.anchorMax = Vector2.one;
++                r.offsetMin = Vector2.zero;
++                r.offsetMax = Vector2.zero;
++            }
++
++            if (promptUI == null) promptUI = Undo.AddComponent<InteractionPromptUI>(canvas.gameObject);
++            SetRef(promptUI, "detector", detector);
++            SetRef(promptUI, "promptRoot", promptRoot);
++            SetRef(promptUI, "promptText", promptText);
++            report.AppendLine("- Prompt dibuat/diperbaiki.");
++        }
++        if (detector == null)
++            report.AppendLine("- PERINGATAN: InteractionDetector tidak ditemukan. Isi field Detector pada InteractionPromptUI secara manual.");
+ 
+-        // 5. Sambungkan ke TARS
++        // 4. TARS
+         TarsWanderer tars = Object.FindFirstObjectByType<TarsWanderer>();
+-        if (tars != null) SetRef(tars, "dialogueUI", dialogueUI);
++        if (tars != null)
++        {
++            SetRef(tars, "dialogueUI", dialogueUI);
++            report.AppendLine("- TARS: Dialogue UI tersambung.");
++        }
++        else
++        {
++            report.AppendLine("- PERINGATAN: TarsWanderer tidak ditemukan di scene ini.");
++        }
+ 
+         EditorSceneManager.MarkSceneDirty(canvas.gameObject.scene);
++        report.AppendLine();
++        report.Append("Tekan Ctrl+S untuk menyimpan scene.");
++        Debug.Log("MarsUISetup:\n" + report);
++        EditorUtility.DisplayDialog("Mars Setup", report.ToString(), "OK");
++    }
+ 
+-        string report = "Selesai. Canvas, DialogueRoot, dan PromptRoot sudah dibuat.\n\n";
+-        report += tars != null ? "- TARS: Dialogue UI sudah tersambung.\n" : "- PERINGATAN: TarsWanderer tidak ditemukan di scene.\n";
+-        report += detector != null ? "- Prompt: terhubung ke InteractionDetector di Player.\n" : "- PERINGATAN: InteractionDetector tidak ditemukan; isi field Detector di Canvas secara manual.\n";
+-        report += "\nTekan Ctrl+S untuk menyimpan scene.";
+-        EditorUtility.DisplayDialog("Mars Setup", report, "OK");
++    private static bool IsConfigured(Object target, params string[] fieldNames)
++    {
++        SerializedObject so = new SerializedObject(target);
++        foreach (string fieldName in fieldNames)
++        {
++            SerializedProperty prop = so.FindProperty(fieldName);
++            if (prop == null || prop.objectReferenceValue == null) return false;
++        }
++        return true;
+     }
+ 
+-    private static GameObject CreatePanel(Transform parent, string name)
++    private static GameObject GetOrCreatePanel(Transform parent, string name, out bool created)
+     {
++        Transform existing = parent.Find(name);
++        if (existing != null)
++        {
++            created = false;
++            return existing.gameObject;
++        }
++
+         GameObject go = new GameObject(name, typeof(RectTransform), typeof(Image));
+         Undo.RegisterCreatedObjectUndo(go, "Create " + name);
+         go.transform.SetParent(parent, false);
+         go.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.8f);
++        created = true;
+         return go;
+     }
+ 
+-    private static Text CreateText(Transform parent, string name, string content, int size, Color color, TextAnchor alignment)
++    private static Text GetOrCreateText(Transform parent, string name, string content, int size,
++        Color color, TextAnchor alignment, out bool created)
+     {
++        Transform existing = parent.Find(name);
++        if (existing != null)
++        {
++            Text existingText = existing.GetComponent<Text>();
++            if (existingText != null)
++            {
++                created = false;
++                return existingText;
++            }
++        }
++
+         GameObject go = new GameObject(name, typeof(RectTransform), typeof(Text));
+         Undo.RegisterCreatedObjectUndo(go, "Create " + name);
+         go.transform.SetParent(parent, false);
+@@ -129,6 +219,7 @@ public static class MarsUISetup
+         text.horizontalOverflow = HorizontalWrapMode.Wrap;
+         text.verticalOverflow = VerticalWrapMode.Overflow;
+         text.raycastTarget = false;
++        created = true;
+         return text;
+     }
+ 

@@ -1,0 +1,155 @@
+diff --git a/Assets/Editor/MarsUISetup.cs b/Assets/Editor/MarsUISetup.cs
+new file mode 100644
+index 00000000..dfe4cb26
+--- /dev/null
++++ b/Assets/Editor/MarsUISetup.cs
+@@ -0,0 +1,149 @@
++#if UNITY_EDITOR
++using UnityEditor;
++using UnityEditor.SceneManagement;
++using UnityEngine;
++using UnityEngine.UI;
++
++/// <summary>
++/// Menu Editor: membuat Canvas, kotak dialog, dan prompt interaksi lalu menyambungkannya
++/// ke TARS dan Player dengan sekali klik. Mars > Setup Dialogue and Prompt UI
++/// </summary>
++public static class MarsUISetup
++{
++    [MenuItem("Mars/Setup Dialogue and Prompt UI")]
++    public static void Setup()
++    {
++        if (Object.FindFirstObjectByType<DialogueUI>() != null)
++        {
++            EditorUtility.DisplayDialog("Mars Setup",
++                "DialogueUI sudah ada di scene ini. Tidak ada yang dibuat ulang.", "OK");
++            return;
++        }
++
++        // 1. Canvas (pakai yang sudah ada jika ada)
++        Canvas canvas = Object.FindFirstObjectByType<Canvas>();
++        if (canvas == null)
++        {
++            GameObject canvasGO = new GameObject("Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
++            Undo.RegisterCreatedObjectUndo(canvasGO, "Create Canvas");
++            canvas = canvasGO.GetComponent<Canvas>();
++            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
++
++            CanvasScaler scaler = canvasGO.GetComponent<CanvasScaler>();
++            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
++            scaler.referenceResolution = new Vector2(1920, 1080);
++            scaler.matchWidthOrHeight = 0.5f;
++        }
++
++        // 2. Kotak dialog
++        GameObject dialogueRoot = CreatePanel(canvas.transform, "DialogueRoot");
++        RectTransform dialogueRect = dialogueRoot.GetComponent<RectTransform>();
++        dialogueRect.anchorMin = new Vector2(0.1f, 0f);
++        dialogueRect.anchorMax = new Vector2(0.9f, 0f);
++        dialogueRect.pivot = new Vector2(0.5f, 0f);
++        dialogueRect.anchoredPosition = new Vector2(0f, 30f);
++        dialogueRect.sizeDelta = new Vector2(0f, 180f);
++
++        Text speakerText = CreateText(dialogueRoot.transform, "SpeakerText", "TARS", 34,
++            new Color(1f, 0.85f, 0.3f), TextAnchor.UpperLeft);
++        RectTransform speakerRect = speakerText.rectTransform;
++        speakerRect.anchorMin = new Vector2(0f, 1f);
++        speakerRect.anchorMax = new Vector2(1f, 1f);
++        speakerRect.pivot = new Vector2(0.5f, 1f);
++        speakerRect.anchoredPosition = new Vector2(0f, -12f);
++        speakerRect.sizeDelta = new Vector2(-40f, 44f);
++        speakerText.fontStyle = FontStyle.Bold;
++
++        Text lineText = CreateText(dialogueRoot.transform, "LineText", "Isi dialog", 30,
++            Color.white, TextAnchor.UpperLeft);
++        RectTransform lineRect = lineText.rectTransform;
++        lineRect.anchorMin = Vector2.zero;
++        lineRect.anchorMax = Vector2.one;
++        lineRect.offsetMin = new Vector2(20f, 15f);
++        lineRect.offsetMax = new Vector2(-20f, -60f);
++
++        // 3. Prompt interaksi
++        GameObject promptRoot = CreatePanel(canvas.transform, "PromptRoot");
++        RectTransform promptRect = promptRoot.GetComponent<RectTransform>();
++        promptRect.anchorMin = new Vector2(0.5f, 0f);
++        promptRect.anchorMax = new Vector2(0.5f, 0f);
++        promptRect.pivot = new Vector2(0.5f, 0f);
++        promptRect.anchoredPosition = new Vector2(0f, 240f);
++        promptRect.sizeDelta = new Vector2(520f, 60f);
++
++        Text promptText = CreateText(promptRoot.transform, "PromptText", "[E] Interaksi", 30,
++            Color.white, TextAnchor.MiddleCenter);
++        RectTransform promptTextRect = promptText.rectTransform;
++        promptTextRect.anchorMin = Vector2.zero;
++        promptTextRect.anchorMax = Vector2.one;
++        promptTextRect.offsetMin = Vector2.zero;
++        promptTextRect.offsetMax = Vector2.zero;
++
++        // 4. Komponen skrip di Canvas + isi field
++        DialogueUI dialogueUI = Undo.AddComponent<DialogueUI>(canvas.gameObject);
++        SetRef(dialogueUI, "dialogueRoot", dialogueRoot);
++        SetRef(dialogueUI, "speakerText", speakerText);
++        SetRef(dialogueUI, "lineText", lineText);
++
++        InteractionDetector detector = Object.FindFirstObjectByType<InteractionDetector>();
++        InteractionPromptUI promptUI = canvas.GetComponent<InteractionPromptUI>();
++        if (promptUI == null) promptUI = Undo.AddComponent<InteractionPromptUI>(canvas.gameObject);
++        SetRef(promptUI, "detector", detector);
++        SetRef(promptUI, "promptRoot", promptRoot);
++        SetRef(promptUI, "promptText", promptText);
++
++        // 5. Sambungkan ke TARS
++        TarsWanderer tars = Object.FindFirstObjectByType<TarsWanderer>();
++        if (tars != null) SetRef(tars, "dialogueUI", dialogueUI);
++
++        EditorSceneManager.MarkSceneDirty(canvas.gameObject.scene);
++
++        string report = "Selesai. Canvas, DialogueRoot, dan PromptRoot sudah dibuat.\n\n";
++        report += tars != null ? "- TARS: Dialogue UI sudah tersambung.\n" : "- PERINGATAN: TarsWanderer tidak ditemukan di scene.\n";
++        report += detector != null ? "- Prompt: terhubung ke InteractionDetector di Player.\n" : "- PERINGATAN: InteractionDetector tidak ditemukan; isi field Detector di Canvas secara manual.\n";
++        report += "\nTekan Ctrl+S untuk menyimpan scene.";
++        EditorUtility.DisplayDialog("Mars Setup", report, "OK");
++    }
++
++    private static GameObject CreatePanel(Transform parent, string name)
++    {
++        GameObject go = new GameObject(name, typeof(RectTransform), typeof(Image));
++        Undo.RegisterCreatedObjectUndo(go, "Create " + name);
++        go.transform.SetParent(parent, false);
++        go.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.8f);
++        return go;
++    }
++
++    private static Text CreateText(Transform parent, string name, string content, int size, Color color, TextAnchor alignment)
++    {
++        GameObject go = new GameObject(name, typeof(RectTransform), typeof(Text));
++        Undo.RegisterCreatedObjectUndo(go, "Create " + name);
++        go.transform.SetParent(parent, false);
++
++        Text text = go.GetComponent<Text>();
++        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
++        text.text = content;
++        text.fontSize = size;
++        text.color = color;
++        text.alignment = alignment;
++        text.horizontalOverflow = HorizontalWrapMode.Wrap;
++        text.verticalOverflow = VerticalWrapMode.Overflow;
++        text.raycastTarget = false;
++        return text;
++    }
++
++    private static void SetRef(Object target, string fieldName, Object value)
++    {
++        if (target == null) return;
++        SerializedObject so = new SerializedObject(target);
++        SerializedProperty prop = so.FindProperty(fieldName);
++        if (prop == null)
++        {
++            Debug.LogError("MarsUISetup: field '" + fieldName + "' tidak ditemukan di " + target.GetType().Name);
++            return;
++        }
++        prop.objectReferenceValue = value;
++        so.ApplyModifiedProperties();
++    }
++}
++#endif
