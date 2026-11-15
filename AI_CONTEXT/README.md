@@ -28,3 +28,6 @@ Jika ada konflik, jangan menebak. Jelaskan konflik dan minta keputusan.
 - Jangan mengarang versi Unity, package, nama file, scene, referensi Inspector, atau hasil tes.
 - Saat kode berubah, usulkan pembaruan dokumen terkait.
 - AI bekerja dengan patch; pengguna yang menerapkan, menguji, commit, dan push.
+
+## Aturan sinkronisasi
+Setiap perubahan proyek wajib memperbarui AI_CONTEXT dalam patch yang sama. Rincian ada di `04_CODE_RULES.md` bagian "Sinkronisasi AI_CONTEXT".

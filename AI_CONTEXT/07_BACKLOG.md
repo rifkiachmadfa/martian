@@ -15,3 +15,8 @@ Prioritas harus disesuaikan setelah audit repository dan milestone tim.
 
 ## Aturan backlog
 Setiap task baru harus punya: tujuan, prioritas, dependensi, kriteria selesai, dan cara tes. Hindari menambah fitur di luar GDD.
+
+## Progres (2026-11-15)
+- Sebagian selesai: langkah 2 (interaksi dasar; perpindahan tiga area belum).
+- Belum: langkah 1 (animasi arah player masih bermasalah), 3 dan seterusnya.
+- Usulan berikutnya: ResourceManager (stok Ice/Water/Oxygen/Energy/Food dengan event untuk HUD), lalu HUD dan timer hari.

@@ -29,3 +29,15 @@ Gunakan checklist ini saat fitur terkait sudah tersedia. Catat versi build, lang
 - [ ] Tidak ada missing reference/asset.
 - [ ] Build berjalan pada target.
 - [ ] Performa layak pada perangkat spesifikasi rendah.
+
+## Interaksi & TARS (ditambahkan 2026-11-15)
+Status [x] berarti dilaporkan developer, belum diverifikasi AI.
+- [x] TARS berjalan acak dan tetap di dalam area jelajah.
+- [ ] TARS tidak menembus dinding dan tidak macet di sudut.
+- [x] Mendekati TARS memunculkan prompt "[E] Bicara dengan TARS".
+- [x] Menekan E membuka dialog; TARS berhenti dan menghadap Player.
+- [x] E melanjutkan baris dialog; setelah baris terakhir TARS berjalan lagi.
+- [ ] E terakhir tidak membuka dialog baru secara langsung.
+- [ ] Console tidak menampilkan error atau peringatan `TarsWanderer`/`DialogueUI`.
+- [ ] Animasi TARS benar untuk arah kiri, kanan, dan atas.
+- [ ] Animasi arah bawah (menunggu sprite Down).

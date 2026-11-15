@@ -8,7 +8,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Interactable
   - Water
   - UI
   - 
@@ -49,6 +49,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 2334826941
+    locked: 0
+  - name: Interactable
+    uniqueID: 1160133427
     locked: 0
   m_RenderingLayers:
   - Default
