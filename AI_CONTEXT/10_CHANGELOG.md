@@ -10,6 +10,13 @@ Format:
 - **Test:** pengujian dan hasil.
 - **Follow-up:** pekerjaan tersisa.
 
+## 2026-11-15 (sinkronisasi PHASE.md dengan repo afc2453c)
+- **Changed:** `PHASE.md` diperbarui ke revisi `afc2453c`: patch objek interaktif dicatat sebagai sudah diterapkan/di-commit; ditambahkan catatan bahwa scene commit belum memuat objek barunya; utang teknis `interactive-objects.patch` dan `Assets/_Recovery` dicatat; riwayat ditambah. `06_PROJECT_STATUS.md` disesuaikan (commit dasar audit, kondisi scene, housekeeping).
+- **Reason:** `PHASE.md` masih menyebut patch belum diterapkan dan revisi `a9357e29`, tidak sesuai kondisi repo.
+- **Files/systems:** `AI_CONTEXT/PHASE.md`, `AI_CONTEXT/06_PROJECT_STATUS.md`, `AI_CONTEXT/10_CHANGELOG.md`. Tidak ada kode, scene, atau aset yang berubah.
+- **Test:** Fakta dicek dari clone bersih `main` (`git show --stat`, isi `SampleScene.unity`, `TagManager.asset`, `git ls-files`). Kompilasi dan run Unity: BELUM.
+- **Follow-up:** Developer menjalankan `Mars > Setup Interactive Objects`, menyimpan dan meng-commit scene; hapus `interactive-objects.patch`; tambahkan `_Recovery/` ke `.gitignore`; lanjut tes checklist "Objek interaktif".
+
 ## 2026-11-15 (Objek interaktif: Ice, Purifier, Oxygen Generator, Farming Plot, Solar Panel + Repair Point, Resource Monitor, Terminal)
 - **Changed:** Menambah script `IceDeposit`, `SolarPanel`, `RepairPoint` (Outdoor), `WaterPurifier`, `OxygenGenerator` (Machines), `FarmingPlot` (Farming), `ResourceMonitor`, `CommunicationTerminal` (Station), dan menu Editor `Mars > Setup Interactive Objects` (`MarsObjectsSetup`). Semua `IInteractable`; stok hanya lewat `ResourceManager`. `HudUI`: `iceText` opsional (menampilkan Ice). Perilaku (angka = USULAN): Ice 3 detik per +1 (perlu suit); Purifier 1 Ice + 5 Energy -> 4 Water dalam 4 detik; Oxygen Generator otomatis 1 Water + 2 Energy -> 5 Oxygen per 5 detik dengan saklar E; Farming Plot 3 tahap, siram 2 Water, tumbuh saat hari berganti, panen +20 Food; Solar Panel 0,5 Energy/detik (rusak 25 persen); Repair Point memperbaiki langsung (sementara); Resource Monitor dan Terminal hanya dialog (teks Terminal placeholder). Ditambah file `.meta` baru untuk 9 script dan 4 folder.
 - **Reason:** Permintaan developer menyelesaikan seluruh daftar "Objek interaktif baru" (GDD 3.1 sampai 3.3, 10, 11).

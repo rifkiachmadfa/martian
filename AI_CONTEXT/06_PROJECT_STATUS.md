@@ -1,7 +1,7 @@
 # Project Status
 
 Terakhir diperbarui: 2026-11-15
-Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `a9357e29` (audit 2026-11-15; patch objek interaktif berbasis revisi ini). `SampleScene.unity` di repo kini memuat TARS, Canvas/HUD, ResourceManager, TimeManager, Bed, FadeOverlay [Repo]. Patch suit sebelumnya (`milestone-a-suit-gate.patch`) hanya ter-commit sebagai file dan belum diterapkan ke `Assets/`; patch Milestone A ini menggantikannya.
+Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `afc2453c` "interactive objects" (audit 2026-11-15 pada clone bersih). Patch objek interaktif sudah ter-commit di revisi ini [Repo]. `SampleScene.unity` di repo kini memuat TARS, Canvas/HUD, ResourceManager, TimeManager, Bed, FadeOverlay [Repo]. Patch suit sebelumnya (`milestone-a-suit-gate.patch`) hanya ter-commit sebagai file dan belum diterapkan ke `Assets/`; patch Milestone A ini menggantikannya.
 
 Label sumber: **[Repo]** terverifikasi dari file di repo, **[Dev]** dilaporkan developer (belum bisa dicek AI), **[?]** belum diverifikasi.
 
@@ -52,12 +52,14 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 - Gambar arah bawah untuk TARS (`Down Frames`) belum ada.
 - Collider Player di scene belum diperiksa.
 - Player masih bisa bergerak saat dialog terbuka (kini disengaja: waktu dan resource tetap berjalan saat dialog).
+- **[Repo, afc2453c]** `SampleScene.unity` yang ter-commit belum berisi objek interaktif baru (IceDeposit, SolarPanel, RepairPoint, WaterPurifier, OxygenGenerator, FarmingPlot, ResourceMonitor, CommunicationTerminal). Menu `Mars > Setup Interactive Objects` belum terbukti dijalankan di repo [?]. Layer `Interactable` ada di `TagManager.asset` [Repo].
 - Objek interaktif (patch 2026-11-15): tidak ada compiler C# atau Unity di lingkungan AI; kode hanya diperiksa dengan membaca dan `git apply --check` [?]. Posisi, sprite, dan collider objek di scene ditentukan developer [?].
 - Keseimbangan: `OxygenGenerator` menyala sejak awal dan memakai Water (usulan 1 per 5 detik) sehingga Water awal (10) bisa habis dalam sekitar 50 detik bila tidak dimatikan; Energy tidak dihasilkan kecuali ada `SolarPanel` di scene. Angka perlu playtest [?].
 - Satu `FarmingPlot` = satu petak; petak tambahan dibuat dengan menduplikasi objek. Pertumbuhan hanya terjadi lewat `TimeManager.OnDayStarted` (jadi lewat Bed atau menu Debug TimeManager) [?].
 
 ## Housekeeping
-- Empat file `.patch` ter-commit di root repo (`tars_interaction`, `tars_dialogue`, `mars_ui_setup`, `mars_ui_setup_fix`). Tidak dipakai lagi; boleh dihapus atau di-ignore.
+- Satu file `.patch` ter-commit di root repo pada `afc2453c`: `interactive-objects.patch`. Sudah diterapkan, tidak dipakai lagi; boleh dihapus atau di-ignore. (Empat file `.patch` lama yang disebut audit sebelumnya sudah tidak ada di root.)
+- `Assets/_Recovery/0.unity` masih ter-commit [Repo].
 - Ada `Assets/popopop.meta` tanpa folder/aset pasangannya.
 - `.gitignore` belum mengecualikan `.vscode/`.
 
