@@ -164,7 +164,7 @@ public static class MarsUISetup
         EditorUtility.DisplayDialog("Mars Setup", report.ToString(), "OK");
     }
 
-    private static bool IsConfigured(Object target, params string[] fieldNames)
+    internal static bool IsConfigured(Object target, params string[] fieldNames)
     {
         SerializedObject so = new SerializedObject(target);
         foreach (string fieldName in fieldNames)
@@ -175,7 +175,7 @@ public static class MarsUISetup
         return true;
     }
 
-    private static GameObject GetOrCreatePanel(Transform parent, string name, out bool created)
+    internal static GameObject GetOrCreatePanel(Transform parent, string name, out bool created)
     {
         Transform existing = parent.Find(name);
         if (existing != null)
@@ -192,7 +192,7 @@ public static class MarsUISetup
         return go;
     }
 
-    private static Text GetOrCreateText(Transform parent, string name, string content, int size,
+    internal static Text GetOrCreateText(Transform parent, string name, string content, int size,
         Color color, TextAnchor alignment, out bool created)
     {
         Transform existing = parent.Find(name);
@@ -223,7 +223,7 @@ public static class MarsUISetup
         return text;
     }
 
-    private static void SetRef(Object target, string fieldName, Object value)
+    internal static void SetRef(Object target, string fieldName, Object value)
     {
         if (target == null) return;
         SerializedObject so = new SerializedObject(target);

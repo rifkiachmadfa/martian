@@ -1,0 +1,518 @@
+diff --git a/AI_CONTEXT/03_TECHNICAL_ARCHITECTURE.md b/AI_CONTEXT/03_TECHNICAL_ARCHITECTURE.md
+index 482659c2..449daae3 100644
+--- a/AI_CONTEXT/03_TECHNICAL_ARCHITECTURE.md
++++ b/AI_CONTEXT/03_TECHNICAL_ARCHITECTURE.md
+@@ -30,5 +30,6 @@ Periksa `ProjectSettings/ProjectVersion.txt`, `Packages/manifest.json`, struktur
+ - **Resource (2026-11-15):** `ResourceManager` (`Assets/Script/Resource/`) adalah satu-satunya penyimpan stok. Akses lewat `ResourceManager.Instance`: `Get`, `GetMax`, `Has`, `Add` (dibatasi kapasitas, mengembalikan jumlah yang masuk), `TryConsume` (false jika stok kurang). Event `OnResourceChanged(type, nilai, max)` untuk HUD. Tanpa `DontDestroyOnLoad` karena game satu scene. HabitatOxygen dan SuitOxygen terpisah. Belum dihubungkan ke sistem lain. [Repo, belum dites di Unity]
+ - **Waktu (2026-11-15):** `TimeManager` (`Assets/Script/Time/`) via `TimeManager.Instance`: `CurrentDay`, `TotalDays`, `RemainingSeconds`, `IsDayOver`, `IsPaused`, `StartDay(int)`; event `OnDayStarted(day)` dan `OnDayTimeEnded`. Timer berhenti selama `DialogueUI.IsOpen` (dibaca tiap frame; DialogueUI tidak diubah). Saat waktu habis timer berhenti di 0 dan event terpicu sekali; belum ada efek lain. [Repo, belum dites di Unity]
+ - **HUD (2026-11-15):** `HudUI` (`Assets/Script/UI/`) hanya tampilan: berlangganan `ResourceManager.OnResourceChanged` dan membaca `TimeManager`. Berlangganan di `Start` (bukan `OnEnable`) karena urutan Awake/OnEnable antar objek tidak terjamin. Menampilkan Food, Water, HabitatOxygen (label "Oxygen"), Energy. Dibuat lewat menu `Mars > Setup HUD and Time`, yang memakai helper `internal` dari `MarsUISetup`.
++- **Tidur (2026-11-15):** `Bed` (`Assets/Script/Interaction/`, IInteractable) menjalankan coroutine: `Player.MovementEnabled=false`, `TimeManager.ExternalPause=true`, `FadeUI.FadeToBlack`, `TimeManager.StartDay(hari+1)`, pindah ke SpawnPoint, `FadeFromBlack`, buka kunci. `FadeUI` hanya tampilan (CanvasGroup, selalu sibling terakhir di Canvas). `Bed` tidak memegang state hari; state di TimeManager. Cooldown singkat setelah dialog mencegah dialog terbuka ulang (pola sama dengan TARS). Pesan Bed memakai `DialogueUI.Show` dengan pembicara "Sistem". [Repo, belum dites di Unity]
+ - **Belum ada:** GameManager, SaveSystem, TARSSystem, dan sistem lain di GDD. Tidak ada namespace; script berada di global namespace.
+ - **Rencana integrasi:** pause timer saat dialog akan memakai event dari `DialogueUI` setelah TimeManager ada.
+diff --git a/AI_CONTEXT/05_SCENES_ASSETS.md b/AI_CONTEXT/05_SCENES_ASSETS.md
+index 2a39e79b..14dcab9c 100644
+--- a/AI_CONTEXT/05_SCENES_ASSETS.md
++++ b/AI_CONTEXT/05_SCENES_ASSETS.md
+@@ -19,7 +19,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan
+ ## Script
+ | Path | Fungsi |
+ |---|---|
+-| `Assets/Script/PlayerMovement.cs` | Gerak 4 arah, arah terakhir, parameter Animator `IsMoving`, `DirectionX`, `DirectionY` |
++| `Assets/Script/PlayerMovement.cs` | Gerak 4 arah, arah terakhir, parameter Animator `IsMoving`, `DirectionX`, `DirectionY`; `MovementEnabled` untuk mengunci gerak |
+ | `Assets/Script/Interaction/IInteractable.cs` | Kontrak: `InteractionPrompt`, `CanInteract`, `Interact` |
+ | `Assets/Script/Interaction/InteractionDetector.cs` | Di Player. Cari objek interaktif terdekat (OverlapCircle + layer), tombol E |
+ | `Assets/Script/Interaction/InteractionPromptUI.cs` | Menampilkan "[E] ..." (UI Text legacy) |
+@@ -30,8 +30,11 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan
+ | `Assets/Script/Resource/ResourceDebugPanel.cs` | Alat uji sementara (OnGUI). Hapus saat HUD sungguhan ada |
+ | `Assets/Script/Time/TimeManager.cs` | Hari, timer harian, pause saat dialog, event hari. Dipasang pada GameObject `TimeManager` |
+ | `Assets/Script/UI/HudUI.cs` | Tampilan Day, timer, Food, Water, Oxygen, Energy. Dipasang pada `HudRoot` di Canvas |
++| `Assets/Script/Interaction/Bed.cs` | Tempat tidur (IInteractable): tidur, fade, hari berikutnya. Dipasang pada GameObject `Bed` (layer `Interactable`, BoxCollider2D, anak `SpawnPoint`) |
++| `Assets/Script/UI/FadeUI.cs` | Layar hitam untuk fade. Dipasang pada `Canvas/FadeOverlay` |
+ | `Assets/Editor/MarsUISetup.cs` | Menu Editor: membuat/memperbaiki Canvas, dialog, prompt, dan menyambungkan ke TARS/Player. Helper `internal` dipakai `MarsHudSetup` |
+ | `Assets/Editor/MarsHudSetup.cs` | Menu Editor `Mars > Setup HUD and Time`: membuat TimeManager, HudRoot (TimePanel, ResourcePanel), dan menyambungkan referensi |
++| `Assets/Editor/MarsSleepSetup.cs` | Menu Editor `Mars > Setup Bed and Fade`: membuat FadeOverlay dan Bed (+SpawnPoint), menyambungkan referensi tanpa menimpa isian manual |
+ | `Assets/Welcome/Welcome2DScript.cs` | Bawaan template Unity; bukan bagian game |
+ 
+ ## Aset
+@@ -47,6 +50,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan
+ **Player:** komponen `InteractionDetector` dengan Interactable Layer = `Interactable`.
+ **ResourceManager:** GameObject kosong `ResourceManager` di scene dengan komponen `ResourceManager` dan `ResourceDebugPanel` (dipasang manual oleh developer; tidak ada di patch) [Dev].
+ **TimeManager dan HUD:** dibuat lewat menu Mars > Setup HUD and Time (GameObject `TimeManager`; `Canvas/HudRoot` berisi `TimePanel` dan `ResourcePanel`). Perubahan scene dilakukan developer, belum diverifikasi AI [?].
++**Bed dan Fade:** dibuat lewat menu Mars > Setup Bed and Fade (`Canvas/FadeOverlay`; GameObject `Bed` dengan anak `SpawnPoint`). Sprite Bed belum ada (placeholder oleh developer). Posisi di scene: [Dev], belum diverifikasi [?].
+ **Canvas:** dibuat lewat menu Mars > Setup Dialogue and Prompt UI (berisi `DialogueUI` dan `InteractionPromptUI`).
+ 
+ ## Saat menambah/mengubah asset
+diff --git a/AI_CONTEXT/06_PROJECT_STATUS.md b/AI_CONTEXT/06_PROJECT_STATUS.md
+index 8beb1a2e..2dd273d4 100644
+--- a/AI_CONTEXT/06_PROJECT_STATUS.md
++++ b/AI_CONTEXT/06_PROJECT_STATUS.md
+@@ -6,7 +6,7 @@ Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `20c1fc28` (4 c
+ Label sumber: **[Repo]** terverifikasi dari file di repo, **[Dev]** dilaporkan developer (belum bisa dicek AI), **[?]** belum diverifikasi.
+ 
+ ## Tahap saat ini
+-Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: movement, sistem interaksi modular, dan TARS yang berjalan acak serta bisa diajak bicara. Sudah ada ResourceManager (Milestone 1) dan TimeManager + HUD (Milestone 2, menunggu tes). Belum ada mesin, suit, farming, bed/tidur, atau save.
++Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: movement, sistem interaksi modular, dan TARS yang berjalan acak serta bisa diajak bicara. Sudah ada ResourceManager (M1), TimeManager + HUD (M2), dan Bed/tidur/pergantian hari (M3, menunggu tes). Belum ada mesin, suit, farming, Victory/Game Over, atau save.
+ 
+ ## Status fitur
+ | Fitur | Status | Bukti / catatan |
+@@ -20,9 +20,10 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari:
+ | Menu setup UI (Mars > Setup Dialogue and Prompt UI) | Ada | [Repo] `Assets/Editor/MarsUISetup.cs`. Sudah dijalankan: [Dev] |
+ | Sprite animasi TARS | Sebagian | [Repo] folder `Assets/Robot` punya Left, Right, Up (3 frame tiap arah). Folder **Down tidak ada** |
+ | Resource systems | Ada | [Repo] `Assets/Script/Resource/`. Playtest panel uji: [Dev] berjalan baik. Komponen di scene lokal dan belum ter-push ke GitHub saat audit 2026-11-15: [Dev] |
+-| Timer harian (TimeManager) | Script dibuat (Milestone 2) | [Repo] `Assets/Script/Time/TimeManager.cs`. Belum dites di Unity. Pause saat dialog lewat `DialogueUI.IsOpen`. Belum ada pergantian hari |
+-| HUD (Day, timer, 4 resource) | Script dan menu setup dibuat (Milestone 2) | [Repo] `Assets/Script/UI/HudUI.cs`, `Assets/Editor/MarsHudSetup.cs`. Belum dijalankan di Unity |
+-| Sleep / pergantian hari / ending | Belum ada | [Repo] tidak ada script. `TimeManager.StartDay` sudah siap dipakai |
++| Timer harian (TimeManager) | Ada | [Repo] `Assets/Script/Time/TimeManager.cs`. Playtest: [Dev] "sudah bagus" (butir tidak dirinci). Pause saat dialog lewat `DialogueUI.IsOpen`; `ExternalPause` untuk transisi |
++| HUD (Day, timer, 4 resource) | Ada | [Repo] `Assets/Script/UI/HudUI.cs`, `Assets/Editor/MarsHudSetup.cs`. Playtest: [Dev] "sudah bagus" |
++| Bed, tidur, fade, pergantian hari | Script dibuat (Milestone 3) | [Repo] `Assets/Script/Interaction/Bed.cs`, `Assets/Script/UI/FadeUI.cs`, `Assets/Editor/MarsSleepSetup.cs`. Belum dites di Unity |
++| Ending Victory / Game Over | Belum ada | [Repo] tidak ada script. Bed hari terakhir hanya menampilkan pesan placeholder |
+ | Suit / outdoor | Belum ada | [Repo] |
+ | Machines / solar / wiring minigame | Belum ada | [Repo] |
+ | Farming / Potato | Belum ada | [Repo] |
+@@ -37,7 +38,7 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari:
+ 
+ ## Belum diverifikasi / risiko
+ - Isi Inspector TARS dan Player di scene lokal (belum di-commit).
+-- Milestone 2: kompilasi dan logika hanya dicek dengan stub di luar Unity [?]. Menu `Mars > Setup HUD and Time`, tampilan HUD, dan pause saat dialog belum dites di Unity [?].
++- Milestone 3: kompilasi dan logika hanya dicek dengan stub di luar Unity [?]. Menu `Mars > Setup Bed and Fade`, fade, perpindahan Player ke SpawnPoint, dan interaksi E dengan Bed belum dites di Unity [?]. Collider dan posisi Bed/SpawnPoint ditentukan developer di scene [?].
+ - GitHub belum memuat Milestone 1 (komponen ResourceManager di scene dan file .meta) saat audit; basis patch 2 adalah `20c1fc28` + patch 1 [?].
+ - Tidak ada compile atau run Unity oleh AI; semua kode hanya diperiksa lewat `git apply --check`.
+ - Gambar arah bawah untuk TARS (`Down Frames`) belum ada.
+diff --git a/AI_CONTEXT/07_BACKLOG.md b/AI_CONTEXT/07_BACKLOG.md
+index 9812ef5c..b41b7c2f 100644
+--- a/AI_CONTEXT/07_BACKLOG.md
++++ b/AI_CONTEXT/07_BACKLOG.md
+@@ -20,6 +20,7 @@ Setiap task baru harus punya: tujuan, prioritas, dependensi, kriteria selesai, d
+ - Sebagian selesai: langkah 2 (interaksi dasar; perpindahan tiga area belum).
+ - Belum: langkah 1 (animasi arah player masih bermasalah), 3 dan seterusnya.
+ - Milestone 1 (ResourceManager): selesai dan dites developer 2026-11-15.
+-- Milestone 2 (TimeManager + HUD): dibuat 2026-11-15, menunggu tes di Unity.
+-- Berikutnya: Milestone 3 bed, tidur, fade to black, pergantian hari (`TimeManager.StartDay`). Lalu: kunci gerakan Player saat dialog, animasi kiri/kanan Player, dan perpindahan area dalam satu scene.
++- Milestone 2 (TimeManager + HUD): selesai, dilaporkan developer berjalan baik 2026-11-15.
++- Milestone 3 (Bed, tidur, fade, pergantian hari): dibuat 2026-11-15, menunggu tes di Unity.
++- Berikutnya (usulan): Milestone 4 mulai Game Over/Victory dasar atau perpindahan area dalam satu scene (tiga area, kamera), lalu suit/outdoor. Kecil tapi tertunda: kunci gerakan Player saat dialog (kini ada `MovementEnabled`), animasi kiri/kanan Player.
+ - (Usulan lama, sudah dikerjakan): ResourceManager (stok Ice/Water/Oxygen/Energy/Food dengan event untuk HUD), lalu HUD dan timer hari.
+diff --git a/AI_CONTEXT/08_DECISIONS.md b/AI_CONTEXT/08_DECISIONS.md
+index 8629b3a3..a4df596e 100644
+--- a/AI_CONTEXT/08_DECISIONS.md
++++ b/AI_CONTEXT/08_DECISIONS.md
+@@ -19,6 +19,9 @@ Catat keputusan yang sudah disetujui. Jangan mengubah keputusan diam-diam.
+ | Angka awal resource | Usulan: Ice 0/5, Water 10/30, HabitatOxygen 50/100, SuitOxygen 0/100, Energy 50/100, Food 50/100. Diubah lewat Inspector | Usulan sementara, belum final |
+ | Timer harian | Usulan: 600 detik/hari, 7 hari (Inspector `TimeManager`). Timer berhenti saat dialog terbuka. Saat waktu habis: berhenti di 0 + event; pergantian hari lewat bed (milestone berikutnya) | Usulan sementara, belum final |
+ | HUD | Menampilkan Day, timer, Food, Water, Oxygen habitat, Energy (GDD 13.1). Ice dan Suit Oxygen menyusul bersama suit/outdoor. UI dibuat lewat menu Editor | Diterapkan 2026-11-15 |
++| Aturan tidur | USULAN (butuh persetujuan): tidur hanya jika sisa waktu <= 120 detik atau waktu habis; sebelum itu pesan "Belum waktunya tidur". Alasan: Food berkurang seiring waktu, sehingga tidur langsung di awal hari bisa memotong tantangan survival. Diatur lewat `earliestSleepRemainingSeconds` di Bed (isi 600 agar boleh kapan saja). GDD tidak menetapkan | Usulan sementara, terbuka |
++| Hari terakhir | Bed pada Day 7 hanya menampilkan pesan placeholder, hari tidak naik. Trigger Victory (timer habis atau tidur) belum diputuskan | Terbuka |
++| Pause timer | `TimeManager.IsPaused` = dialog terbuka ATAU `ExternalPause` (dipakai transisi tidur; minigame nanti) | Diterapkan 2026-11-15 |
+ | Arsitektur final | Belum diputuskan; mengikuti kebutuhan tiap milestone | Terbuka |
+ | Angka balancing | Belum final | Terbuka |
+ 
+diff --git a/AI_CONTEXT/09_TEST_CHECKLIST.md b/AI_CONTEXT/09_TEST_CHECKLIST.md
+index 9a06b3c2..73462c04 100644
+--- a/AI_CONTEXT/09_TEST_CHECKLIST.md
++++ b/AI_CONTEXT/09_TEST_CHECKLIST.md
+@@ -49,12 +49,23 @@ Status [x] berarti dilaporkan developer, belum diverifikasi AI.
+ - [x] HabitatOxygen dan SuitOxygen berubah sendiri-sendiri.
+ - [x] Console tidak menampilkan error (khususnya "Dialogue Root belum diisi" atau missing script).
+ 
+-## TimeManager dan HUD (ditambahkan 2026-11-15, belum dites di Unity)
+-- [ ] Menu `Mars > Setup HUD and Time` jalan tanpa error; setelah itu ada objek `TimeManager` dan `Canvas/HudRoot`.
+-- [ ] Play: HUD menampilkan "Day 1 / 7", timer 10:00 yang menghitung mundur, dan Food/Water/Oxygen/Energy sesuai nilai awal.
+-- [ ] Tombol +/- di panel uji mengubah angka HUD seketika (Food, Water, Oxygen, Energy).
+-- [ ] Buka dialog TARS: timer berhenti; tutup dialog: timer lanjut.
+-- [ ] Klik kanan komponen TimeManager > Debug: Sisakan 5 detik: timer berhenti di 00:00 dan Console menulis "waktu hari 1 habis" sekali saja.
+-- [ ] Klik kanan > Debug: Mulai hari berikutnya: HUD menjadi "Day 2 / 7" dan timer kembali 10:00.
+-- [ ] Menjalankan menu setup kedua kali tidak membuat HUD ganda.
+-- [ ] Console tidak menampilkan error atau peringatan HudUI/TimeManager.
++## TimeManager dan HUD (ditambahkan 2026-11-15; dilaporkan developer lolos, butir tidak dirinci)
++- [x] Menu `Mars > Setup HUD and Time` jalan tanpa error; setelah itu ada objek `TimeManager` dan `Canvas/HudRoot`.
++- [x] Play: HUD menampilkan "Day 1 / 7", timer 10:00 yang menghitung mundur, dan Food/Water/Oxygen/Energy sesuai nilai awal.
++- [x] Tombol +/- di panel uji mengubah angka HUD seketika (Food, Water, Oxygen, Energy).
++- [x] Buka dialog TARS: timer berhenti; tutup dialog: timer lanjut.
++- [x] Klik kanan komponen TimeManager > Debug: Sisakan 5 detik: timer berhenti di 00:00 dan Console menulis "waktu hari 1 habis" sekali saja.
++- [x] Klik kanan > Debug: Mulai hari berikutnya: HUD menjadi "Day 2 / 7" dan timer kembali 10:00.
++- [x] Menjalankan menu setup kedua kali tidak membuat HUD ganda.
++- [x] Console tidak menampilkan error atau peringatan HudUI/TimeManager.
++
++## Bed, tidur, pergantian hari (ditambahkan 2026-11-15, belum dites di Unity)
++- [ ] Menu `Mars > Setup Bed and Fade` jalan tanpa error; ada `Canvas/FadeOverlay` dan `Bed` (dengan anak `SpawnPoint`).
++- [ ] Mendekati Bed memunculkan prompt "[E] Tidur".
++- [ ] E di awal hari: dialog "Belum waktunya tidur. Sisa waktu hari ini: mm:ss." Setelah dialog ditutup, dialog tidak terbuka lagi sendiri.
++- [ ] Setelah "Debug: Sisakan 5 detik" lalu E: layar memudar ke hitam, hari menjadi "Day 2 / 7", timer 10:00, Player muncul di SpawnPoint, layar memudar terang.
++- [ ] Selama transisi Player tidak bisa digerakkan dan timer tidak berjalan; setelahnya gerakan normal dan timer mulai dari 10:00.
++- [ ] Stok resource tidak berubah setelah tidur.
++- [ ] Layar hitam tidak menghalangi klik/tombol setelah fade selesai.
++- [ ] Day 7 setelah waktu habis: E memunculkan pesan "Hari terakhir telah selesai", hari tetap 7.
++- [ ] Console tidak menampilkan error atau peringatan Bed/FadeUI.
+diff --git a/AI_CONTEXT/10_CHANGELOG.md b/AI_CONTEXT/10_CHANGELOG.md
+index 11f03aa0..72b8f103 100644
+--- a/AI_CONTEXT/10_CHANGELOG.md
++++ b/AI_CONTEXT/10_CHANGELOG.md
+@@ -10,6 +10,13 @@ Format:
+ - **Test:** pengujian dan hasil.
+ - **Follow-up:** pekerjaan tersisa.
+ 
++## 2026-11-15 (Milestone 3: Bed, tidur, pergantian hari)
++- **Changed:** Menambah `Bed` (IInteractable), `FadeUI`, dan menu Editor `Mars > Setup Bed and Fade` (`MarsSleepSetup`). Alur tidur: kunci gerakan, timer ditahan, fade to black, `TimeManager.StartDay(hari+1)`, Player dipindah ke SpawnPoint, fade in. `PlayerMovement`: properti `MovementEnabled`. `TimeManager`: properti `ExternalPause`. Aturan usulan: tidur hanya boleh saat sisa waktu <= 120 detik atau waktu habis; sebelum itu muncul pesan "Belum waktunya tidur". Hari terakhir: hanya pesan placeholder (Victory belum dibuat).
++- **Reason:** Menjalankan pergantian hari sesuai GDD 5.4 dan menutup loop harian. Jadwal GDD hari 4 (bagian hari).
++- **Files/systems:** `Assets/Script/Interaction/Bed.cs`, `Assets/Script/UI/FadeUI.cs`, `Assets/Editor/MarsSleepSetup.cs` (baru); `Assets/Script/PlayerMovement.cs`, `Assets/Script/Time/TimeManager.cs` (diubah kecil). Scene diubah lewat menu Editor oleh developer, bukan oleh patch.
++- **Test:** Kompilasi dan logika (tidur ditolak terlalu awal, gerakan terkunci, pause, hari naik, timer reset, pindah ke spawn, hari terakhir tidak naik) dicek dengan stub di luar Unity. Belum dijalankan di Unity. Milestone 2 dilaporkan developer berjalan baik ("sudah bagus").
++- **Follow-up:** Keputusan desain terbuka: aturan kapan boleh tidur (lihat 08). Belum ada: save ke disk, Victory/Game Over, efek pertumbuhan tanaman saat tidur, dialog TARS pergantian hari, sprite Bed.
++
+ ## 2026-11-15 (Milestone 2: TimeManager dan HUD)
+ - **Changed:** Menambah `TimeManager` (Day 1-7, timer 600 detik per hari, berhenti saat dialog terbuka, event `OnDayStarted` dan `OnDayTimeEnded`, method `StartDay`), `HudUI` (Day, timer, Food, Water, Oxygen habitat, Energy), dan menu Editor `Mars > Setup HUD and Time` (`MarsHudSetup`). `MarsUISetup`: empat helper `private` menjadi `internal` agar dipakai ulang (perilaku tidak berubah). Koreksi dokumen: jumlah commit repo 4, bukan 5.
+ - **Reason:** Alur hari dan tampilan status, jadwal GDD hari 4. Syarat untuk milestone bed/tidur dan reminder TARS.
+diff --git a/Assets/Editor/MarsSleepSetup.cs b/Assets/Editor/MarsSleepSetup.cs
+new file mode 100644
+index 00000000..197a1a10
+--- /dev/null
++++ b/Assets/Editor/MarsSleepSetup.cs
+@@ -0,0 +1,116 @@
++#if UNITY_EDITOR
++using System.Text;
++using UnityEditor;
++using UnityEditor.SceneManagement;
++using UnityEngine;
++using UnityEngine.UI;
++
++/// <summary>
++/// Menu Editor: membuat FadeOverlay di Canvas dan objek Bed (beserta SpawnPoint), lalu menyambungkan referensinya.
++/// Aman dijalankan berulang kali; referensi yang sudah Anda isi tidak ditimpa.
++/// Mars > Setup Bed and Fade
++/// </summary>
++public static class MarsSleepSetup
++{
++    [MenuItem("Mars/Setup Bed and Fade")]
++    public static void Setup()
++    {
++        StringBuilder report = new StringBuilder();
++
++        Canvas canvas = Object.FindFirstObjectByType<Canvas>();
++        if (canvas == null)
++        {
++            EditorUtility.DisplayDialog("Mars Setup",
++                "Canvas tidak ditemukan. Jalankan dulu menu Mars > Setup Dialogue and Prompt UI.", "OK");
++            return;
++        }
++
++        // 1. FadeOverlay
++        FadeUI fade = Object.FindFirstObjectByType<FadeUI>();
++        if (fade == null)
++        {
++            GameObject overlay = new GameObject("FadeOverlay", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
++            Undo.RegisterCreatedObjectUndo(overlay, "Create FadeOverlay");
++            overlay.transform.SetParent(canvas.transform, false);
++
++            RectTransform rect = overlay.GetComponent<RectTransform>();
++            rect.anchorMin = Vector2.zero;
++            rect.anchorMax = Vector2.one;
++            rect.offsetMin = Vector2.zero;
++            rect.offsetMax = Vector2.zero;
++
++            Image image = overlay.GetComponent<Image>();
++            image.color = new Color(0f, 0f, 0f, 1f);
++            image.raycastTarget = false;
++
++            CanvasGroup group = overlay.GetComponent<CanvasGroup>();
++            group.alpha = 0f;
++            group.blocksRaycasts = false;
++            group.interactable = false;
++
++            fade = Undo.AddComponent<FadeUI>(overlay);
++            MarsUISetup.SetRef(fade, "group", group);
++            overlay.transform.SetAsLastSibling();
++            report.AppendLine("- FadeOverlay dibuat.");
++        }
++        else
++        {
++            report.AppendLine("- FadeOverlay sudah ada.");
++        }
++
++        // 2. Bed
++        PlayerMovement player = Object.FindFirstObjectByType<PlayerMovement>();
++        TimeManager timeManager = Object.FindFirstObjectByType<TimeManager>();
++        DialogueUI dialogueUI = Object.FindFirstObjectByType<DialogueUI>();
++
++        Bed bed = Object.FindFirstObjectByType<Bed>();
++        if (bed == null)
++        {
++            GameObject bedObject = new GameObject("Bed", typeof(SpriteRenderer), typeof(BoxCollider2D));
++            Undo.RegisterCreatedObjectUndo(bedObject, "Create Bed");
++
++            int interactableLayer = LayerMask.NameToLayer("Interactable");
++            if (interactableLayer >= 0) bedObject.layer = interactableLayer;
++            else report.AppendLine("- PERINGATAN: layer 'Interactable' tidak ditemukan. Set layer Bed secara manual.");
++
++            if (player != null) bedObject.transform.position = player.transform.position + new Vector3(2f, 0f, 0f);
++
++            GameObject spawn = new GameObject("SpawnPoint");
++            Undo.RegisterCreatedObjectUndo(spawn, "Create SpawnPoint");
++            spawn.transform.SetParent(bedObject.transform, false);
++            spawn.transform.localPosition = new Vector3(0f, -1.2f, 0f);
++
++            bed = Undo.AddComponent<Bed>(bedObject);
++            report.AppendLine("- Bed dibuat dekat Player (pindahkan ke posisi yang diinginkan; SpawnPoint adalah anaknya).");
++        }
++        else
++        {
++            report.AppendLine("- Bed sudah ada: " + bed.gameObject.name);
++        }
++
++        Transform spawnChild = bed.transform.Find("SpawnPoint");
++        SetRefIfEmpty(bed, "fadeUI", fade);
++        SetRefIfEmpty(bed, "player", player);
++        SetRefIfEmpty(bed, "timeManager", timeManager);
++        SetRefIfEmpty(bed, "dialogueUI", dialogueUI);
++        SetRefIfEmpty(bed, "spawnPoint", spawnChild);
++
++        if (player == null) report.AppendLine("- PERINGATAN: PlayerMovement tidak ditemukan.");
++        if (timeManager == null) report.AppendLine("- PERINGATAN: TimeManager tidak ada. Jalankan Mars > Setup HUD and Time.");
++        if (spawnChild == null) report.AppendLine("- PERINGATAN: anak 'SpawnPoint' tidak ada di Bed; isi field Spawn Point manual.");
++
++        EditorSceneManager.MarkSceneDirty(canvas.gameObject.scene);
++        report.AppendLine();
++        report.Append("Tekan Ctrl+S untuk menyimpan scene.");
++        Debug.Log("MarsSleepSetup:\n" + report);
++        EditorUtility.DisplayDialog("Mars Setup", report.ToString(), "OK");
++    }
++
++    private static void SetRefIfEmpty(Object target, string fieldName, Object value)
++    {
++        SerializedObject so = new SerializedObject(target);
++        SerializedProperty prop = so.FindProperty(fieldName);
++        if (prop != null && prop.objectReferenceValue == null) MarsUISetup.SetRef(target, fieldName, value);
++    }
++}
++#endif
+diff --git a/Assets/Script/Interaction/Bed.cs b/Assets/Script/Interaction/Bed.cs
+new file mode 100644
+index 00000000..9fdb41f2
+--- /dev/null
++++ b/Assets/Script/Interaction/Bed.cs
+@@ -0,0 +1,115 @@
++using System.Collections;
++using UnityEngine;
++
++/// <summary>
++/// Tempat tidur di Control Room. Saat dipakai: kunci gerakan, fade to black, hari bertambah,
++/// Player dipindah ke titik spawn, timer hari baru mulai, lalu fade in.
++/// Pada hari terakhir, ending Victory belum dibuat (milestone berikutnya).
++/// Penyimpanan data (SaveSystem) belum ada; stok tetap di memori karena game satu scene.
++/// </summary>
++public class Bed : MonoBehaviour, IInteractable
++{
++    [Header("Referensi (otomatis dicari jika kosong)")]
++    [SerializeField] private FadeUI fadeUI;
++    [SerializeField] private PlayerMovement player;
++    [SerializeField] private TimeManager timeManager;
++    [SerializeField] private DialogueUI dialogueUI;
++    [SerializeField] private Transform spawnPoint;
++
++    [Header("Aturan tidur (usulan, belum diputuskan)")]
++    [Tooltip("Boleh tidur jika sisa waktu hari ini sama dengan atau kurang dari angka ini (detik). Isi dengan durasi hari penuh agar boleh tidur kapan saja.")]
++    [SerializeField, Min(0f)] private float earliestSleepRemainingSeconds = 120f;
++    [SerializeField, Min(0f)] private float blackHoldSeconds = 0.5f;
++    [SerializeField, Min(0f)] private float reinteractCooldown = 0.3f;
++
++    private bool isSleeping;
++    private float nextInteractTime;
++
++    public string InteractionPrompt => "Tidur";
++
++    private void Start()
++    {
++        if (fadeUI == null) fadeUI = FindFirstObjectByType<FadeUI>();
++        if (player == null) player = FindFirstObjectByType<PlayerMovement>();
++        if (timeManager == null) timeManager = FindFirstObjectByType<TimeManager>();
++        if (dialogueUI == null) dialogueUI = FindFirstObjectByType<DialogueUI>();
++
++        if (fadeUI == null || player == null || timeManager == null)
++            Debug.LogError("Bed: FadeUI, PlayerMovement, atau TimeManager tidak ditemukan. Jalankan menu Mars > Setup Bed and Fade.", this);
++        if (spawnPoint == null)
++            Debug.LogWarning("Bed: Spawn Point belum diisi; Player tidak akan dipindahkan setelah tidur.", this);
++    }
++
++    public bool CanInteract(GameObject interactor)
++    {
++        if (isSleeping || Time.time < nextInteractTime) return false;
++        return dialogueUI == null || !dialogueUI.IsOpen;
++    }
++
++    public void Interact(GameObject interactor)
++    {
++        if (fadeUI == null || player == null || timeManager == null) return;
++
++        bool canSleepNow = timeManager.IsDayOver || timeManager.RemainingSeconds <= earliestSleepRemainingSeconds;
++        if (!canSleepNow)
++        {
++            int seconds = Mathf.CeilToInt(timeManager.RemainingSeconds);
++            ShowMessage("Belum waktunya tidur. Sisa waktu hari ini: " +
++                (seconds / 60).ToString("00") + ":" + (seconds % 60).ToString("00") + ".");
++            return;
++        }
++
++        if (timeManager.CurrentDay >= timeManager.TotalDays)
++        {
++            ShowMessage("Hari terakhir telah selesai. (Ending Victory belum dibuat.)");
++            return;
++        }
++
++        StartCoroutine(SleepRoutine());
++    }
++
++    private IEnumerator SleepRoutine()
++    {
++        isSleeping = true;
++        player.MovementEnabled = false;
++        timeManager.ExternalPause = true;
++
++        yield return fadeUI.FadeToBlack();
++
++        timeManager.StartDay(timeManager.CurrentDay + 1);
++        MovePlayerToSpawn();
++
++        if (blackHoldSeconds > 0f) yield return new WaitForSeconds(blackHoldSeconds);
++
++        yield return fadeUI.FadeFromBlack();
++
++        timeManager.ExternalPause = false;
++        player.MovementEnabled = true;
++        nextInteractTime = Time.time + reinteractCooldown;
++        isSleeping = false;
++    }
++
++    private void MovePlayerToSpawn()
++    {
++        if (spawnPoint == null) return;
++
++        Vector3 target = spawnPoint.position;
++        target.z = player.transform.position.z;
++
++        player.transform.position = target;
++
++        Rigidbody2D body = player.GetComponent<Rigidbody2D>();
++        if (body != null) body.position = target;
++    }
++
++    private void ShowMessage(string message)
++    {
++        if (dialogueUI == null)
++        {
++            Debug.Log("Bed: " + message);
++            return;
++        }
++
++        dialogueUI.Show("Sistem", new[] { message }, () => nextInteractTime = Time.time + reinteractCooldown);
++    }
++}
+diff --git a/Assets/Script/PlayerMovement.cs b/Assets/Script/PlayerMovement.cs
+index 2d655e82..1e7e55ff 100644
+--- a/Assets/Script/PlayerMovement.cs
++++ b/Assets/Script/PlayerMovement.cs
+@@ -12,6 +12,9 @@ public class PlayerMovement : MonoBehaviour
+     private Vector2 movement;
+     private Vector2 lastDirection = Vector2.down;
+ 
++    /// <summary>False saat gerakan dikunci (misalnya saat tidur/transisi hari).</summary>
++    public bool MovementEnabled { get; set; } = true;
++
+     void Awake()
+     {
+         rb = GetComponent<Rigidbody2D>();
+@@ -20,9 +23,16 @@ public class PlayerMovement : MonoBehaviour
+ 
+     void Update()
+     {
+-        // Membaca input keyboard
+-        movement.x = Input.GetAxisRaw("Horizontal");
+-        movement.y = Input.GetAxisRaw("Vertical");
++        // Membaca input keyboard (diabaikan saat gerakan dikunci)
++        if (MovementEnabled)
++        {
++            movement.x = Input.GetAxisRaw("Horizontal");
++            movement.y = Input.GetAxisRaw("Vertical");
++        }
++        else
++        {
++            movement = Vector2.zero;
++        }
+ 
+         // Mencegah gerakan diagonal lebih cepat
+         movement = movement.normalized;
+diff --git a/Assets/Script/Time/TimeManager.cs b/Assets/Script/Time/TimeManager.cs
+index 4a461f44..b074e7fb 100644
+--- a/Assets/Script/Time/TimeManager.cs
++++ b/Assets/Script/Time/TimeManager.cs
+@@ -24,8 +24,11 @@ public class TimeManager : MonoBehaviour
+     public float RemainingSeconds { get; private set; }
+     public bool IsDayOver { get; private set; }
+ 
+-    /// <summary>True saat timer ditahan (sekarang: dialog terbuka).</summary>
+-    public bool IsPaused => dialogueUI != null && dialogueUI.IsOpen;
++    /// <summary>Pause dari sistem lain (sekarang: transisi tidur). Minigame nanti bisa memakai ini juga.</summary>
++    public bool ExternalPause { get; set; }
++
++    /// <summary>True saat timer ditahan (dialog terbuka atau ExternalPause aktif).</summary>
++    public bool IsPaused => ExternalPause || (dialogueUI != null && dialogueUI.IsOpen);
+ 
+     /// <summary>Dipanggil saat hari baru dimulai (parameter: nomor hari).</summary>
+     public event Action<int> OnDayStarted;
+diff --git a/Assets/Script/UI/FadeUI.cs b/Assets/Script/UI/FadeUI.cs
+new file mode 100644
+index 00000000..4c07936c
+--- /dev/null
++++ b/Assets/Script/UI/FadeUI.cs
+@@ -0,0 +1,54 @@
++using System.Collections;
++using UnityEngine;
++
++/// <summary>
++/// Layar hitam penuh untuk transisi (fade to black / fade in). Hanya tampilan:
++/// pemanggil (misalnya Bed) menjalankan lewat "yield return fadeUI.FadeToBlack()" di dalam coroutine.
++/// Dipasang pada objek "FadeOverlay" (Image hitam + CanvasGroup) di Canvas.
++/// </summary>
++[RequireComponent(typeof(CanvasGroup))]
++public class FadeUI : MonoBehaviour
++{
++    [SerializeField] private CanvasGroup group;
++    [SerializeField, Min(0.05f)] private float fadeDuration = 1f;
++
++    private void Awake()
++    {
++        if (group == null) group = GetComponent<CanvasGroup>();
++
++        group.alpha = 0f;
++        group.blocksRaycasts = false;
++        group.interactable = false;
++
++        // Selalu digambar paling atas, di atas HUD dan dialog.
++        transform.SetAsLastSibling();
++    }
++
++    public IEnumerator FadeToBlack()
++    {
++        return Fade(1f);
++    }
++
++    public IEnumerator FadeFromBlack()
++    {
++        return Fade(0f);
++    }
++
++    private IEnumerator Fade(float target)
++    {
++        float start = group.alpha;
++        float elapsed = 0f;
++
++        group.blocksRaycasts = true;
++
++        while (elapsed < fadeDuration)
++        {
++            elapsed += Time.deltaTime;
++            group.alpha = Mathf.Lerp(start, target, Mathf.Clamp01(elapsed / fadeDuration));
++            yield return null;
++        }
++
++        group.alpha = target;
++        group.blocksRaycasts = target > 0f;
++    }
++}

@@ -12,6 +12,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 movement;
     private Vector2 lastDirection = Vector2.down;
 
+    /// <summary>False saat gerakan dikunci (misalnya saat tidur/transisi hari).</summary>
+    public bool MovementEnabled { get; set; } = true;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -20,9 +23,16 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Membaca input keyboard
-        movement.x = Input.GetAxisRaw("Horizontal");
-        movement.y = Input.GetAxisRaw("Vertical");
+        // Membaca input keyboard (diabaikan saat gerakan dikunci)
+        if (MovementEnabled)
+        {
+            movement.x = Input.GetAxisRaw("Horizontal");
+            movement.y = Input.GetAxisRaw("Vertical");
+        }
+        else
+        {
+            movement = Vector2.zero;
+        }
 
         // Mencegah gerakan diagonal lebih cepat
         movement = movement.normalized;

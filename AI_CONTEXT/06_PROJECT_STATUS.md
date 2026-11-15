@@ -1,12 +1,12 @@
 # Project Status
 
 Terakhir diperbarui: 2026-11-15
-Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `e6feb586` (3 commit: init, dialogue, ui).
+Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `20c1fc28` (4 commit; scene lokal dan layer `Interactable` sudah ter-commit).
 
 Label sumber: **[Repo]** terverifikasi dari file di repo, **[Dev]** dilaporkan developer (belum bisa dicek AI), **[?]** belum diverifikasi.
 
 ## Tahap saat ini
-Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: movement, sistem interaksi modular, dan TARS yang berjalan acak serta bisa diajak bicara. Belum ada sistem resource, waktu, atau mesin.
+Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: movement, sistem interaksi modular, dan TARS yang berjalan acak serta bisa diajak bicara. Sudah ada ResourceManager (M1), TimeManager + HUD (M2), dan Bed/tidur/pergantian hari (M3, menunggu tes). Belum ada mesin, suit, farming, Victory/Game Over, atau save.
 
 ## Status fitur
 | Fitur | Status | Bukti / catatan |
@@ -19,8 +19,11 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 | TARS berhenti saat interaksi + dialog | Ada | [Repo] `Assets/Script/Dialogue/DialogueUI.cs`. Berfungsi di Unity: [Dev] |
 | Menu setup UI (Mars > Setup Dialogue and Prompt UI) | Ada | [Repo] `Assets/Editor/MarsUISetup.cs`. Sudah dijalankan: [Dev] |
 | Sprite animasi TARS | Sebagian | [Repo] folder `Assets/Robot` punya Left, Right, Up (3 frame tiap arah). Folder **Down tidak ada** |
-| Resource systems | Belum ada | [Repo] tidak ada script |
-| Day flow / timer / sleep / ending | Belum ada | [Repo] tidak ada script |
+| Resource systems | Ada | [Repo] `Assets/Script/Resource/`. Playtest panel uji: [Dev] berjalan baik. Komponen di scene lokal dan belum ter-push ke GitHub saat audit 2026-11-15: [Dev] |
+| Timer harian (TimeManager) | Ada | [Repo] `Assets/Script/Time/TimeManager.cs`. Playtest: [Dev] "sudah bagus" (butir tidak dirinci). Pause saat dialog lewat `DialogueUI.IsOpen`; `ExternalPause` untuk transisi |
+| HUD (Day, timer, 4 resource) | Ada | [Repo] `Assets/Script/UI/HudUI.cs`, `Assets/Editor/MarsHudSetup.cs`. Playtest: [Dev] "sudah bagus" |
+| Bed, tidur, fade, pergantian hari | Script dibuat (Milestone 3) | [Repo] `Assets/Script/Interaction/Bed.cs`, `Assets/Script/UI/FadeUI.cs`, `Assets/Editor/MarsSleepSetup.cs`. Belum dites di Unity |
+| Ending Victory / Game Over | Belum ada | [Repo] tidak ada script. Bed hari terakhir hanya menampilkan pesan placeholder |
 | Suit / outdoor | Belum ada | [Repo] |
 | Machines / solar / wiring minigame | Belum ada | [Repo] |
 | Farming / Potato | Belum ada | [Repo] |
@@ -35,6 +38,8 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 
 ## Belum diverifikasi / risiko
 - Isi Inspector TARS dan Player di scene lokal (belum di-commit).
+- Milestone 3: kompilasi dan logika hanya dicek dengan stub di luar Unity [?]. Menu `Mars > Setup Bed and Fade`, fade, perpindahan Player ke SpawnPoint, dan interaksi E dengan Bed belum dites di Unity [?]. Collider dan posisi Bed/SpawnPoint ditentukan developer di scene [?].
+- GitHub belum memuat Milestone 1 (komponen ResourceManager di scene dan file .meta) saat audit; basis patch 2 adalah `20c1fc28` + patch 1 [?].
 - Tidak ada compile atau run Unity oleh AI; semua kode hanya diperiksa lewat `git apply --check`.
 - Gambar arah bawah untuk TARS (`Down Frames`) belum ada.
 - Collider Player di scene belum diperiksa.

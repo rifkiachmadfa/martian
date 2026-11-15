@@ -19,13 +19,22 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 ## Script
 | Path | Fungsi |
 |---|---|
-| `Assets/Script/PlayerMovement.cs` | Gerak 4 arah, arah terakhir, parameter Animator `IsMoving`, `DirectionX`, `DirectionY` |
+| `Assets/Script/PlayerMovement.cs` | Gerak 4 arah, arah terakhir, parameter Animator `IsMoving`, `DirectionX`, `DirectionY`; `MovementEnabled` untuk mengunci gerak |
 | `Assets/Script/Interaction/IInteractable.cs` | Kontrak: `InteractionPrompt`, `CanInteract`, `Interact` |
 | `Assets/Script/Interaction/InteractionDetector.cs` | Di Player. Cari objek interaktif terdekat (OverlapCircle + layer), tombol E |
 | `Assets/Script/Interaction/InteractionPromptUI.cs` | Menampilkan "[E] ..." (UI Text legacy) |
 | `Assets/Script/Dialogue/DialogueUI.cs` | Kotak dialog; E untuk lanjut baris; callback saat selesai |
 | `Assets/Script/NPC/TarsWanderer.cs` | TARS acak di `BoxCollider2D` area; state Idle/Moving/Interacting; sprite per arah lewat array Inspector |
-| `Assets/Editor/MarsUISetup.cs` | Menu Editor: membuat/memperbaiki Canvas, dialog, prompt, dan menyambungkan ke TARS/Player |
+| `Assets/Script/Resource/ResourceType.cs` | Enum jenis resource (Ice, Water, HabitatOxygen, SuitOxygen, Energy, Food) |
+| `Assets/Script/Resource/ResourceManager.cs` | Stok, kapasitas, `Add`/`TryConsume`, event perubahan. Dipasang pada GameObject `ResourceManager` di scene |
+| `Assets/Script/Resource/ResourceDebugPanel.cs` | Alat uji sementara (OnGUI). Hapus saat HUD sungguhan ada |
+| `Assets/Script/Time/TimeManager.cs` | Hari, timer harian, pause saat dialog, event hari. Dipasang pada GameObject `TimeManager` |
+| `Assets/Script/UI/HudUI.cs` | Tampilan Day, timer, Food, Water, Oxygen, Energy. Dipasang pada `HudRoot` di Canvas |
+| `Assets/Script/Interaction/Bed.cs` | Tempat tidur (IInteractable): tidur, fade, hari berikutnya. Dipasang pada GameObject `Bed` (layer `Interactable`, BoxCollider2D, anak `SpawnPoint`) |
+| `Assets/Script/UI/FadeUI.cs` | Layar hitam untuk fade. Dipasang pada `Canvas/FadeOverlay` |
+| `Assets/Editor/MarsUISetup.cs` | Menu Editor: membuat/memperbaiki Canvas, dialog, prompt, dan menyambungkan ke TARS/Player. Helper `internal` dipakai `MarsHudSetup` |
+| `Assets/Editor/MarsHudSetup.cs` | Menu Editor `Mars > Setup HUD and Time`: membuat TimeManager, HudRoot (TimePanel, ResourcePanel), dan menyambungkan referensi |
+| `Assets/Editor/MarsSleepSetup.cs` | Menu Editor `Mars > Setup Bed and Fade`: membuat FadeOverlay dan Bed (+SpawnPoint), menyambungkan referensi tanpa menimpa isian manual |
 | `Assets/Welcome/Welcome2DScript.cs` | Bawaan template Unity; bukan bagian game |
 
 ## Aset
@@ -39,6 +48,9 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 **TARS:** SpriteRenderer, Rigidbody2D (Dynamic, Gravity Scale 0, Freeze Rotation Z), BoxCollider2D (bukan trigger), layer `Interactable`, komponen `TarsWanderer` (isi Wander Area, Dialogue UI, array frame per arah).
 **TarsArea:** GameObject dengan BoxCollider2D, Is Trigger dicentang.
 **Player:** komponen `InteractionDetector` dengan Interactable Layer = `Interactable`.
+**ResourceManager:** GameObject kosong `ResourceManager` di scene dengan komponen `ResourceManager` dan `ResourceDebugPanel` (dipasang manual oleh developer; tidak ada di patch) [Dev].
+**TimeManager dan HUD:** dibuat lewat menu Mars > Setup HUD and Time (GameObject `TimeManager`; `Canvas/HudRoot` berisi `TimePanel` dan `ResourcePanel`). Perubahan scene dilakukan developer, belum diverifikasi AI [?].
+**Bed dan Fade:** dibuat lewat menu Mars > Setup Bed and Fade (`Canvas/FadeOverlay`; GameObject `Bed` dengan anak `SpawnPoint`). Sprite Bed belum ada (placeholder oleh developer). Posisi di scene: [Dev], belum diverifikasi [?].
 **Canvas:** dibuat lewat menu Mars > Setup Dialogue and Prompt UI (berisi `DialogueUI` dan `InteractionPromptUI`).
 
 ## Saat menambah/mengubah asset
