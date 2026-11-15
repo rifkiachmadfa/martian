@@ -10,12 +10,12 @@
 |---|---|
 | Repo | https://github.com/rifkiachmadfa/martian.git |
 | Branch | `main` |
-| Revisi terakhir diperiksa | `f0df08f9` "tars mvoement" (2026-11-15) |
+| Revisi terakhir diperiksa | `a9357e29` "phase" (2026-11-15). Patch objek interaktif berbasis revisi ini (belum diterapkan developer saat dokumen ditulis) |
 | Unity | 6000.6.8f1 |
 | Paket penting | Input System 1.20.1 (kode saat ini memakai `Input.GetAxisRaw` / `KeyCode`), URP 17.6.0, 2D Animation 16.0.1, Tilemap, Cinemachine |
 | Scene | Satu scene: `Assets/Scenes/SampleScene.unity` |
-| Fase aktif | **Milestone 6 — Ice Gathering + Water Purifier (belum dimulai)** |
-| Catatan | Tidak ada Unity yang dijalankan oleh AI. Semua status di bawah berasal dari membaca kode dan scene, bukan dari playtest. |
+| Fase aktif | **Verifikasi objek interaktif di Unity (Milestone 6–10 sebagian), lalu minigame kabel (Milestone 10) dan TARSSystem (Milestone 11)** |
+| Catatan | Tidak ada Unity atau compiler C# yang dijalankan oleh AI. Semua status di bawah berasal dari membaca kode dan scene, bukan dari playtest. Status "script dibuat" berarti belum dikompilasi dan belum dites. |
 
 ## 1. Status per milestone (jadwal 15 hari GDD bagian 19)
 
@@ -26,14 +26,14 @@ Legenda: SELESAI / SEBAGIAN / BELUM
 | 1 | Setup Unity, input, movement, kamera, collision | SELESAI | `PlayerMovement` (WASD/Arrow, Rigidbody2D), `CinemachineCamera` |
 | 2 | Tiga lokasi Tilemap dan perpindahan area | SEBAGIAN | Ada area dalam habitat dan area luar (`Ground`, `PasirMars`, `Wall`, `Tangga`, `IndoorZone`, `SuitGate`). Farming Area belum ada. Belum ada pemisahan scene. |
 | 3 | Interaction System, ResourceManager, data persisten | SEBAGIAN | Interaction dan `ResourceManager` selesai. `SaveSystem` belum ada (belum perlu selama satu scene). |
-| 4 | HUD, Resource Monitor, timer, pergantian hari | SEBAGIAN (hampir selesai) | HUD, `TimeManager`, `Bed` + `FadeUI` jalan. Resource Monitor sebagai objek interaktif di Control Room belum ada. HUD belum menampilkan Ice. |
+| 4 | HUD, Resource Monitor, timer, pergantian hari | SEBAGIAN (hampir selesai) | HUD, `TimeManager`, `Bed` + `FadeUI` jalan. `ResourceMonitor` (objek interaktif) dan `HudUI.iceText` ditambahkan di patch objek interaktif (belum dites). |
 | 5 | Astronaut Suit, Suit Station, oksigen suit | SELESAI* | Lihat penyimpangan P-1. Game Over / countdown darurat saat oksigen suit habis belum ada. |
-| 6 | Ice Gathering dan Water Purifier | **BELUM** | Fase aktif berikutnya. |
-| 7 | Farming Plot (tanam, siram, tumbuh, panen) | BELUM | |
-| 8 | Oxygen Generator, alur Water/Energy/Oxygen | BELUM | |
-| 9 | Solar Panel dan produksi Energy | BELUM | Energy saat ini hanya stok awal, tidak ada produksi. |
-| 10 | Panel rusak dan minigame kabel | BELUM | |
-| 11 | TARS monitoring dan reminder | SEBAGIAN kecil | TARS berjalan, berdialog statis, dan ada `SuitReminder`. Belum ada `TARSSystem` berbasis ambang resource. |
+| 6 | Ice Gathering dan Water Purifier | SEBAGIAN (script dibuat, belum dites) | `IceDeposit`, `WaterPurifier`. |
+| 7 | Farming Plot (tanam, siram, tumbuh, panen) | SEBAGIAN (script dibuat, belum dites) | `FarmingPlot`: satu petak per objek, pertumbuhan lewat `OnDayStarted`. Belum ada sprite. |
+| 8 | Oxygen Generator, alur Water/Energy/Oxygen | SEBAGIAN (script dibuat, belum dites) | `OxygenGenerator` dengan saklar E (usulan di luar GDD, lihat P-5). |
+| 9 | Solar Panel dan produksi Energy | SEBAGIAN (script dibuat, belum dites) | `SolarPanel` menghasilkan Energy; kerusakan hanya lewat menu Debug. |
+| 10 | Panel rusak dan minigame kabel | SEBAGIAN kecil | `RepairPoint` memperbaiki langsung (sementara). Minigame kabel belum ada. |
+| 11 | TARS monitoring dan reminder | SEBAGIAN kecil | TARS berjalan, berdialog statis, dan ada `SuitReminder`. Belum ada `TARSSystem` berbasis ambang resource (termasuk laporan panel rusak). |
 | 12 | Integrasi loop dan tutorial Day 1 | BELUM | |
 | 13 | Day 2–7, Victory/Game Over, balancing | BELUM | `Bed` memblokir tidur di Day 7 ("Ending Victory belum dibuat"). Food belum berkurang. |
 | 14 | Audio, animasi, polish | SEBAGIAN kecil | Animasi TARS selesai. Audio belum ada. |
@@ -53,17 +53,26 @@ Legenda: SELESAI / SEBAGIAN / BELUM
 | `Time/TimeManager` | Hari, timer 600 dtk (usulan), 7 hari, `ExternalPause`, `OnDayStarted`, `OnDayTimeEnded`. Dialog tidak menjeda timer secara default. |
 | `Suit/SuitSystem` | Equip/Unequip, refill dari habitat, drain oksigen, `IsOutdoors`, event `OnSuitOxygenEmpty` |
 | `Suit/SuitStation`, `SuitGate`, `IndoorZone`, `SuitReminder` | Interaksi suit, tembok pintu keluar, zona dalam habitat, pengingat "lepas suit" |
+| `Outdoor/IceDeposit` | Deposit es: E, pemain berhenti ±3 dtk, Ice +1 (batas kapasitas Ice), perlu suit (usulan) |
+| `Outdoor/SolarPanel` | Energy otomatis per tick; `Damage()`/`Repair()`, `IsDamaged`, `OnDamagedChanged`; banyak panel menjumlah |
+| `Outdoor/RepairPoint` | Memperbaiki satu `SolarPanel` (langsung, sementara) |
+| `Machines/WaterPurifier` | Ice + Energy -> Water per batch (usulan 1 + 5 -> 4 dalam 4 dtk), `IsProcessing`, `OnProcessingChanged` |
+| `Machines/OxygenGenerator` | Water + Energy -> HabitatOxygen otomatis per siklus (usulan 1 + 2 -> 5 per 5 dtk), saklar E, `IsOn`/`IsRunning` |
+| `Farming/FarmingPlot` | Tanam, siram (usulan 2 Water), tumbuh 3 tahap saat hari berganti bila disiram, panen (usulan +20 Food) |
+| `Station/ResourceMonitor` | Dialog ringkasan hari, stok, suit, panel, mesin (hanya baca) |
+| `Station/CommunicationTerminal` | Pesan Bumi per hari (placeholder, bukan quest) |
 | `NPC/TarsWanderer` | TARS jalan 4 arah langkah pendek, cek rintangan (`Rigidbody2D.Cast`), animasi frame 1-2-3-2 per arah, menembus Player (`IgnoreCollision`), dialog saat E |
 | `Dialogue/DialogueUI` | Dialog baris demi baris (E/Spasi/klik) |
-| `UI/HudUI`, `UI/FadeUI` | HUD (hari, timer, Food, Water, Oxygen, Energy, panel Suit Oxygen) dan layar fade |
+| `UI/HudUI`, `UI/FadeUI` | HUD (hari, timer, Food, Water, Oxygen, Energy, Ice opsional, panel Suit Oxygen) dan layar fade |
 
 ### Editor setup scripts (Assets/Editor) — pola kerja proyek
 Menu yang aman dijalankan berulang, tidak menimpa referensi yang sudah diisi:
-`Mars > Setup Dialogue and Prompt UI`, `Setup HUD and Time`, `Setup Bed and Fade`, `Setup Suit and Gate`, `Setup TARS Animation`.
+`Mars > Setup Dialogue and Prompt UI`, `Setup HUD and Time`, `Setup Bed and Fade`, `Setup Suit and Gate`, `Setup TARS Animation`, `Setup Interactive Objects` (baru: 8 objek placeholder + panel Ice).
 Milestone baru sebaiknya memakai pola yang sama (satu menu setup per milestone, objek placeholder di sekitar Player).
 
 ### Objek penting di SampleScene
 `Player`, `TARS`, `TarsArea`, `Bed`, `SpawnPoint`, `SuitStation`, `SuitGate`, `IndoorZone`, `SuitSystem`, `ResourceManager`, `TimeManager`, `DialogueManager`, `Canvas` (`HudRoot`, `DialogueRoot`, `PromptRoot`, `FadeOverlay`), `CinemachineCamera`, `Grid`, `Ground`, `PasirMars`, `Wall`, `Tangga`.
+Setelah menjalankan `Mars > Setup Interactive Objects` bertambah: `IceDeposit`, `SolarPanel`, `RepairPoint`, `WaterPurifier`, `OxygenGenerator`, `FarmingPlot`, `ResourceMonitor`, `CommunicationTerminal`, `HudRoot/IcePanel` (masih di sekitar Player; developer memindahkan ke lokasi akhir).
 Layer `Interactable` sudah ada (layer 3).
 
 ### Aset
@@ -77,6 +86,7 @@ Layer `Interactable` sudah ada (layer 3).
 | P-2 | Dialog tidak menjeda timer (`pauseDuringDialogue = false`). GDD: timer "dapat" berhenti saat dialog penting. | Kecil | Dianggap sesuai (opsional). |
 | P-3 | Satu scene, bukan scene terpisah `ControlRoom`/`FarmingArea`/`Outdoor` seperti GDD 16.1. | Menentukan perlu tidaknya `SaveSystem` lintas scene | **Menunggu keputusan.** Rekomendasi AI: tetap satu scene. |
 | P-4 | Perilaku `Bed` di Day 7 belum ada (menunggu Victory). | Blok akhir game | Dikerjakan di milestone 13. |
+| P-5 | `OxygenGenerator` punya tombol E untuk menyalakan/mematikan. GDD 11.2 hanya menyebut mesin bekerja otomatis. Alasan: pemain perlu menghemat Water untuk tanaman (GDD 7.1). Default menyala, sehingga Water awal bisa habis dalam ±50 dtk bila tidak dimatikan. | Kecil di kode (`allowManualToggle`), memengaruhi balancing dan tutorial Day 1 | **Menunggu keputusan developer.** Jika ditolak, matikan `allowManualToggle`. |
 
 ## 4. Keputusan yang sudah diambil (jangan diubah tanpa persetujuan)
 
@@ -86,32 +96,30 @@ Layer `Interactable` sudah ada (layer 3).
 - Resource hanya diubah lewat `ResourceManager`; HUD memakai event.
 - Angka balancing di kode adalah **usulan**, bukan final.
 - Alur kerja perubahan: AI menganalisis repo, lalu memberi patch `.patch`. Developer yang menerapkan (`git apply`). AI tidak commit atau push.
+- Terminal komunikasi hanya cerita (bukan quest); pesan bawaan adalah placeholder.
 
-## 5. Fase aktif: Milestone 6 — Ice Gathering + Water Purifier
+## 5. Fase aktif: verifikasi objek interaktif, lalu Milestone 10–11
 
-Status: rencana, belum ada kode. Menunggu keputusan P-1 dan konfirmasi poin di bawah.
+Status: script dan menu setup dibuat; belum dikompilasi dan belum dites di Unity.
 
-Lingkup:
-1. `IceDeposit` (IInteractable): interaksi E, proses beberapa detik, menambah `ResourceType.Ice`. Batas inventory memakai kapasitas Ice di `ResourceManager` (saat ini 5).
-2. `WaterPurifier` (IInteractable): memakai Ice + Energy, menghasilkan Water ke stok bersama. Logika terpisah dari tampilan, ada event status aktif/nonaktif.
-3. Tambah tampilan Ice di `HudUI`.
-4. Editor setup `Mars > Setup Ice and Water Purifier`.
+Langkah developer:
+1. Terapkan patch, tunggu kompilasi Unity, jalankan `Mars > Setup Interactive Objects`, simpan scene.
+2. Pindahkan objek ke lokasi akhir dan pasang sprite (placeholder kotak berwarna sementara).
+3. Jalankan checklist "Objek interaktif" di `09_TEST_CHECKLIST.md`, lalu laporkan hasil dan error.
 
-Usulan angka (belum disetujui): kumpul 3 dtk per Ice; Purifier 1 Ice + 5 Energy -> 4 Water dalam 4 dtk.
+Keputusan terbuka: saklar Oxygen Generator (P-5), deposit es tak terbatas (usulan: ya), pemicu kerusakan Solar Panel (usulan: acak jarang atau per hari tertentu, belum dipilih), angka balancing semua mesin.
 
-Keputusan terbuka: deposit es tak terbatas atau habis (usulan: tak terbatas).
+Di luar lingkup patch ini: minigame kabel, `TARSSystem`, Food berkurang, Game Over/Victory, tutorial Day 1, SaveSystem, audio.
 
-Di luar lingkup: Solar Panel, Oxygen Generator, farming, TARSSystem.
-
-Kriteria selesai:
-- Pemain bisa mengumpulkan Ice di luar dan stok Ice bertambah sampai batas.
-- Purifier mengubah Ice menjadi Water dan mengurangi Energy; tidak jalan bila Ice atau Energy kurang (ada umpan balik jelas).
-- HUD menampilkan Ice dan stok lain berubah lewat event.
+Kriteria selesai fase ini (setelah tes):
+- Loop Ice -> Water -> tanaman -> Food berjalan tanpa error Console.
+- Energy dari Solar Panel menjalankan Purifier dan Oxygen Generator; panel rusak menurunkan produksi saja.
+- Resource Monitor dan Terminal menampilkan data/pesan yang benar.
 - Tidak ada fitur dari daftar Won't Have.
 
 ## 6. Urutan fase berikutnya (rekomendasi)
 
-7 Farming -> 8 Oxygen Generator -> 9 Solar Panel -> 10 minigame kabel -> 11 TARSSystem -> 12 Tutorial Day 1 -> 13 Day 2–7, Game Over/Victory, Food drain, balancing -> 14 Audio/polish -> 15 build.
+10 minigame kabel + pemicu kerusakan -> 11 TARSSystem -> 12 Tutorial Day 1 -> 13 Day 2–7, Game Over/Victory, Food drain, balancing -> 14 Audio/polish -> 15 build.
 Jika jadwal mundur: kurangi polish dan fitur Should Have dulu; jangan korbankan loop resource inti dan sistem tujuh hari.
 
 ## 7. Utang teknis dan kebersihan repo
@@ -121,6 +129,7 @@ Jika jadwal mundur: kurangi polish dan fitur Should Have dulu; jangan korbankan 
 - `Assets/Welcome` adalah sisa template Unity.
 - `ResourceDebugPanel` masih ada (alat uji sementara).
 - `SuitReminder` sementara menggantikan `TARSSystem`; pindahkan logikanya saat `TARSSystem` dibuat.
+- `RepairPoint` memperbaiki langsung sementara; ganti dengan minigame kabel.
 - Belum ada `SaveSystem`; belum ada Game Over dan Victory.
 - Kode memakai Input Manager lama (`Input.GetAxisRaw`, `KeyCode`) meski paket Input System terpasang. Jangan ganti sistem input tanpa konfirmasi.
 
@@ -144,3 +153,4 @@ Setelah tiap milestone selesai dan di-commit:
 | Tanggal | Perubahan |
 |---|---|
 | 2026-11-15 | Versi pertama dibuat dari pemeriksaan repo `f0df08f9`. Animasi dan gerak TARS selesai (3 patch). Milestone 6 dijadwalkan sebagai fase berikutnya. |
+| 2026-11-15 | Patch objek interaktif (berbasis `a9357e29`): IceDeposit, WaterPurifier, OxygenGenerator, FarmingPlot, SolarPanel + RepairPoint, ResourceMonitor, CommunicationTerminal, menu setup, Ice di HUD. Belum dikompilasi/dites. Milestone 6–10 menjadi SEBAGIAN; penyimpangan P-5 ditambahkan. |

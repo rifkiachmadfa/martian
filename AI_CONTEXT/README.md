@@ -14,6 +14,7 @@ Dokumentasi ringkas untuk AI dan tim pengembang.
 9. `08_DECISIONS.md`
 10. `09_TEST_CHECKLIST.md`
 11. `10_CHANGELOG.md`
+12. `PHASE.md` (ringkasan fase aktif dan inventaris, dibuat developer; diperbarui bersama dokumen lain)
 
 ## Prioritas sumber kebenaran
 - Desain/fitur: GDD resmi MARS: LAST HARVEST v1.2.

@@ -1,12 +1,12 @@
 # Project Status
 
 Terakhir diperbarui: 2026-11-15
-Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `bcf3a834` (6 commit). `SampleScene.unity` di repo kini memuat TARS, Canvas/HUD, ResourceManager, TimeManager, Bed, FadeOverlay [Repo]. Patch suit sebelumnya (`milestone-a-suit-gate.patch`) hanya ter-commit sebagai file dan belum diterapkan ke `Assets/`; patch Milestone A ini menggantikannya.
+Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `a9357e29` (audit 2026-11-15; patch objek interaktif berbasis revisi ini). `SampleScene.unity` di repo kini memuat TARS, Canvas/HUD, ResourceManager, TimeManager, Bed, FadeOverlay [Repo]. Patch suit sebelumnya (`milestone-a-suit-gate.patch`) hanya ter-commit sebagai file dan belum diterapkan ke `Assets/`; patch Milestone A ini menggantikannya.
 
 Label sumber: **[Repo]** terverifikasi dari file di repo, **[Dev]** dilaporkan developer (belum bisa dicek AI), **[?]** belum diverifikasi.
 
 ## Tahap saat ini
-Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: movement, sistem interaksi modular, dan TARS yang berjalan acak serta bisa diajak bicara. Sudah ada ResourceManager (M1), TimeManager + HUD (M2), dan Bed/tidur/pergantian hari (M3, menunggu tes). Belum ada mesin, suit, farming, Victory/Game Over, atau save.
+Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: movement, sistem interaksi modular, dan TARS yang berjalan acak serta bisa diajak bicara. Sudah ada ResourceManager (M1), TimeManager + HUD (M2), dan Bed/tidur/pergantian hari (M3, menunggu tes). Suit (Milestone A) dan objek interaktif Outdoor/Farming Area/Control Room (patch 2026-11-15, hanya script + menu setup) sudah dibuat tetapi belum dikompilasi dan dites di Unity. Belum ada minigame kabel, TARSSystem, Victory/Game Over, atau save.
 
 ## Status fitur
 | Fitur | Status | Bukti / catatan |
@@ -26,8 +26,15 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 | Ending Victory / Game Over | Belum ada | [Repo] tidak ada script. Bed hari terakhir hanya menampilkan pesan placeholder |
 | Suit, Suit Station, gerbang keluar, oksigen suit (berkurang saat dikenakan) | Script dibuat (Milestone A + revisi: lepas suit, lepas otomatis saat tidur, pengingat TARS `SuitReminder`) | [Repo setelah patch] `Assets/Script/Suit/*`, `Assets/Editor/MarsSuitSetup.cs`, `HudUI` (panel suit). Belum dikompilasi/dites di Unity [?]. Objek scene (SuitStation, IndoorZone, SuitGate) dibuat lewat menu dan diposisikan developer [?] |
 | Countdown darurat / Game Over oksigen suit | Belum ada | `SuitSystem.OnSuitOxygenEmpty` hanya event + log |
-| Machines / solar / wiring minigame | Belum ada | [Repo] |
-| Farming / Potato | Belum ada | [Repo] |
+| Ice Deposit (kumpul es, inventory Ice) | Script dibuat | [Repo setelah patch] `Assets/Script/Outdoor/IceDeposit.cs`; HUD menampilkan Ice lewat `HudUI.iceText`. Belum dites di Unity [?] |
+| Water Purifier | Script dibuat | [Repo setelah patch] `Assets/Script/Machines/WaterPurifier.cs`. Belum dites [?] |
+| Oxygen Generator | Script dibuat | [Repo setelah patch] `Assets/Script/Machines/OxygenGenerator.cs` (saklar E = usulan di luar GDD). Belum dites [?] |
+| Solar Panel (produksi Energy, status rusak) | Script dibuat | [Repo setelah patch] `Assets/Script/Outdoor/SolarPanel.cs`. Pemicu kerusakan otomatis belum ada (hanya menu konteks Debug). Belum dites [?] |
+| Repair Point | Script dibuat (perbaikan langsung) | [Repo setelah patch] `Assets/Script/Outdoor/RepairPoint.cs`. Belum dites [?] |
+| Wiring minigame | Belum ada | [Repo] |
+| Resource Monitor | Script dibuat | [Repo setelah patch] `Assets/Script/Station/ResourceMonitor.cs`. Belum dites [?] |
+| Terminal komunikasi | Script dibuat (teks placeholder) | [Repo setelah patch] `Assets/Script/Station/CommunicationTerminal.cs`. Belum dites [?] |
+| Farming / Potato | Script dibuat (satu petak per objek, tanpa sprite) | [Repo setelah patch] `Assets/Script/Farming/FarmingPlot.cs`: tanam, siram, tumbuh saat hari berganti, panen. Belum dites [?] |
 | TARS reminder berbasis resource | Belum ada | Dialog TARS saat ini teks tetap lewat Inspector |
 | Save system | Belum ada | [Repo] |
 | Tiga scene area (Control Room, Farming, Outdoor) | Belum ada | [Repo] hanya `SampleScene` |
@@ -45,6 +52,9 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 - Gambar arah bawah untuk TARS (`Down Frames`) belum ada.
 - Collider Player di scene belum diperiksa.
 - Player masih bisa bergerak saat dialog terbuka (kini disengaja: waktu dan resource tetap berjalan saat dialog).
+- Objek interaktif (patch 2026-11-15): tidak ada compiler C# atau Unity di lingkungan AI; kode hanya diperiksa dengan membaca dan `git apply --check` [?]. Posisi, sprite, dan collider objek di scene ditentukan developer [?].
+- Keseimbangan: `OxygenGenerator` menyala sejak awal dan memakai Water (usulan 1 per 5 detik) sehingga Water awal (10) bisa habis dalam sekitar 50 detik bila tidak dimatikan; Energy tidak dihasilkan kecuali ada `SolarPanel` di scene. Angka perlu playtest [?].
+- Satu `FarmingPlot` = satu petak; petak tambahan dibuat dengan menduplikasi objek. Pertumbuhan hanya terjadi lewat `TimeManager.OnDayStarted` (jadi lewat Bed atau menu Debug TimeManager) [?].
 
 ## Housekeeping
 - Empat file `.patch` ter-commit di root repo (`tars_interaction`, `tars_dialogue`, `mars_ui_setup`, `mars_ui_setup_fix`). Tidak dipakai lagi; boleh dihapus atau di-ignore.

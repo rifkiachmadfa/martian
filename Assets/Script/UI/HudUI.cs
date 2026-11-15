@@ -4,7 +4,7 @@ using UnityEngine.UI;
 /// <summary>
 /// HUD gameplay: hari, timer, serta Food, Water, Oxygen (habitat), dan Energy.
 /// Hanya tampilan: membaca ResourceManager (lewat event) dan TimeManager.
-/// Suit Oxygen tampil di panel opsional (suitPanel) hanya saat suit dikenakan. Ice belum ditampilkan.
+/// Suit Oxygen tampil di panel opsional (suitPanel) hanya saat suit dikenakan. Ice tampil di iceText (opsional).
 /// </summary>
 public class HudUI : MonoBehaviour
 {
@@ -14,6 +14,9 @@ public class HudUI : MonoBehaviour
     [SerializeField] private Text waterText;
     [SerializeField] private Text oxygenText;
     [SerializeField] private Text energyText;
+
+    [Header("Ice (opsional; diisi menu Mars > Setup Interactive Objects)")]
+    [SerializeField] private Text iceText;
 
     [Header("Suit (opsional; diisi menu Mars > Setup Suit and Gate)")]
     [SerializeField] private GameObject suitPanel;
@@ -46,6 +49,7 @@ public class HudUI : MonoBehaviour
             RefreshResource(ResourceType.Water);
             RefreshResource(ResourceType.HabitatOxygen);
             RefreshResource(ResourceType.Energy);
+            RefreshResource(ResourceType.Ice);
         }
         else
         {
@@ -145,8 +149,11 @@ public class HudUI : MonoBehaviour
             case ResourceType.Water: label = "Water"; target = waterText; break;
             case ResourceType.HabitatOxygen: label = "Oxygen"; target = oxygenText; break;
             case ResourceType.Energy: label = "Energy"; target = energyText; break;
+            case ResourceType.Ice:
+                if (iceText == null) return; // panel Ice opsional
+                label = "Ice"; target = iceText; break;
             case ResourceType.SuitOxygen: RefreshSuit(); return;
-            default: return; // Ice belum ada di HUD
+            default: return;
         }
 
         target.text = label + ": " + Mathf.RoundToInt(resources.Get(type)) + " / " + Mathf.RoundToInt(resources.GetMax(type));

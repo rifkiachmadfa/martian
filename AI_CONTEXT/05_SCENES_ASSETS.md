@@ -1,6 +1,6 @@
 # Scenes & Assets
 
-Terakhir diperbarui: 2026-11-15 (commit `e6feb586`). Label: [Repo] terverifikasi, [Dev] dilaporkan developer.
+Terakhir diperbarui: 2026-11-15 (commit `a9357e29` + patch objek interaktif). Label: [Repo] terverifikasi, [Dev] dilaporkan developer.
 
 ## Area desain yang direncanakan
 - Control Room
@@ -29,7 +29,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Script/Resource/ResourceManager.cs` | Stok, kapasitas, `Add`/`TryConsume`, event perubahan. Dipasang pada GameObject `ResourceManager` di scene |
 | `Assets/Script/Resource/ResourceDebugPanel.cs` | Alat uji sementara (OnGUI). Hapus saat HUD sungguhan ada |
 | `Assets/Script/Time/TimeManager.cs` | Hari, timer harian, timer harian (pause saat dialog opsional lewat `pauseDuringDialogue`, default mati), event hari. Dipasang pada GameObject `TimeManager` |
-| `Assets/Script/UI/HudUI.cs` | Tampilan Day, timer, Food, Water, Oxygen, Energy. Dipasang pada `HudRoot` di Canvas |
+| `Assets/Script/UI/HudUI.cs` | Tampilan Day, timer, Food, Water, Oxygen, Energy, Ice (opsional, `iceText`). Dipasang pada `HudRoot` di Canvas |
 | `Assets/Script/Interaction/Bed.cs` | Tempat tidur (IInteractable): tidur, fade, hari berikutnya. Dipasang pada GameObject `Bed` (layer `Interactable`, BoxCollider2D, anak `SpawnPoint`) |
 | `Assets/Script/UI/FadeUI.cs` | Layar hitam untuk fade. Dipasang pada `Canvas/FadeOverlay` |
 | `Assets/Editor/MarsUISetup.cs` | Menu Editor: membuat/memperbaiki Canvas, dialog, prompt, dan menyambungkan ke TARS/Player. Helper `internal` dipakai `MarsHudSetup` |
@@ -41,6 +41,15 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Script/Suit/SuitGate.cs` | Tembok tak terlihat di pintu keluar (BoxCollider2D solid) |
 | `Assets/Editor/MarsSuitSetup.cs` | Menu Editor `Mars > Setup Suit and Gate`: membuat SuitSystem, SuitStation, IndoorZone, SuitGate, dan `HudRoot/SuitPanel` |
 | `Assets/Editor/MarsSleepSetup.cs` | Menu Editor `Mars > Setup Bed and Fade`: membuat FadeOverlay dan Bed (+SpawnPoint), menyambungkan referensi tanpa menimpa isian manual |
+| `Assets/Script/Outdoor/IceDeposit.cs` | Deposit es (IInteractable): E, pemain berhenti beberapa detik, Ice +1 ke inventory (batas = kapasitas Ice). Perlu suit. Layer `Interactable`, Collider2D |
+| `Assets/Script/Outdoor/SolarPanel.cs` | Panel surya: Energy otomatis per tick; `Damage()`/`Repair()`, `IsDamaged`, event `OnDamagedChanged`. Bukan IInteractable. Beberapa panel menjumlah |
+| `Assets/Script/Outdoor/RepairPoint.cs` | Titik perbaikan (IInteractable) untuk satu `SolarPanel` (field `panel`). Perbaikan langsung sementara; minigame kabel nanti |
+| `Assets/Script/Machines/WaterPurifier.cs` | Water Purifier (IInteractable): Ice + Energy -> Water, proses beberapa detik, `IsProcessing`, `OnProcessingChanged`, indikator opsional |
+| `Assets/Script/Machines/OxygenGenerator.cs` | Oxygen Generator (IInteractable): Water + Energy -> HabitatOxygen otomatis per siklus; E = nyalakan/matikan (USULAN); `IsOn`, `IsRunning`, `StatusText` |
+| `Assets/Script/Farming/FarmingPlot.cs` | Satu petak kentang (IInteractable): tanam, siram (Water), tumbuh saat hari berganti bila disiram, panen (Food). Satu objek = satu petak |
+| `Assets/Script/Station/ResourceMonitor.cs` | Resource Monitor Control Room (IInteractable): dialog ringkasan hari, stok, suit, panel, mesin. Hanya membaca |
+| `Assets/Script/Station/CommunicationTerminal.cs` | Terminal komunikasi (IInteractable): pesan placeholder dari Bumi per hari (array Inspector). Bukan quest |
+| `Assets/Editor/MarsObjectsSetup.cs` | Menu Editor `Mars > Setup Interactive Objects`: membuat 7 objek interaktif placeholder + `SolarPanel` + panel Ice di HUD |
 | `Assets/Welcome/Welcome2DScript.cs` | Bawaan template Unity; bukan bagian game |
 
 ## Aset
@@ -58,6 +67,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 **TimeManager dan HUD:** dibuat lewat menu Mars > Setup HUD and Time (GameObject `TimeManager`; `Canvas/HudRoot` berisi `TimePanel` dan `ResourcePanel`). Perubahan scene dilakukan developer, belum diverifikasi AI [?].
 **Bed dan Fade:** dibuat lewat menu Mars > Setup Bed and Fade (`Canvas/FadeOverlay`; GameObject `Bed` dengan anak `SpawnPoint`). Sprite Bed belum ada (placeholder oleh developer). Posisi di scene: [Dev], belum diverifikasi [?].
 **Suit dan Gate:** dibuat lewat menu Mars > Setup Suit and Gate (placeholder di sekitar Player). WAJIB diposisikan developer: `IndoorZone` menutupi seluruh interior dengan tepi sejajar pintu; `SuitGate` di pintu dan menutup seluruh lebar pintu; `SuitStation` di Control Room dengan sprite. Posisi akhir: [Dev], belum diverifikasi [?].
+**Objek interaktif (patch 2026-11-15):** dibuat lewat menu Mars > Setup Interactive Objects: `IceDeposit`, `SolarPanel`, `RepairPoint`, `WaterPurifier`, `OxygenGenerator`, `FarmingPlot`, `ResourceMonitor`, `CommunicationTerminal` (SpriteRenderer kotak placeholder, BoxCollider2D trigger 1.5x1.5, layer `Interactable`, diletakkan di sekitar Player) dan `HudRoot/IcePanel` (+ `iceText`). WAJIB developer: memindahkan tiap objek ke lokasi akhirnya (Outdoor: IceDeposit, SolarPanel, RepairPoint; Farming Area: WaterPurifier, OxygenGenerator, FarmingPlot; Control Room: ResourceMonitor, CommunicationTerminal), mengganti sprite placeholder, dan menyimpan scene. Posisi akhir: [Dev], belum diverifikasi [?]. Objek belum ada di `SampleScene.unity` di repo [Repo].
 **Canvas:** dibuat lewat menu Mars > Setup Dialogue and Prompt UI (berisi `DialogueUI` dan `InteractionPromptUI`).
 
 ## Saat menambah/mengubah asset
