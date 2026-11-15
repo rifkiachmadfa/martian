@@ -103,6 +103,8 @@ public static class MarsUISetup
         if (removedDialogue > 0)
             report.AppendLine("- " + removedDialogue + " komponen DialogueUI kosong (duplikat) dihapus.");
 
+        EnsureCloseButton(dialogueUI, report);
+
         // 3. Prompt
         InteractionDetector detector = Object.FindFirstObjectByType<InteractionDetector>();
         InteractionPromptUI promptUI = Object.FindFirstObjectByType<InteractionPromptUI>();
@@ -162,6 +164,69 @@ public static class MarsUISetup
         report.Append("Tekan Ctrl+S untuk menyimpan scene.");
         Debug.Log("MarsUISetup:\n" + report);
         EditorUtility.DisplayDialog("Mars Setup", report.ToString(), "OK");
+    }
+
+    // Membuat tombol Tutup di kotak dialog bila belum ada, lalu menyambungkannya ke DialogueUI.closeButton.
+    // Tidak menimpa tombol yang sudah Anda isi.
+    private static void EnsureCloseButton(DialogueUI dialogueUI, StringBuilder report)
+    {
+        if (dialogueUI == null) return;
+
+        SerializedObject so = new SerializedObject(dialogueUI);
+        SerializedProperty buttonProp = so.FindProperty("closeButton");
+        SerializedProperty rootProp = so.FindProperty("dialogueRoot");
+        if (buttonProp == null || rootProp == null || rootProp.objectReferenceValue == null) return;
+
+        if (buttonProp.objectReferenceValue != null)
+        {
+            report.AppendLine("- Tombol Tutup dialog sudah ada.");
+            return;
+        }
+
+        GameObject root = (GameObject)rootProp.objectReferenceValue;
+        Transform existing = root.transform.Find("CloseButton");
+        GameObject buttonGO;
+
+        if (existing != null)
+        {
+            buttonGO = existing.gameObject;
+        }
+        else
+        {
+            buttonGO = new GameObject("CloseButton", typeof(RectTransform), typeof(Image), typeof(Button));
+            Undo.RegisterCreatedObjectUndo(buttonGO, "Create CloseButton");
+            buttonGO.transform.SetParent(root.transform, false);
+
+            RectTransform r = buttonGO.GetComponent<RectTransform>();
+            r.anchorMin = new Vector2(1f, 1f);
+            r.anchorMax = new Vector2(1f, 1f);
+            r.pivot = new Vector2(1f, 1f);
+            r.anchoredPosition = new Vector2(-12f, -12f);
+            r.sizeDelta = new Vector2(56f, 44f);
+
+            Image image = buttonGO.GetComponent<Image>();
+            image.color = new Color(0.55f, 0.15f, 0.15f, 0.95f);
+            image.raycastTarget = true;
+
+            bool created;
+            Text label = GetOrCreateText(buttonGO.transform, "Label", "X", 30, Color.white, TextAnchor.MiddleCenter, out created);
+            if (created)
+            {
+                RectTransform lr = label.rectTransform;
+                lr.anchorMin = Vector2.zero;
+                lr.anchorMax = Vector2.one;
+                lr.offsetMin = Vector2.zero;
+                lr.offsetMax = Vector2.zero;
+                label.fontStyle = FontStyle.Bold;
+            }
+        }
+
+        Button button = buttonGO.GetComponent<Button>();
+        if (button == null) button = Undo.AddComponent<Button>(buttonGO);
+        if (button.targetGraphic == null) button.targetGraphic = buttonGO.GetComponent<Image>();
+
+        SetRef(dialogueUI, "closeButton", button);
+        report.AppendLine("- Tombol Tutup dialog dibuat di pojok kanan atas kotak dialog.");
     }
 
     internal static bool IsConfigured(Object target, params string[] fieldNames)

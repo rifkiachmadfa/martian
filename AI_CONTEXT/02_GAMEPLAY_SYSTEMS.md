@@ -5,7 +5,7 @@
 | Resource | Food, Water, Oxygen, Energy dikelola sebagai stok survival. |
 | Ice / Purifier | Ice + Energy → Water. |
 | Oxygen Generator | Water + Energy → Oxygen habitat. |
-| Habitat vs Suit | Oxygen habitat adalah stok bersama; Suit Oxygen adalah tangki terpisah dan terpakai saat outdoor. |
+| Habitat vs Suit | Oxygen habitat adalah stok bersama; Suit Oxygen adalah tangki terpisah. **Revisi GDD 2026-11-15:** Suit Oxygen berkurang selama suit DIKENAKAN (di dalam maupun di luar habitat) dan tidak berkurang saat suit dilepas. Suit dilepas di Suit Station. |
 | Solar Panel | Menghasilkan Energy; panel rusak menurunkan produksi. Satu panel rusak tidak mematikan seluruh habitat. |
 | Outdoor | Gunakan suit; kumpulkan Ice dan perbaiki panel; kembali sebelum Suit Oxygen habis. |
 | Farming | Potato saja; 2–3 tahap pertumbuhan. Tanaman yang disiram maju satu tahap per hari; tanpa air tidak maju. |

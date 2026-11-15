@@ -4,6 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Tempat tidur di Control Room. Saat dipakai: kunci gerakan, fade to black, hari bertambah,
 /// Player dipindah ke titik spawn, timer hari baru mulai, lalu fade in.
+/// Saat tidur, suit yang masih dikenakan dilepas otomatis (oksigen yang tersisa di tabung tetap ada).
 /// Pada hari terakhir, ending Victory belum dibuat (milestone berikutnya).
 /// Penyimpanan data (SaveSystem) belum ada; stok tetap di memori karena game satu scene.
 /// </summary>
@@ -14,6 +15,7 @@ public class Bed : MonoBehaviour, IInteractable
     [SerializeField] private PlayerMovement player;
     [SerializeField] private TimeManager timeManager;
     [SerializeField] private DialogueUI dialogueUI;
+    [SerializeField] private SuitSystem suit; // opsional: bila ada, suit dilepas saat tidur
     [SerializeField] private Transform spawnPoint;
 
     [Header("Aturan tidur (usulan, belum diputuskan)")]
@@ -33,6 +35,7 @@ public class Bed : MonoBehaviour, IInteractable
         if (player == null) player = FindFirstObjectByType<PlayerMovement>();
         if (timeManager == null) timeManager = FindFirstObjectByType<TimeManager>();
         if (dialogueUI == null) dialogueUI = FindFirstObjectByType<DialogueUI>();
+        if (suit == null) suit = FindFirstObjectByType<SuitSystem>();
 
         if (fadeUI == null || player == null || timeManager == null)
             Debug.LogError("Bed: FadeUI, PlayerMovement, atau TimeManager tidak ditemukan. Jalankan menu Mars > Setup Bed and Fade.", this);
@@ -75,6 +78,9 @@ public class Bed : MonoBehaviour, IInteractable
         timeManager.ExternalPause = true;
 
         yield return fadeUI.FadeToBlack();
+
+        // Layar sudah hitam: lepas suit (hanya berhasil jika Bed berada di dalam IndoorZone).
+        if (suit != null) suit.Unequip();
 
         timeManager.StartDay(timeManager.CurrentDay + 1);
         MovePlayerToSpawn();

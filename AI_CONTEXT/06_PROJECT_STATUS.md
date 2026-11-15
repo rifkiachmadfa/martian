@@ -1,7 +1,7 @@
 # Project Status
 
 Terakhir diperbarui: 2026-11-15
-Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `20c1fc28` (4 commit; scene lokal dan layer `Interactable` sudah ter-commit).
+Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `bcf3a834` (6 commit). `SampleScene.unity` di repo kini memuat TARS, Canvas/HUD, ResourceManager, TimeManager, Bed, FadeOverlay [Repo]. Patch suit sebelumnya (`milestone-a-suit-gate.patch`) hanya ter-commit sebagai file dan belum diterapkan ke `Assets/`; patch Milestone A ini menggantikannya.
 
 Label sumber: **[Repo]** terverifikasi dari file di repo, **[Dev]** dilaporkan developer (belum bisa dicek AI), **[?]** belum diverifikasi.
 
@@ -20,11 +20,12 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 | Menu setup UI (Mars > Setup Dialogue and Prompt UI) | Ada | [Repo] `Assets/Editor/MarsUISetup.cs`. Sudah dijalankan: [Dev] |
 | Sprite animasi TARS | Sebagian | [Repo] folder `Assets/Robot` punya Left, Right, Up (3 frame tiap arah). Folder **Down tidak ada** |
 | Resource systems | Ada | [Repo] `Assets/Script/Resource/`. Playtest panel uji: [Dev] berjalan baik. Komponen di scene lokal dan belum ter-push ke GitHub saat audit 2026-11-15: [Dev] |
-| Timer harian (TimeManager) | Ada | [Repo] `Assets/Script/Time/TimeManager.cs`. Playtest: [Dev] "sudah bagus" (butir tidak dirinci). Pause saat dialog lewat `DialogueUI.IsOpen`; `ExternalPause` untuk transisi |
+| Timer harian (TimeManager) | Ada | [Repo] `Assets/Script/Time/TimeManager.cs`. Playtest: [Dev] "sudah bagus" (butir tidak dirinci). Sejak 2026-11-15 timer tetap berjalan saat dialog (flag `pauseDuringDialogue`, default mati); `ExternalPause` untuk transisi |
 | HUD (Day, timer, 4 resource) | Ada | [Repo] `Assets/Script/UI/HudUI.cs`, `Assets/Editor/MarsHudSetup.cs`. Playtest: [Dev] "sudah bagus" |
 | Bed, tidur, fade, pergantian hari | Script dibuat (Milestone 3) | [Repo] `Assets/Script/Interaction/Bed.cs`, `Assets/Script/UI/FadeUI.cs`, `Assets/Editor/MarsSleepSetup.cs`. Belum dites di Unity |
 | Ending Victory / Game Over | Belum ada | [Repo] tidak ada script. Bed hari terakhir hanya menampilkan pesan placeholder |
-| Suit / outdoor | Belum ada | [Repo] |
+| Suit, Suit Station, gerbang keluar, oksigen suit (berkurang saat dikenakan) | Script dibuat (Milestone A + revisi: lepas suit, lepas otomatis saat tidur, pengingat TARS `SuitReminder`) | [Repo setelah patch] `Assets/Script/Suit/*`, `Assets/Editor/MarsSuitSetup.cs`, `HudUI` (panel suit). Belum dikompilasi/dites di Unity [?]. Objek scene (SuitStation, IndoorZone, SuitGate) dibuat lewat menu dan diposisikan developer [?] |
+| Countdown darurat / Game Over oksigen suit | Belum ada | `SuitSystem.OnSuitOxygenEmpty` hanya event + log |
 | Machines / solar / wiring minigame | Belum ada | [Repo] |
 | Farming / Potato | Belum ada | [Repo] |
 | TARS reminder berbasis resource | Belum ada | Dialog TARS saat ini teks tetap lewat Inspector |
@@ -43,7 +44,7 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 - Tidak ada compile atau run Unity oleh AI; semua kode hanya diperiksa lewat `git apply --check`.
 - Gambar arah bawah untuk TARS (`Down Frames`) belum ada.
 - Collider Player di scene belum diperiksa.
-- Player masih bisa bergerak saat dialog terbuka; timer harian belum ada untuk dijeda.
+- Player masih bisa bergerak saat dialog terbuka (kini disengaja: waktu dan resource tetap berjalan saat dialog).
 
 ## Housekeeping
 - Empat file `.patch` ter-commit di root repo (`tars_interaction`, `tars_dialogue`, `mars_ui_setup`, `mars_ui_setup_fix`). Tidak dipakai lagi; boleh dihapus atau di-ignore.

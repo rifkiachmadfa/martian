@@ -3,7 +3,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Kotak dialog sederhana. Menampilkan baris teks satu per satu; tekan E untuk lanjut.
+/// Kotak dialog sederhana. Menampilkan baris teks satu per satu.
+/// Lanjut ke baris berikutnya / menutup dialog di baris terakhir: tombol E, Spasi, atau klik mouse di mana saja.
+/// Tombol Tutup (opsional, closeButton) menutup dialog langsung, melewati sisa baris.
+/// Dialog TIDAK menghentikan waktu atau resource (lihat TimeManager.pauseDuringDialogue).
 /// Hanya tampilan: isi dialog dikirim oleh pemanggil (misalnya TARS).
 /// </summary>
 public class DialogueUI : MonoBehaviour
@@ -11,7 +14,14 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] private GameObject dialogueRoot;
     [SerializeField] private Text speakerText;   // opsional
     [SerializeField] private Text lineText;
+    [Tooltip("Opsional. Tombol Tutup: menutup dialog langsung. Dibuat oleh menu Mars > Setup Dialogue and Prompt UI.")]
+    [SerializeField] private Button closeButton;
+
+    [Header("Input lanjut / tutup dialog")]
     [SerializeField] private KeyCode advanceKey = KeyCode.E;
+    [SerializeField] private KeyCode alternateAdvanceKey = KeyCode.Space;
+    [Tooltip("Klik mouse kiri di mana saja = lanjut / tutup (di luar tombol Tutup).")]
+    [SerializeField] private bool clickAnywhereToAdvance = true;
 
     private string[] lines;
     private int lineIndex;
@@ -30,6 +40,13 @@ public class DialogueUI : MonoBehaviour
         }
 
         dialogueRoot.SetActive(false);
+
+        if (closeButton != null) closeButton.onClick.AddListener(CloseNow);
+    }
+
+    private void OnDestroy()
+    {
+        if (closeButton != null) closeButton.onClick.RemoveListener(CloseNow);
     }
 
     private void Update()
@@ -39,7 +56,28 @@ public class DialogueUI : MonoBehaviour
         // Abaikan tombol yang sama yang baru membuka dialog.
         if (Time.frameCount == openedFrame) return;
 
-        if (Input.GetKeyDown(advanceKey)) ShowNextLine();
+        bool advance =
+            Input.GetKeyDown(advanceKey) ||
+            Input.GetKeyDown(alternateAdvanceKey) ||
+            (clickAnywhereToAdvance && Input.GetMouseButtonDown(0) && !IsPointerOverCloseButton());
+
+        if (advance) ShowNextLine();
+    }
+
+    /// <summary>Menutup dialog sekarang juga (melewati sisa baris). Dipakai tombol Tutup.</summary>
+    private void CloseNow()
+    {
+        if (IsOpen) Close();
+    }
+
+    // Klik pada tombol Tutup ditangani tombolnya sendiri; jangan dihitung juga sebagai "klik di mana saja".
+    private bool IsPointerOverCloseButton()
+    {
+        if (closeButton == null || !closeButton.gameObject.activeInHierarchy) return false;
+
+        Canvas canvas = closeButton.GetComponentInParent<Canvas>();
+        Camera uiCamera = (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay) ? canvas.worldCamera : null;
+        return RectTransformUtility.RectangleContainsScreenPoint((RectTransform)closeButton.transform, Input.mousePosition, uiCamera);
     }
 
     public void Show(string speaker, string[] dialogueLines, Action finishedCallback)

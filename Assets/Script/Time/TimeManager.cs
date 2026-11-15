@@ -3,7 +3,8 @@ using UnityEngine;
 
 /// <summary>
 /// Mengatur hari ke-berapa dan timer harian (usulan: 10 menit per hari, 7 hari).
-/// Timer berhenti saat dialog terbuka. Saat waktu habis, timer berhenti di 0 dan memicu OnDayTimeEnded;
+/// Secara default timer TETAP berjalan saat dialog terbuka (revisi 2026-11-15); aktifkan pauseDuringDialogue
+/// untuk menghentikannya. Saat waktu habis, timer berhenti di 0 dan memicu OnDayTimeEnded;
 /// proses tidur/pergantian hari dan grace period outdoor dibuat di milestone berikutnya.
 /// Hanya mengurus waktu; tidak menampilkan apa pun.
 /// </summary>
@@ -17,6 +18,8 @@ public class TimeManager : MonoBehaviour
 
     [Header("Sumber pause")]
     [SerializeField] private DialogueUI dialogueUI;
+    [Tooltip("Jika dicentang, timer (dan sistem yang mengikuti IsPaused, misalnya oksigen suit) berhenti selama dialog terbuka. Default: mati, waktu dan resource tetap berjalan.")]
+    [SerializeField] private bool pauseDuringDialogue = false;
 
     public int CurrentDay { get; private set; } = 1;
     public int TotalDays => totalDays;
@@ -27,8 +30,8 @@ public class TimeManager : MonoBehaviour
     /// <summary>Pause dari sistem lain (sekarang: transisi tidur). Minigame nanti bisa memakai ini juga.</summary>
     public bool ExternalPause { get; set; }
 
-    /// <summary>True saat timer ditahan (dialog terbuka atau ExternalPause aktif).</summary>
-    public bool IsPaused => ExternalPause || (dialogueUI != null && dialogueUI.IsOpen);
+    /// <summary>True saat timer ditahan (ExternalPause aktif, atau dialog terbuka bila pauseDuringDialogue dicentang).</summary>
+    public bool IsPaused => ExternalPause || (pauseDuringDialogue && dialogueUI != null && dialogueUI.IsOpen);
 
     /// <summary>Dipanggil saat hari baru dimulai (parameter: nomor hari).</summary>
     public event Action<int> OnDayStarted;
@@ -52,7 +55,7 @@ public class TimeManager : MonoBehaviour
     private void Start()
     {
         if (dialogueUI == null) dialogueUI = FindFirstObjectByType<DialogueUI>();
-        if (dialogueUI == null)
+        if (pauseDuringDialogue && dialogueUI == null)
             Debug.LogWarning("TimeManager: DialogueUI tidak ditemukan, timer tidak akan berhenti saat dialog.", this);
     }
 
