@@ -10,6 +10,13 @@ Format:
 - **Test:** pengujian dan hasil.
 - **Follow-up:** pekerjaan tersisa.
 
+## 2026-11-16 (checklist dan PHASE.md sesuai hasil tes developer)
+- **Changed:** `09_TEST_CHECKLIST.md` bagian "Objek interaktif": seluruh butir lama ditandai [x] (dilaporkan developer), instruksi setup dihapus, dua butir baru (BARU) ditambahkan, butir Repair Point disesuaikan dengan kode. `PHASE.md`: revisi `d96d9b6f`; milestone 6–9 menjadi SELESAI* (dilaporkan); bagian 5 ditulis ulang; bagian 6 memuat usulan urutan; utang teknis diperbarui. `06`, `07`, `05` disesuaikan.
+- **Reason:** developer melaporkan tes interaksi lolos semua; dokumen masih menyebut belum dites. Pemeriksaan kode mendapati angka dan perilaku di checklist cocok dengan script.
+- **Files/systems:** `AI_CONTEXT/{PHASE,05_SCENES_ASSETS,06_PROJECT_STATUS,07_BACKLOG,09_TEST_CHECKLIST,10_CHANGELOG}.md`. Tidak ada kode, scene, atau aset yang berubah.
+- **Test:** Dicek dari clone bersih `main` (`d96d9b6f`): GUID script objek interaktif tidak ada di `SampleScene.unity`; default angka dibaca dari script. Hasil tes Unity berasal dari laporan developer, tidak diverifikasi AI.
+- **Follow-up:** Commit scene lokal; putuskan P-1, P-5, dan fase berikutnya; hapus `phase-sync.patch` dan tambahkan `*.patch` serta `Assets/_Recovery/` ke `.gitignore`.
+
 ## 2026-11-15 (sinkronisasi PHASE.md dengan repo afc2453c)
 - **Changed:** `PHASE.md` diperbarui ke revisi `afc2453c`: patch objek interaktif dicatat sebagai sudah diterapkan/di-commit; ditambahkan catatan bahwa scene commit belum memuat objek barunya; utang teknis `interactive-objects.patch` dan `Assets/_Recovery` dicatat; riwayat ditambah. `06_PROJECT_STATUS.md` disesuaikan (commit dasar audit, kondisi scene, housekeeping).
 - **Reason:** `PHASE.md` masih menyebut patch belum diterapkan dan revisi `a9357e29`, tidak sesuai kondisi repo.

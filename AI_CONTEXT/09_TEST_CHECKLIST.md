@@ -103,45 +103,47 @@ Status [x] berarti dilaporkan developer, belum diverifikasi AI.
 - [ ] Selama dialog terbuka, timer HUD terus berkurang dan Food/Water/Oxygen/Energy tetap berjalan sesuai sistemnya.
 - [ ] Dialog Bed, Suit Station, SuitGate, dan SuitReminder juga bisa ditutup dengan Spasi/klik/X. Tidak ada error di Console.
 
-## Objek interaktif (ditambahkan 2026-11-15, belum dites di Unity)
-Persiapan: terapkan patch, buka Unity (tunggu kompilasi tanpa error), jalankan `Mars > Setup Interactive Objects`, simpan scene. Pastikan `SuitSystem`, `ResourceManager`, `TimeManager`, `DialogueUI` ada. Untuk tes cepat, dekatkan semua objek ke Player lebih dulu.
-- [ ] Menu setup jalan tanpa error; ada 8 objek baru (IceDeposit, SolarPanel, RepairPoint, WaterPurifier, OxygenGenerator, FarmingPlot, ResourceMonitor, CommunicationTerminal) dan `HudRoot/IcePanel`. Menjalankannya dua kali tidak membuat objek ganda.
-- [ ] Console tidak menampilkan error kompilasi, missing reference, atau error dari script baru saat Play.
-- [ ] HUD menampilkan "Ice: 0 / 5" di bawah panel resource.
+## Objek interaktif (ditambahkan 2026-11-15; dilaporkan developer lolos 2026-11-16)
+Status [x] = dilaporkan developer 2026-11-16 (seluruh butir bagian ini lolos; butir tidak dirinci), belum diverifikasi AI. Scene hasil setup belum di-commit ke repo (revisi `d96d9b6f`). Butir bertanda "(BARU)" ditambahkan 2026-11-16 dan belum dites.
+- [x] Ke-8 objek interaktif ada di scene (IceDeposit, SolarPanel, RepairPoint, WaterPurifier, OxygenGenerator, FarmingPlot, ResourceMonitor, CommunicationTerminal) beserta `HudRoot/IcePanel`.
+- [x] Console tidak menampilkan error kompilasi, missing reference, atau error dari script baru saat Play.
+- [x] HUD menampilkan "Ice: 0 / 5" di bawah panel resource.
 
 ### Ice Deposit
-- [ ] Tanpa suit: E menampilkan pesan perlu suit; Ice tidak berubah.
-- [ ] Dengan suit: E membuat Player berhenti; prompt menghitung mundur; setelah sekitar 3 detik Ice +1 dan Player bisa bergerak lagi. HUD Ice berubah.
-- [ ] Ulangi sampai Ice 5 / 5: E berikutnya menampilkan pesan inventory penuh; Ice tidak melebihi 5.
-- [ ] Menekan E berulang saat mengumpulkan tidak menggandakan hasil.
+- [x] Tanpa suit: E menampilkan pesan perlu suit; Ice tidak berubah.
+- [x] Dengan suit: E membuat Player berhenti; prompt menghitung mundur; setelah sekitar 3 detik Ice +1 dan Player bisa bergerak lagi. HUD Ice berubah.
+- [x] Ulangi sampai Ice 5 / 5: E berikutnya menampilkan pesan inventory penuh; Ice tidak melebihi 5.
+- [x] Menekan E berulang saat mengumpulkan tidak menggandakan hasil.
 
 ### Water Purifier
-- [ ] Ice 0: pesan tidak ada Ice. Ice ada tetapi Energy < 5: pesan Energy tidak cukup.
-- [ ] Ice dan Energy cukup: E mengurangi 1 Ice dan 5 Energy seketika; setelah sekitar 4 detik Water +4 (maksimum 30). Prompt menampilkan sisa waktu selama proses.
-- [ ] E saat proses berjalan: pesan "sedang bekerja"; tidak ada pengurangan ganda.
-- [ ] Water hampir penuh (muat < 4): ditolak dengan pesan, Ice dan Energy tidak berkurang.
-- [ ] Indikator aktif (jika diisi) menyala hanya selama proses.
+- [x] Ice 0: pesan tidak ada Ice. Ice ada tetapi Energy < 5: pesan Energy tidak cukup.
+- [x] Ice dan Energy cukup: E mengurangi 1 Ice dan 5 Energy seketika; setelah sekitar 4 detik Water +4 (maksimum 30). Prompt menampilkan sisa waktu selama proses.
+- [x] E saat proses berjalan: pesan "sedang bekerja"; tidak ada pengurangan ganda.
+- [x] Water hampir penuh (muat < 4): ditolak dengan pesan, Ice dan Energy tidak berkurang.
+- [x] Indikator aktif (jika diisi) menyala hanya selama proses.
 
 ### Oxygen Generator
-- [ ] Dengan Water dan Energy cukup dan oksigen habitat belum penuh: oksigen habitat naik 5 tiap sekitar 5 detik sambil Water -1 dan Energy -2 per siklus.
-- [ ] Water habis atau Energy < 2: mesin berhenti; E menampilkan alasannya. Setelah stok ada lagi, mesin lanjut sendiri.
-- [ ] Oksigen habitat penuh: mesin siaga dan tidak memakai Water/Energy.
-- [ ] E mematikan mesin: Water/Energy tidak berkurang lagi; E lagi menyalakan kembali. Oksigen suit tidak tersentuh mesin.
+- [x] Dengan Water dan Energy cukup dan oksigen habitat belum penuh: oksigen habitat naik 5 tiap sekitar 5 detik sambil Water -1 dan Energy -2 per siklus.
+- [x] Water habis atau Energy < 2: mesin berhenti; E menampilkan alasannya. Setelah stok ada lagi, mesin lanjut sendiri.
+- [x] Oksigen habitat penuh: mesin siaga dan tidak memakai Water/Energy.
+- [x] E mematikan mesin: Water/Energy tidak berkurang lagi; E lagi menyalakan kembali. Oksigen suit tidak tersentuh mesin.
+- [ ] (BARU) Mesin menyala sejak awal (`startOn`): dengan Energy cukup, Water awal 10 habis dalam sekitar 50 detik bila mesin tidak dimatikan. Catat hasilnya untuk keputusan P-5 (saklar E).
 
 ### Solar Panel dan Repair Point
-- [ ] Panel normal menambah Energy sekitar 0,5 per detik (naik tiap 1 detik, maksimum 100). Dua panel menambah dua kali lipat.
-- [ ] Klik kanan komponen SolarPanel > "Debug: Rusakkan panel": warna berubah kemerahan (atau sprite rusak jika diisi) dan produksi turun ke sekitar 25 persen. Fasilitas lain tetap jalan.
-- [ ] Repair Point saat panel normal: pesan panel normal. Saat rusak: E memperbaiki, warna kembali, produksi normal.
-- [ ] Repair Point tanpa field Panel terisi: Console menulis error yang jelas dan E tidak melakukan apa pun.
+- [x] Panel normal menambah Energy sekitar 0,5 per detik (naik tiap 1 detik, maksimum 100). Dua panel menambah dua kali lipat.
+- [ ] (BARU) Catat selisih Energy: satu panel normal (0,5/dtk) hanya sedikit di atas konsumsi Oxygen Generator (2 Energy per 5 dtk = 0,4/dtk), dan panel rusak (0,125/dtk) tidak cukup menopangnya. Ini hitungan dari angka default; bahan balancing, bukan bug.
+- [x] Klik kanan komponen SolarPanel > "Debug: Rusakkan panel": warna berubah kemerahan (atau sprite rusak jika diisi) dan produksi turun ke sekitar 25 persen. Fasilitas lain tetap jalan.
+- [x] Repair Point saat panel normal: pesan panel normal. Saat rusak: E memperbaiki, warna kembali, produksi normal.
+- [x] Repair Point tanpa field Panel terisi: Console menulis error yang jelas saat Start dan prompt tidak muncul (tidak bisa dipakai).
 
 ### Farming Plot
-- [ ] Petak kosong: prompt "Tanam kentang"; E menanam, warna menjadi hijau muda.
-- [ ] Siram: E mengurangi 2 Water dan menandai sudah disiram; E lagi hanya menampilkan pesan sudah disiram. Water < 2: pesan Water tidak cukup.
-- [ ] Tidur lewat Bed (atau Debug TimeManager "Mulai hari berikutnya") pada tanaman yang disiram: maju satu tahap dan status siram direset. Pada tanaman yang TIDAK disiram: tidak maju dan tidak mati.
-- [ ] Setelah mencapai tahap terakhir (3 tahap = dua pergantian hari dengan siram): prompt "Panen kentang"; E menambah Food 20 dan petak kosong lagi.
-- [ ] Food penuh: panen ditunda dengan pesan.
+- [x] Petak kosong: prompt "Tanam kentang"; E menanam, warna menjadi hijau muda.
+- [x] Siram: E mengurangi 2 Water dan menandai sudah disiram; E lagi hanya menampilkan pesan sudah disiram. Water < 2: pesan Water tidak cukup.
+- [x] Tidur lewat Bed (atau Debug TimeManager "Mulai hari berikutnya") pada tanaman yang disiram: maju satu tahap dan status siram direset. Pada tanaman yang TIDAK disiram: tidak maju dan tidak mati.
+- [x] Setelah mencapai tahap terakhir (3 tahap = dua pergantian hari dengan siram): prompt "Panen kentang"; E menambah Food 20 dan petak kosong lagi.
+- [x] Food penuh: panen ditunda dengan pesan.
 
 ### Resource Monitor dan Terminal
-- [ ] Resource Monitor: dialog berisi hari/waktu, stok semua resource (nilai sama dengan HUD), status suit, kondisi panel (jumlah normal/rusak), Water Purifier, Oxygen Generator. Fasilitas yang tidak ada di scene tidak muncul. Tidak mengubah stok apa pun.
-- [ ] Terminal: E menampilkan pesan Day 1; setelah tidur, E menampilkan pesan hari berikutnya; tidak ada pesan yang berisi tugas atau mengubah stok.
-- [ ] Semua dialog objek baru bisa ditutup dengan E/Spasi/klik/X dan prompt tidak muncul ulang sendiri.
+- [x] Resource Monitor: dialog berisi hari/waktu, stok semua resource (nilai sama dengan HUD), status suit, kondisi panel (jumlah normal/rusak), Water Purifier, Oxygen Generator. Fasilitas yang tidak ada di scene tidak muncul. Tidak mengubah stok apa pun.
+- [x] Terminal: E menampilkan pesan Day 1; setelah tidur, E menampilkan pesan hari berikutnya; tidak ada pesan yang berisi tugas atau mengubah stok.
+- [x] Semua dialog objek baru bisa ditutup dengan E/Spasi/klik/X dan prompt tidak muncul ulang sendiri.

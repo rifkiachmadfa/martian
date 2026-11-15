@@ -1,7 +1,7 @@
 # Project Status
 
 Terakhir diperbarui: 2026-11-15
-Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `afc2453c` "interactive objects" (audit 2026-11-15 pada clone bersih). Patch objek interaktif sudah ter-commit di revisi ini [Repo]. `SampleScene.unity` di repo kini memuat TARS, Canvas/HUD, ResourceManager, TimeManager, Bed, FadeOverlay [Repo]. Patch suit sebelumnya (`milestone-a-suit-gate.patch`) hanya ter-commit sebagai file dan belum diterapkan ke `Assets/`; patch Milestone A ini menggantikannya.
+Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `d96d9b6f` (dicek ulang 2026-11-16; kode tidak berubah sejak `afc2453c`). Patch objek interaktif sudah ter-commit [Repo]. Developer melaporkan tes interaksi objek interaktif lolos semua [Dev]; scene lokal belum di-commit.
 
 Label sumber: **[Repo]** terverifikasi dari file di repo, **[Dev]** dilaporkan developer (belum bisa dicek AI), **[?]** belum diverifikasi.
 
@@ -26,15 +26,15 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 | Ending Victory / Game Over | Belum ada | [Repo] tidak ada script. Bed hari terakhir hanya menampilkan pesan placeholder |
 | Suit, Suit Station, gerbang keluar, oksigen suit (berkurang saat dikenakan) | Script dibuat (Milestone A + revisi: lepas suit, lepas otomatis saat tidur, pengingat TARS `SuitReminder`) | [Repo setelah patch] `Assets/Script/Suit/*`, `Assets/Editor/MarsSuitSetup.cs`, `HudUI` (panel suit). Belum dikompilasi/dites di Unity [?]. Objek scene (SuitStation, IndoorZone, SuitGate) dibuat lewat menu dan diposisikan developer [?] |
 | Countdown darurat / Game Over oksigen suit | Belum ada | `SuitSystem.OnSuitOxygenEmpty` hanya event + log |
-| Ice Deposit (kumpul es, inventory Ice) | Script dibuat | [Repo setelah patch] `Assets/Script/Outdoor/IceDeposit.cs`; HUD menampilkan Ice lewat `HudUI.iceText`. Belum dites di Unity [?] |
-| Water Purifier | Script dibuat | [Repo setelah patch] `Assets/Script/Machines/WaterPurifier.cs`. Belum dites [?] |
-| Oxygen Generator | Script dibuat | [Repo setelah patch] `Assets/Script/Machines/OxygenGenerator.cs` (saklar E = usulan di luar GDD). Belum dites [?] |
-| Solar Panel (produksi Energy, status rusak) | Script dibuat | [Repo setelah patch] `Assets/Script/Outdoor/SolarPanel.cs`. Pemicu kerusakan otomatis belum ada (hanya menu konteks Debug). Belum dites [?] |
-| Repair Point | Script dibuat (perbaikan langsung) | [Repo setelah patch] `Assets/Script/Outdoor/RepairPoint.cs`. Belum dites [?] |
+| Ice Deposit (kumpul es, inventory Ice) | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Outdoor/IceDeposit.cs`; HUD menampilkan Ice lewat `HudUI.iceText`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
+| Water Purifier | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Machines/WaterPurifier.cs`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
+| Oxygen Generator | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Machines/OxygenGenerator.cs` (saklar E = usulan di luar GDD). Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
+| Solar Panel (produksi Energy, status rusak) | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Outdoor/SolarPanel.cs`. Pemicu kerusakan otomatis belum ada (hanya menu konteks Debug). Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
+| Repair Point | Script dibuat; tes interaksi dilaporkan lolos (perbaikan langsung) | [Repo setelah patch] `Assets/Script/Outdoor/RepairPoint.cs`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
 | Wiring minigame | Belum ada | [Repo] |
-| Resource Monitor | Script dibuat | [Repo setelah patch] `Assets/Script/Station/ResourceMonitor.cs`. Belum dites [?] |
-| Terminal komunikasi | Script dibuat (teks placeholder) | [Repo setelah patch] `Assets/Script/Station/CommunicationTerminal.cs`. Belum dites [?] |
-| Farming / Potato | Script dibuat (satu petak per objek, tanpa sprite) | [Repo setelah patch] `Assets/Script/Farming/FarmingPlot.cs`: tanam, siram, tumbuh saat hari berganti, panen. Belum dites [?] |
+| Resource Monitor | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Station/ResourceMonitor.cs`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
+| Terminal komunikasi | Script dibuat; tes interaksi dilaporkan lolos (teks placeholder) | [Repo setelah patch] `Assets/Script/Station/CommunicationTerminal.cs`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
+| Farming / Potato | Script dibuat; tes interaksi dilaporkan lolos (satu petak per objek, tanpa sprite) | [Repo setelah patch] `Assets/Script/Farming/FarmingPlot.cs`: tanam, siram, tumbuh saat hari berganti, panen. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
 | TARS reminder berbasis resource | Belum ada | Dialog TARS saat ini teks tetap lewat Inspector |
 | Save system | Belum ada | [Repo] |
 | Tiga scene area (Control Room, Farming, Outdoor) | Belum ada | [Repo] hanya `SampleScene` |
@@ -52,13 +52,13 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 - Gambar arah bawah untuk TARS (`Down Frames`) belum ada.
 - Collider Player di scene belum diperiksa.
 - Player masih bisa bergerak saat dialog terbuka (kini disengaja: waktu dan resource tetap berjalan saat dialog).
-- **[Repo, afc2453c]** `SampleScene.unity` yang ter-commit belum berisi objek interaktif baru (IceDeposit, SolarPanel, RepairPoint, WaterPurifier, OxygenGenerator, FarmingPlot, ResourceMonitor, CommunicationTerminal). Menu `Mars > Setup Interactive Objects` belum terbukti dijalankan di repo [?]. Layer `Interactable` ada di `TagManager.asset` [Repo].
+- **[Repo, d96d9b6f]** `SampleScene.unity` yang ter-commit belum berisi objek interaktif baru (tidak ada GUID script objek interaktif di scene). **[Dev]** setup di scene lokal sudah dilakukan dan tes interaksi lolos; belum di-commit. Layer `Interactable` ada di `TagManager.asset` [Repo].
 - Objek interaktif (patch 2026-11-15): tidak ada compiler C# atau Unity di lingkungan AI; kode hanya diperiksa dengan membaca dan `git apply --check` [?]. Posisi, sprite, dan collider objek di scene ditentukan developer [?].
 - Keseimbangan: `OxygenGenerator` menyala sejak awal dan memakai Water (usulan 1 per 5 detik) sehingga Water awal (10) bisa habis dalam sekitar 50 detik bila tidak dimatikan; Energy tidak dihasilkan kecuali ada `SolarPanel` di scene. Angka perlu playtest [?].
 - Satu `FarmingPlot` = satu petak; petak tambahan dibuat dengan menduplikasi objek. Pertumbuhan hanya terjadi lewat `TimeManager.OnDayStarted` (jadi lewat Bed atau menu Debug TimeManager) [?].
 
 ## Housekeeping
-- Satu file `.patch` ter-commit di root repo pada `afc2453c`: `interactive-objects.patch`. Sudah diterapkan, tidak dipakai lagi; boleh dihapus atau di-ignore. (Empat file `.patch` lama yang disebut audit sebelumnya sudah tidak ada di root.)
+- `phase-sync.patch` ter-commit di root repo (`interactive-objects.patch` sudah dihapus di `b09da2e3`). File `.patch` tidak perlu ikut repo; hapus dan tambahkan `*.patch` ke `.gitignore`.
 - `Assets/_Recovery/0.unity` masih ter-commit [Repo].
 - Ada `Assets/popopop.meta` tanpa folder/aset pasangannya.
 - `.gitignore` belum mengecualikan `.vscode/`.
