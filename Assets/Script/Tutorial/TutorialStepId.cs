@@ -12,5 +12,6 @@ public enum TutorialStepId
     Farming,        // 12.1.5 Menanam dan menyiram di Farming Plot
     OxygenGenerator,// 12.1.6 Mengenal Oxygen Generator dan hubungan Water/Energy
     Sleep,          // 12.1.7 Kembali ke Control Room dan tidur
-    RemoveSuit      // 12.1.8 Melepas suit di Suit Station (ditambahkan 2026-11-17; ditaruh di akhir agar ID lama di scene tidak bergeser)
+    RemoveSuit,     // 12.1.8 Melepas suit di Suit Station (ditambahkan 2026-11-17; ditaruh di akhir agar ID lama di scene tidak bergeser)
+    Eat             // 12.1.9 Makan kentang dari tas (ditambahkan 2026-11-17; ID 8, letak dalam alur diatur array steps)
 }

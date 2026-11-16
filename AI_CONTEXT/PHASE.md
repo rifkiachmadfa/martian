@@ -10,7 +10,7 @@
 |---|---|
 | Repo | https://github.com/rifkiachmadfa/martian.git |
 | Branch | `main` |
-| Revisi terakhir diperiksa | `80bc5a6d` (2026-11-17, commit "phase11", clone `main`); patch tutorial Day 1 (Milestone 12, `TutorialManager`) dibuat di atas revisi ini |
+| Revisi terakhir diperiksa | `80bc5a6d` (2026-11-17, commit "phase11", clone `main`); patch tutorial Day 1 (Milestone 12, `TutorialManager`) dibuat di atas revisi ini; patch `tutorial-eat-sleep.patch` dibuat di atas `fe6dc9ae` (commit "tutorial update"); patch `farming-realtime.patch` bertumpuk di atasnya |
 | Unity | 6000.6.8f1 |
 | Paket penting | Input System 1.20.1 (kode memakai `Input.GetAxisRaw` / `KeyCode`), URP 17.6.0, 2D Animation 16.0.1, Tilemap, Cinemachine |
 | Scene | Satu scene: `Assets/Scenes/SampleScene.unity` |
@@ -52,11 +52,11 @@ Dihitung dari checklist bagian 3 (revisi `80bc5a6d` + patch tutorial Day 1).
 | 9 | Solar Panel dan produksi Energy | SEBAGIAN | 7 | 0 | 1 | 8 |
 | 10 | Panel rusak dan minigame kabel | SEBAGIAN | 10 | 1 | 0 | 11 |
 | 11 | TARS monitoring dan reminder | SEBAGIAN | 14 | 2 | 2 | 18 |
-| 12 | Integrasi loop dan tutorial Day 1 | SEBAGIAN | 12 | 1 | 1 | 14 |
+| 12 | Integrasi loop dan tutorial Day 1 | SEBAGIAN | 13 | 1 | 1 | 15 |
 | 13 | Day 2–7, Game Over/Victory, balancing | SEBAGIAN | 0 | 1 | 12 | 13 |
 | 14 | Audio, animasi, polish | SEBAGIAN | 1 | 2 | 11 | 14 |
 | 15 | Playtest penuh dan build | BELUM | 0 | 0 | 4 | 4 |
-| | **Total** | | **107** | **15** | **40** | **162** |
+| | **Total** | | **108** | **15** | **40** | **163** |
 
 Usulan urutan berikutnya (**belum disetujui developer**): 13 (loop menang/kalah minimal: Food berkurang, Game Over, Victory, perilaku `Bed` di Day 7) agar game bisa dimainkan Day 1 sampai Day 7, lalu 11 (`TARSSystem` sudah dibuat, menunggu tes Unity), 12 (tutorial), 14, 15. Urutan jadwal GDD: 10, 11, 12, 13, 14, 15. Build WebGL percobaan sebaiknya lebih awal.
 Jika jadwal mundur: kurangi polish dan fitur Should Have dulu; jangan korbankan loop resource inti dan sistem tujuh hari.
@@ -198,15 +198,15 @@ Acuan: GDD 19 hari 7; GDD 10. Status: **SEBAGIAN** (6 selesai, 2 sebagian, 1 bel
 
 **7.1 Tanam dan siram** (2/2)
 - [x] `7.1.1` Tanam benih kentang (gratis, tanpa stok seed)
-- [x] `7.1.2` Siram memakai 2 Water (usulan), satu kali per hari
+- [x] `7.1.2` Siram memakai 2 Water (usulan), cukup SATU kali per tanaman (revisi 2026-11-17, sebelumnya satu kali per hari)
 
 **7.2 Pertumbuhan** (2/2)
-- [x] `7.2.1` 3 tahap, maju satu tahap saat `OnDayStarted` bila disiram
+- [x] `7.2.1` 3 tahap visual; setelah disiram tumbuh waktu nyata selama durasi acak 60 sampai 120 detik (USULAN, `growSecondsMin/Max`), lalu matang; timer ikut jeda `TimeManager.IsPaused`; pergantian hari tidak mempengaruhi (revisi 2026-11-17, permintaan developer; menggantikan "maju saat `OnDayStarted`", lihat P-6)
 - [x] `7.2.2` Tanaman tidak disiram tidak maju dan tidak mati
 
 **7.3 Panen** (2/2)
-- [x] `7.3.1` Panen menambah 20 Food (usulan)
-- [x] `7.3.2` Panen ditunda bila Food penuh
+- [x] `7.3.1` Panen memberi 2 sampai 4 kentang dan 1 sampai 2 bibit secara acak (USULAN, `potatoMin/Max`, `seedMin/Max`; diundi saat disiram); kentang masuk tas, bibit masuk tas atau storage bila tas penuh (revisi 2026-11-17, sebelumnya +20 Food)
+- [x] `7.3.2` Panen ditunda bila tas kentang tidak muat hasil panen
 
 **7.4 Visual dan penataan** (0/3)
 - [~] `7.4.1` Warna placeholder sebagai penanda tahap
@@ -298,24 +298,25 @@ Latar: keduanya dihapus 2026-11-16 atas permintaan developer (HUD dan Storage su
 - [ ] `11.4.5` Pesan penutup Day 7 (konfirmasi penjemputan) milik ending Victory (13.3.3); API siap: `TARSSystem.Announce(key, prioritas, teks)`
 
 ### Milestone 12 — Integrasi loop dan tutorial Day 1
-Acuan: GDD 19 hari 12; GDD 5.2. Status: **SEBAGIAN** (12 selesai, 1 sebagian, 1 belum dari 14). Kode dibuat 2026-11-17, belum dikompilasi/dites di Unity. Semua syarat langkah adalah USULAN (lihat `TutorialManager`); teks arahan masih PLACEHOLDER.
+Acuan: GDD 19 hari 12; GDD 5.2. Status: **SEBAGIAN** (13 selesai, 1 sebagian, 1 belum dari 15). Kode dibuat 2026-11-17, belum dikompilasi/dites di Unity. Semua syarat langkah adalah USULAN (lihat `TutorialManager`); teks arahan masih PLACEHOLDER.
 
-**12.1 Alur tutorial Day 1** (8/8)
+**12.1 Alur tutorial Day 1** (9/9)
 - [x] `12.1.1` Mengenal Control Room, TARS, HUD, dan Storage (Resource Monitor sudah dihapus): selesai bila pemain mengajak TARS bicara DAN membuka Storage (yang ada di scene)
 - [x] `12.1.2` Mengambil dan mengisi Astronaut Suit: selesai bila `SuitSystem.IsEquipped` (Suit Station mengisi tabung otomatis)
 - [x] `12.1.3` Keluar dan mengumpulkan Ice dalam jumlah kecil: selesai bila 5 es (`iceToCollect`, USULAN, dibatasi kapasitas tas) berhasil dikumpulkan di Ice Deposit (`IceDeposit.OnCollected`) atau tas es penuh
 - [x] `12.1.4` Membawa Ice ke Water Purifier dan menghasilkan Water: selesai bila satu batch `WaterPurifier` selesai (`OnProcessingChanged` false)
 - [x] `12.1.5` Menanam dan menyiram di Farming Plot: selesai bila ada `FarmingPlot` dengan `HasPlant` dan `IsWatered`
 - [x] `12.1.6` Mengenal Oxygen Generator dan hubungan Water/Energy: selesai bila `OxygenGenerator` menjadi target interaksi pemain (didekati); penjelasan Water/Energy ada di arahan TARS (keputusan USULAN, lihat P-5)
-- [x] `12.1.7` Kembali ke Control Room dan tidur: selesai saat Day 2 mulai (`Bed` memanggil `StartDay`)
+- [x] `12.1.7` Kembali ke Control Room dan tidur: selesai saat Day 2 mulai (`Bed` memanggil `StartDay`). Arahan TARS dan garis arah ke Bed baru muncul SETELAH timer hari habis (`TimeManager.IsDayOver`; `OnDayTimeEnded` memicu pengumuman), bukan saat langkah dimulai (permintaan developer 2026-11-17)
 - [x] `12.1.8` Melepas suit di Suit Station (ditambahkan 2026-11-17; tindak lanjut keputusan 2026-11-15 "Day 1 tutorial perlu menjelaskan melepas suit"): selesai bila `SuitSystem.OnEquippedChanged(false)`. Letak dalam alur: setelah 12.1.4 (array `steps`); `TutorialStepId.RemoveSuit` bernilai 7 agar ID lama di scene tidak bergeser
+- [x] `12.1.9` Makan kentang (ditambahkan 2026-11-17, permintaan developer): selesai bila kenyang naik (`HungerSystem.OnSatietyChanged`; satu-satunya jalan naik adalah `Feed`). Letak dalam alur: setelah 12.1.6 dan sebelum Sleep (array `steps`); `TutorialStepId.Eat` bernilai 8. Garis arah ke Storage bila tas tanpa kentang; bila tas berisi kentang tidak ada garis (pemain tekan 1 lalu E)
 
 **12.2 Mekanik tutorial** (4/5)
 - [~] `12.2.1` Arahan TARS langkah demi langkah (bukan quest harian): `TutorialManager` mengumumkan arahan tiap langkah lewat `TARSSystem.Announce`; teks masih PLACEHOLDER
 - [x] `12.2.2` Status tutorial selesai tersimpan: `PlayerPrefs` kunci `Mars.TutorialCompleted` (USULAN sementara sampai ada SaveSystem; hanya disimpan bila tutorial selesai penuh, bukan dilewati)
 - [x] `12.2.3` Tutorial dapat dilewati setelah pernah dimainkan (Should Have): bila status tersimpan ada, TARS memberi tahu dan tombol `skipKey` (default Tab, USULAN) melewati tutorial; flag Inspector `skipTutorial` untuk uji
-- [x] `12.2.4` `TutorialManager`: delapan langkah (`TutorialStepId`), data (`TutorialStepData`), event, `TryCompleteStep`, syarat dikunci (latched) sehingga urutan bebas, pengumuman ulang arahan tiap `reminderSeconds` (120, USULAN), selesai otomatis saat Day 2 mulai
-- [x] `12.2.5` Garis arah tutorial (USULAN, hanya Day 1): `TutorialGuideUI` menggambar garis UI dari tubuh pemain ke tujuan langkah aktif (`TutorialManager.GetGuideTarget`: Intro = Storage lalu TARS, Suit = Suit Station, CollectIce = Ice Deposit, PurifyWater = Ice Deposit bila tas tanpa es lalu Water Purifier, Farming = petak/Storage sesuai kebutuhan, OxygenGenerator, Sleep = Bed); disembunyikan saat tutorial tidak aktif, panel Storage terbuka, atau pemain sudah dekat
+- [x] `12.2.4` `TutorialManager`: sembilan langkah (`TutorialStepId`), data (`TutorialStepData`), event, `TryCompleteStep`, syarat dikunci (latched) sehingga urutan bebas, pengumuman ulang arahan tiap `reminderSeconds` (120, USULAN), selesai otomatis saat Day 2 mulai
+- [x] `12.2.5` Garis arah tutorial (USULAN, hanya Day 1): `TutorialGuideUI` menggambar garis UI dari tubuh pemain ke tujuan langkah aktif (`TutorialManager.GetGuideTarget`: Intro = Storage lalu TARS, Suit = Suit Station, CollectIce = Ice Deposit, PurifyWater = Ice Deposit bila tas tanpa es lalu Water Purifier, Farming = petak/Storage sesuai kebutuhan, OxygenGenerator, Sleep = Bed); disembunyikan saat tutorial tidak aktif, panel Storage terbuka, pemain sudah dekat, dialog terbuka, atau masih ada pesan TARS yang mengantre (`TARSSystem.HasPendingMessages`): dialog selesai dulu, baru garis (2026-11-17)
 
 **12.3 Integrasi** (0/1)
 - [ ] `12.3.1` Loop harian berjalan dari awal sampai akhir tanpa urutan wajib
@@ -391,6 +392,7 @@ Acuan: GDD 19 hari 15; GDD 21. Status: **BELUM** (0 selesai, 0 sebagian, 4 belum
 | P-3 | Satu scene, bukan scene terpisah `ControlRoom`/`FarmingArea`/`Outdoor` seperti GDD 16.1. | Menentukan perlu tidaknya `SaveSystem` lintas scene | **Menunggu keputusan.** Rekomendasi AI: tetap satu scene. |
 | P-4 | Perilaku `Bed` di Day 7 belum ada (menunggu Victory). | Blok akhir game | Dikerjakan di milestone 13. |
 | P-5 | `OxygenGenerator` punya tombol E untuk menyalakan/mematikan. GDD 11.2 hanya menyebut mesin bekerja otomatis. Alasan: pemain perlu menghemat Water untuk tanaman (GDD 7.1). Default menyala, sehingga Water awal bisa habis dalam ±50 dtk bila tidak dimatikan. | Kecil di kode (`allowManualToggle`), memengaruhi balancing dan tutorial Day 1 | **Menunggu keputusan developer.** Jika ditolak, matikan `allowManualToggle`. |
+| P-6 | Pertumbuhan tanaman waktu nyata (60 sampai 120 detik acak setelah satu kali siram) dan panen acak 2 sampai 4 kentang plus 1 sampai 2 bibit. GDD v1.2 bagian 5.5 dan 10 menyatakan tanaman maju satu tahap saat pergantian hari. | Rutinitas lebih cepat; satu petak bisa panen berkali-kali dalam sehari; Food dan bibit bisa berlebih (cek balancing) | Disetujui developer 2026-11-17 (permintaan eksplisit). Dokumen GDD perlu direvisi. |
 
 Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), angka balancing semua mesin (termasuk frekuensi kerusakan panel: satu per hari, Day 2 dan seterusnya, mungkin terlalu sering; cek saat playtest), dan urutan fase berikutnya.
 
@@ -480,3 +482,5 @@ Layer `Interactable` sudah ada (layer 3).
 | 2026-11-17 | Milestone 12: `TutorialManager`, `TutorialStepId`, `TutorialStepData`, menu `Setup Tutorial`; semua syarat 7 langkah, simpan/lewati tutorial (PlayerPrefs, Tab), event `TarsWanderer.OnPlayerTalked`. Total 106/15/40/161. Basis `80bc5a6d`. Belum dikompilasi/dites di Unity. |
 | 2026-11-17 | Milestone 12: `TutorialGuideUI` (garis arah UI ke tujuan langkah tutorial), `TutorialManager.GetGuideTarget`; menu `Setup Tutorial` memasang komponen di Canvas. Butir 12.2.5 ditambahkan. Total 107/15/40/162. Basis `80bc5a6d` + `tutorial-day1.patch`. Belum dikompilasi/dites di Unity. |
 | 2026-11-17 | Perbaikan tutorial: langkah CollectIce selesai setelah 5 es dikumpulkan (event `IceDeposit.OnCollected`) atau tas es penuh, tidak lagi bergantung `IsOutdoors`; garis arah tidak macet di Ice Deposit. Total tidak berubah (107/15/40/162). |
+| 2026-11-17 | Milestone 12: langkah tutorial `Eat` (makan kentang, 12.1.9); arahan dan garis arah Sleep menunggu timer hari habis; `TutorialGuideUI` disembunyikan saat dialog terbuka atau pesan TARS mengantre (`TARSSystem.HasPendingMessages`). Total 108/15/40/163. Basis `fe6dc9ae` + `tutorial-eat-sleep.patch`. Belum dikompilasi/dites di Unity. |
+| 2026-11-17 | Milestone 7: pertumbuhan `FarmingPlot` waktu nyata (durasi acak 60 sampai 120 detik setelah satu kali siram), panen acak 2 sampai 4 kentang dan 1 sampai 2 bibit; tidak lagi bergantung `OnDayStarted`. Penyimpangan P-6. Total butir tidak berubah (108/15/40/163). Basis `fe6dc9ae` + `tutorial-eat-sleep.patch` + `farming-realtime.patch`. Belum dikompilasi/dites di Unity. |

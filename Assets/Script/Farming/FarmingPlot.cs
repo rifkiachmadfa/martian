@@ -2,10 +2,13 @@ using UnityEngine;
 
 /// <summary>
 /// Satu petak tanam kentang di Farming Area (GDD bagian 10). Siklus lewat tombol E:
-/// kosong -> tanam (pilih Bibit di tas, tombol 3, lalu E); tumbuh dan belum disiram -> siram (memakai Water bersama);
-/// matang -> panen (Kentang masuk ke tas; bila tas tidak muat, panen ditunda sampai pemain menyimpan di storage).
-/// Tanaman yang SUDAH disiram maju satu tahap saat hari berganti (TimeManager.OnDayStarted, jadi lewat Bed);
-/// yang belum disiram tidak maju dan tidak mati. Tahap terakhir = matang.
+/// kosong -> tanam (pilih Bibit di tas, tombol 3, lalu E); belum disiram -> siram SEKALI (memakai Water bersama);
+/// matang -> panen (Kentang dan Bibit masuk ke tas; bila tas kentang tidak muat, panen ditunda sampai pemain menyimpan di storage).
+/// Pertumbuhan (revisi desain 2026-11-17, permintaan developer; menggantikan GDD 5.5 "tumbuh saat hari berganti"):
+/// begitu disiram, tanaman tumbuh dalam WAKTU NYATA selama durasi acak growSecondsMin..growSecondsMax (default 60 sampai 120
+/// detik), lalu matang. Timer ikut jeda TimeManager.IsPaused (tidur, minigame). Pergantian hari tidak mempengaruhi tumbuh.
+/// Tanaman yang belum disiram tidak tumbuh dan tidak mati. Hasil panen acak (default 2 sampai 4 kentang dan 1 sampai 2
+/// bibit), diundi saat disiram agar tidak bisa diulang-ulang dengan mencoba panen berkali-kali.
 /// Tidak ada pupuk, hama, atau jenis tanaman lain. Bibit adalah item tas. Semua angka adalah USULAN.
 /// Pasang pada objek ber-layer Interactable dengan Collider2D. Satu objek = satu petak; duplikat untuk petak lain.
 /// Status (HasPlant, Stage, IsWatered) disediakan sebagai properti untuk SaveSystem nanti.
@@ -16,13 +19,24 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
     [SerializeField] private DialogueUI dialogueUI;
 
     [Header("Aturan tanaman (USULAN, ubah lewat Inspector setelah playtest)")]
-    [Tooltip("Jumlah tahap pertumbuhan (GDD: 2-3 tahap). Tahap terakhir = matang.")]
+    [Tooltip("Jumlah tahap visual (GDD: 2-3 tahap). Tahap terakhir = matang.")]
     [SerializeField, Range(2, 3)] private int stageCount = 3;
+    [Tooltip("Water yang dipakai untuk satu kali siram. Tanaman hanya perlu disiram sekali.")]
     [SerializeField, Min(0f)] private float waterPerWatering = 2f;
-    [Tooltip("Kentang yang didapat per panen (masuk ke tas; kapasitas tas 10).")]
-    [SerializeField, Min(1)] private int potatoPerHarvest = 4;
-    [Tooltip("Bibit yang dikembalikan per panen (masuk tas; bila penuh, masuk storage).")]
-    [SerializeField, Min(0)] private int seedPerHarvest = 1;
+
+    [Header("Pertumbuhan waktu nyata (USULAN, permintaan developer 2026-11-17)")]
+    [Tooltip("Durasi tumbuh minimum setelah disiram (detik). Durasi sebenarnya diundi acak antara minimum dan maksimum.")]
+    [SerializeField, Min(1f)] private float growSecondsMin = 60f;
+    [Tooltip("Durasi tumbuh maksimum setelah disiram (detik).")]
+    [SerializeField, Min(1f)] private float growSecondsMax = 120f;
+
+    [Header("Hasil panen acak (USULAN, permintaan developer 2026-11-17)")]
+    [Tooltip("Kentang per panen, acak antara minimum dan maksimum (inklusif). Masuk ke tas; kapasitas tas 10.")]
+    [SerializeField, Min(1)] private int potatoMin = 2;
+    [SerializeField, Min(1)] private int potatoMax = 4;
+    [Tooltip("Bibit per panen, acak antara minimum dan maksimum (inklusif). Masuk tas; bila penuh, masuk storage.")]
+    [SerializeField, Min(0)] private int seedMin = 1;
+    [SerializeField, Min(0)] private int seedMax = 2;
 
     [Header("Tampilan opsional")]
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -38,6 +52,10 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
     private TimeManager time;
     private Color baseColor = Color.white;
     private float nextInteractTime;
+    private float growDuration;
+    private float growElapsed;
+    private int rolledPotatoes;
+    private int rolledSeeds;
 
     /// <summary>True bila ada tanaman di petak.</summary>
     public bool HasPlant { get; private set; }
@@ -45,11 +63,22 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
     /// <summary>Tahap pertumbuhan, mulai 0. Hanya berarti bila HasPlant.</summary>
     public int Stage { get; private set; }
 
-    /// <summary>True bila tanaman sudah disiram sejak hari terakhir berganti.</summary>
+    /// <summary>True bila tanaman sudah disiram (tetap true sampai dipanen; cukup disiram sekali).</summary>
     public bool IsWatered { get; private set; }
 
     /// <summary>True bila tanaman sudah di tahap terakhir dan siap panen.</summary>
     public bool IsMature => HasPlant && Stage >= stageCount - 1;
+
+    /// <summary>Kemajuan tumbuh 0 sampai 1 (0 bila belum disiram, 1 bila matang). Untuk prompt dan SaveSystem nanti.</summary>
+    public float GrowthProgress
+    {
+        get
+        {
+            if (!HasPlant || !IsWatered) return 0f;
+            if (IsMature || growDuration <= 0f) return 1f;
+            return Mathf.Clamp01(growElapsed / growDuration);
+        }
+    }
 
     public string InteractionPrompt
     {
@@ -57,7 +86,7 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
         {
             if (!HasPlant) return "Petak kosong (pilih bibit, tombol 3)";
             if (IsMature) return "Panen kentang";
-            return IsWatered ? "Periksa tanaman" : "Siram tanaman";
+            return IsWatered ? "Periksa tanaman (" + Mathf.RoundToInt(GrowthProgress * 100f) + "%)" : "Siram tanaman";
         }
     }
 
@@ -85,8 +114,9 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
         HasPlant = true;
         Stage = 0;
         IsWatered = false;
+        growElapsed = 0f;
         RefreshVisual();
-        ShowMessage("Bibit kentang ditanam. Siram tanaman agar maju satu tahap saat hari berganti.");
+        ShowMessage("Bibit kentang ditanam. Siram tanaman sekali agar ia mulai tumbuh.");
     }
 
     private void Awake()
@@ -98,17 +128,36 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
     {
         if (dialogueUI == null) dialogueUI = FindFirstObjectByType<DialogueUI>();
 
-        // Berlangganan di Start (bukan OnEnable): urutan Awake/OnEnable antar objek tidak terjamin.
-        time = TimeManager.Instance;
-        if (time != null) time.OnDayStarted += HandleDayStarted;
-        else Debug.LogWarning("FarmingPlot: TimeManager tidak ada di scene; tanaman tidak akan tumbuh.", this);
+        time = TimeManager.Instance; // hanya untuk IsPaused; tanpa TimeManager tanaman tetap tumbuh
+
+        if (potatoMax < potatoMin) potatoMax = potatoMin;
+        if (seedMax < seedMin) seedMax = seedMin;
+        if (growSecondsMax < growSecondsMin) growSecondsMax = growSecondsMin;
 
         RefreshVisual();
     }
 
-    private void OnDestroy()
+    private void Update()
     {
-        if (time != null) time.OnDayStarted -= HandleDayStarted;
+        if (!HasPlant || !IsWatered || IsMature) return;
+        if (time != null && time.IsPaused) return; // tidur atau minigame: waktu tumbuh ikut berhenti
+
+        growElapsed += Time.deltaTime;
+
+        if (growElapsed >= growDuration)
+        {
+            Stage = stageCount - 1;
+            RefreshVisual();
+            return;
+        }
+
+        // Tahap visual antara: bagi durasi rata ke (stageCount - 1) tahap sebelum matang.
+        int stage = Mathf.Min(stageCount - 2, Mathf.FloorToInt(growElapsed / growDuration * (stageCount - 1)));
+        if (stage != Stage)
+        {
+            Stage = stage;
+            RefreshVisual();
+        }
     }
 
     public bool CanInteract(GameObject interactor)
@@ -140,8 +189,8 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
 
         if (IsWatered)
         {
-            ShowMessage("Tanaman sudah disiram (tahap " + (Stage + 1) + " dari " + stageCount +
-                "). Ia tumbuh saat hari berganti.");
+            ShowMessage("Tanaman sudah disiram dan sedang tumbuh (" + Mathf.RoundToInt(GrowthProgress * 100f) +
+                " persen, tahap " + (Stage + 1) + " dari " + stageCount + "). Cukup disiram sekali; tunggu sampai matang.");
             return;
         }
 
@@ -153,8 +202,13 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
         }
 
         IsWatered = true;
+        growElapsed = 0f;
+        growDuration = Random.Range(growSecondsMin, growSecondsMax);
+        rolledPotatoes = Random.Range(potatoMin, potatoMax + 1); // batas atas int bersifat eksklusif
+        rolledSeeds = Random.Range(seedMin, seedMax + 1);
+        RefreshVisual();
         ShowMessage("Tanaman disiram memakai " + Mathf.CeilToInt(waterPerWatering) +
-            " Water. Ia akan maju satu tahap saat hari berganti.");
+            " Water. Ia mulai tumbuh dan akan matang dalam sekitar 1 sampai 2 menit.");
     }
 
     private void Harvest()
@@ -167,36 +221,27 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
         }
 
         int space = inventory.BagSpace(ItemType.Potato);
-        if (space < potatoPerHarvest)
+        if (space < rolledPotatoes)
         {
-            ShowMessage("Tas tidak muat " + potatoPerHarvest + " kentang (ruang " + space +
+            ShowMessage("Tas tidak muat " + rolledPotatoes + " kentang (ruang " + space +
                 "). Simpan kentang di storage dulu, lalu panen lagi.");
             return;
         }
 
-        int potatoes = inventory.AddToBag(ItemType.Potato, potatoPerHarvest);
-        int seedsInBag = inventory.AddToBag(ItemType.Seed, seedPerHarvest);
-        int seedsStored = seedsInBag < seedPerHarvest ? inventory.AddToStorage(ItemType.Seed, seedPerHarvest - seedsInBag) : 0;
+        int potatoes = inventory.AddToBag(ItemType.Potato, rolledPotatoes);
+        int seedsInBag = inventory.AddToBag(ItemType.Seed, rolledSeeds);
+        int seedsStored = seedsInBag < rolledSeeds ? inventory.AddToStorage(ItemType.Seed, rolledSeeds - seedsInBag) : 0;
 
         HasPlant = false;
         Stage = 0;
         IsWatered = false;
+        growElapsed = 0f;
         RefreshVisual();
 
         string message = "Kentang dipanen: " + potatoes + " kentang masuk ke tas.";
         if (seedsInBag > 0) message += " Bibit +" + seedsInBag + " masuk ke tas.";
         if (seedsStored > 0) message += " Bibit +" + seedsStored + " masuk ke storage (tas penuh).";
         ShowMessage(message + " Petak kosong lagi dan siap ditanami.");
-    }
-
-    // Pertumbuhan: hanya tanaman yang disiram dan belum matang yang maju. Status siram direset tiap hari.
-    private void HandleDayStarted(int day)
-    {
-        if (!HasPlant) return;
-
-        if (IsWatered && !IsMature) Stage++;
-        IsWatered = false;
-        RefreshVisual();
     }
 
     private void RefreshVisual()

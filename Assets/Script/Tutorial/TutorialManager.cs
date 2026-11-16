@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Tutorial Day 1 (Milestone 12, PHASE.md 12.1 dan 12.2): delapan langkah arahan TARS. BUKAN quest harian.
+/// Tutorial Day 1 (Milestone 12, PHASE.md 12.1 dan 12.2): sembilan langkah arahan TARS. BUKAN quest harian.
 ///
 /// Prinsip (GDD 5.2, 12):
 /// - Hanya di Day 1 (tutorialDay). Mulai Day 2 tutorial selesai sendiri, apa pun langkah terakhirnya.
@@ -21,10 +21,12 @@ using UnityEngine;
 /// - PurifyWater: satu batch Water Purifier selesai (OnProcessingChanged true lalu false).
 /// - RemoveSuit: suit dilepas di Suit Station (SuitSystem.OnEquippedChanged false; hanya bisa di dalam habitat).
 ///   Langkah ini diletakkan setelah PurifyWater (pemain sudah kembali ke habitat); urutan ada di array steps.
-/// - Farming: ada FarmingPlot dengan tanaman yang sudah disiram.
+/// - Farming: ada FarmingPlot dengan tanaman yang sudah disiram (tumbuh waktu nyata setelah siram, lihat FarmingPlot).
 /// - OxygenGenerator: Oxygen Generator menjadi target interaksi pemain (pemain mendekatinya); penjelasan
 ///   hubungan Water/Energy ada di arahan TARS. Mesin menyala sejak awal (P-5), jadi status "menyala" tidak dipakai.
-/// - Sleep: Day 2 dimulai (Bed).
+/// - Eat: pemain memakan kentang (HungerSystem.OnSatietyChanged naik; satu-satunya jalan kenyang naik adalah Feed).
+/// - Sleep: Day 2 dimulai (Bed). Arahan dan garis arah Sleep baru muncul SETELAH timer hari habis (TimeManager.IsDayOver),
+///   bukan saat langkahnya mulai, agar pemain tidak disuruh tidur saat waktu masih berjalan.
 ///
 /// Status "pernah selesai" disimpan di PlayerPrefs (USULAN sederhana; SaveSystem belum ada). Bila pernah selesai,
 /// TARS memberi tahu bahwa tutorial bisa dilewati dengan tombol skipKey (GDD 18.2 Should Have).
@@ -73,6 +75,8 @@ public class TutorialManager : MonoBehaviour
     private FoodStorage storage;
     private SuitStation suitStation;
     private SuitSystem suitSystem;
+    private HungerSystem hunger;
+    private float lastSatiety;
     private OxygenGenerator oxygenGenerator;
     private Bed bed;
 
@@ -134,6 +138,7 @@ public class TutorialManager : MonoBehaviour
 
         // Berlangganan di Start (bukan OnEnable) karena urutan Awake/OnEnable antar objek tidak terjamin.
         time.OnDayStarted += HandleDayStarted;
+        time.OnDayTimeEnded += HandleDayTimeEnded;
 
         if (skipTutorial)
         {
@@ -151,7 +156,11 @@ public class TutorialManager : MonoBehaviour
     private void OnDestroy()
     {
         if (Instance == this) Instance = null;
-        if (time != null) time.OnDayStarted -= HandleDayStarted;
+        if (time != null)
+        {
+            time.OnDayStarted -= HandleDayStarted;
+            time.OnDayTimeEnded -= HandleDayTimeEnded;
+        }
         UnsubscribeWatchers();
     }
 
@@ -283,11 +292,22 @@ public class TutorialManager : MonoBehaviour
         FinishTutorial(!finishedAllSteps);
     }
 
+    // Langkah Sleep sedang berjalan dan waktu hari baru saja habis: sekarang arahan tidur boleh tampil.
+    private void HandleDayTimeEnded()
+    {
+        TutorialStepData step = CurrentStep;
+        if (IsActive && step != null && step.Id == TutorialStepId.Sleep) AnnounceStep(step);
+    }
+
+    // Arahan dan garis arah tidur hanya muncul setelah timer hari habis (permintaan developer).
+    private bool IsSleepWindowOpen => time != null && time.IsDayOver;
+
     private void AnnounceStep(TutorialStepData step)
     {
         TARSSystem tars = TARSSystem.Instance;
         string[] lines = step.TarsLines;
         if (lines == null || lines.Length == 0) return;
+        if (step.Id == TutorialStepId.Sleep && !IsSleepWindowOpen) return; // tunggu waktu habis; HandleDayTimeEnded mengumumkannya
 
         if (tars == null)
         {
@@ -315,6 +335,8 @@ public class TutorialManager : MonoBehaviour
         storage = FindFirstObjectByType<FoodStorage>();
         suitStation = FindFirstObjectByType<SuitStation>();
         suitSystem = SuitSystem.Instance;
+        hunger = HungerSystem.Instance;
+        lastSatiety = hunger != null ? hunger.Satiety : 0f;
         oxygenGenerator = FindFirstObjectByType<OxygenGenerator>();
         bed = FindFirstObjectByType<Bed>();
 
@@ -328,6 +350,7 @@ public class TutorialManager : MonoBehaviour
         foreach (TarsWanderer npc in tarsNpcs) npc.OnPlayerTalked += HandlePlayerTalked;
         foreach (WaterPurifier purifier in purifiers) purifier.OnProcessingChanged += HandlePurifierProcessing;
         if (suitSystem != null) suitSystem.OnEquippedChanged += HandleSuitEquippedChanged;
+        if (hunger != null) hunger.OnSatietyChanged += HandleSatietyChanged;
     }
 
     private void UnsubscribeWatchers()
@@ -336,6 +359,7 @@ public class TutorialManager : MonoBehaviour
         foreach (TarsWanderer npc in tarsNpcs) if (npc != null) npc.OnPlayerTalked -= HandlePlayerTalked;
         foreach (WaterPurifier purifier in purifiers) if (purifier != null) purifier.OnProcessingChanged -= HandlePurifierProcessing;
         if (suitSystem != null) suitSystem.OnEquippedChanged -= HandleSuitEquippedChanged;
+        if (hunger != null) hunger.OnSatietyChanged -= HandleSatietyChanged;
     }
 
     private void HandlePlayerTalked() => talkedToTars = true;
@@ -376,6 +400,13 @@ public class TutorialManager : MonoBehaviour
         if (!equipped) achieved.Add(TutorialStepId.RemoveSuit);
     }
 
+    // Kenyang berkurang pelan dan HANYA naik lewat HungerSystem.Feed (makan kentang), jadi kenaikan = pemain makan.
+    private void HandleSatietyChanged(float satiety, float max)
+    {
+        if (satiety > lastSatiety + 0.001f) achieved.Add(TutorialStepId.Eat);
+        lastSatiety = satiety;
+    }
+
     // Syarat yang tidak punya event: dicek berkala dan dikunci.
     private void EvaluateConditions()
     {
@@ -403,7 +434,8 @@ public class TutorialManager : MonoBehaviour
     /// Hanya petunjuk arah; tidak mengubah apa pun. 'from' = posisi pemain (untuk memilih objek terdekat).
     /// Tujuan (USULAN): Intro = Storage lalu TARS; Suit dan RemoveSuit = Suit Station; CollectIce = Ice Deposit terdekat;
     /// PurifyWater = Ice Deposit bila tas belum berisi es, selain itu Water Purifier; Farming = petak bertanaman yang belum
-    /// disiram, atau petak kosong bila ada bibit di tas, selain itu Storage (ambil bibit); OxygenGenerator; Sleep = Bed.
+    /// disiram, atau petak kosong bila ada bibit di tas, selain itu Storage (ambil bibit); OxygenGenerator; Eat = Storage bila
+    /// tas tanpa kentang; Sleep = Bed, hanya setelah timer hari habis.
     /// </summary>
     public Transform GetGuideTarget(Vector3 from)
     {
@@ -434,8 +466,14 @@ public class TutorialManager : MonoBehaviour
             case TutorialStepId.OxygenGenerator:
                 return oxygenGenerator != null ? oxygenGenerator.transform : null;
 
+            case TutorialStepId.Eat:
+                // Tas berisi kentang: tidak ada tujuan (pemain pilih kentang dengan tombol 1 lalu E). Tas kosong: ke Storage.
+                if (inventory != null && inventory.GetBag(ItemType.Potato) >= 1) return null;
+                return hasStorage ? storage.transform : null;
+
             case TutorialStepId.Sleep:
-                return bed != null ? bed.transform : null;
+                // Garis ke tempat tidur baru muncul setelah timer hari habis.
+                return IsSleepWindowOpen && bed != null ? bed.transform : null;
 
             default:
                 return null;
@@ -527,11 +565,13 @@ public class TutorialManager : MonoBehaviour
             new TutorialStepData(TutorialStepId.RemoveSuit, "Lepas suit",
                 "[PLACEHOLDER] TARS: Anda sudah di dalam habitat. Oksigen suit tetap berkurang selama suit dikenakan. Lepas suit di Suit Station; tabungnya terisi lagi dari oksigen habitat."),
             new TutorialStepData(TutorialStepId.Farming, "Tanam dan siram",
-                "[PLACEHOLDER] TARS: Tanam bibit kentang di Farming Plot, lalu siram. Tanaman yang disiram tumbuh saat hari berganti."),
+                "[PLACEHOLDER] TARS: Tanam bibit kentang di Farming Plot, lalu siram. Cukup siram sekali; tanaman matang dalam sekitar 1 sampai 2 menit, lalu panen untuk mendapat kentang dan bibit."),
             new TutorialStepData(TutorialStepId.OxygenGenerator, "Oxygen Generator",
                 "[PLACEHOLDER] TARS: Dekati Oxygen Generator. Mesin ini memakai Water dan Energy untuk menghasilkan oksigen habitat, jadi air dibagi antara tanaman dan oksigen."),
+            new TutorialStepData(TutorialStepId.Eat, "Makan",
+                "[PLACEHOLDER] TARS: Rasa kenyang Anda berkurang seiring waktu. Ambil kentang dari Storage, pilih kentang di tas (tombol 1), lalu tekan E untuk makan."),
             new TutorialStepData(TutorialStepId.Sleep, "Kembali dan tidur",
-                "[PLACEHOLDER] TARS: Kembali ke Control Room dan tidur di tempat tidur untuk mengakhiri hari.")
+                "[PLACEHOLDER] TARS: Waktu hari ini habis. Kembali ke Control Room dan tidur di tempat tidur untuk mengakhiri hari.")
         };
     }
 }

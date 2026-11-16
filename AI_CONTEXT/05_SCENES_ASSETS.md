@@ -66,7 +66,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Editor/MarsHungerSetup.cs` | Menu Editor `Mars > Setup Hunger and Food Storage`: membuat HungerSystem, HungerReminder, FoodStorage, dan `HudRoot/HungerPanel` (teks Kenyang) |
 | `Assets/Script/Machines/WaterPurifier.cs` | Water Purifier (IInteractable): Ice + Energy -> Water, proses beberapa detik, `IsProcessing`, `OnProcessingChanged`, indikator opsional |
 | `Assets/Script/Machines/OxygenGenerator.cs` | Oxygen Generator (IInteractable): Water + Energy -> HabitatOxygen otomatis per siklus (10 Oxygen per 1 Water sejak 2026-11-17); siaga sampai oksigen habitat <= `restartBelowFraction` (0,4) lalu mengisi sampai penuh; E = nyalakan/matikan (USULAN); `IsOn`, `IsRunning`, `StatusText`. Nilai serialized di `SampleScene.unity` (`oxygenPerCycle`, `SuitSystem.drainPerSecond`) ikut diubah 2026-11-17 |
-| `Assets/Script/Farming/FarmingPlot.cs` | Satu petak kentang (IInteractable): tanam, siram (Water), tumbuh saat hari berganti bila disiram, panen (Food). Satu objek = satu petak |
+| `Assets/Script/Farming/FarmingPlot.cs` | Satu petak kentang (IInteractable): tanam, siram (Water), tumbuh waktu nyata setelah satu kali siram, panen acak (kentang dan bibit). Satu objek = satu petak |
 | `Assets/Editor/MarsObjectsSetup.cs` | Menu Editor `Mars > Setup Interactive Objects`: membuat 7 objek interaktif placeholder + `SolarPanel` + panel Ice di HUD |
 | `Assets/Welcome/Welcome2DScript.cs` | Bawaan template Unity; bukan bagian game |
 

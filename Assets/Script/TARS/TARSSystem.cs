@@ -37,6 +37,9 @@ public class TARSSystem : MonoBehaviour
 
     public static TARSSystem Instance { get; private set; }
 
+    /// <summary>True bila masih ada pesan TARS yang mengantre (akan tampil sebagai dialog). Dipakai TutorialGuideUI agar garis arah tidak tampil bersamaan dengan dialog.</summary>
+    public bool HasPendingMessages => pending.Count > 0;
+
     [Header("Referensi (otomatis dicari jika kosong)")]
     [SerializeField] private DialogueUI dialogueUI;
     [SerializeField] private string speakerName = "TARS";

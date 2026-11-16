@@ -1345,8 +1345,6 @@ MonoBehaviour:
   dialogueUI: {fileID: 0}
   stageCount: 3
   waterPerWatering: 2
-  potatoPerHarvest: 4
-  seedPerHarvest: 1
   spriteRenderer: {fileID: 610598006}
   emptySprite: {fileID: 0}
   stageSprites: []
@@ -18788,15 +18786,19 @@ MonoBehaviour:
   - id: 4
     title: Tanam dan siram
     tarsLines:
-    - '[PLACEHOLDER] TARS: Tanam bibit kentang di Farming Plot, lalu siram. Tanaman yang disiram tumbuh saat hari berganti.'
+    - '[PLACEHOLDER] TARS: Tanam bibit kentang di Farming Plot, lalu siram. Cukup siram sekali; tanaman matang dalam sekitar 1 sampai 2 menit, lalu panen untuk mendapat kentang dan bibit.'
   - id: 5
     title: Oxygen Generator
     tarsLines:
     - '[PLACEHOLDER] TARS: Dekati Oxygen Generator. Mesin ini memakai Water dan Energy untuk menghasilkan oksigen habitat, jadi air dibagi antara tanaman dan oksigen.'
+  - id: 8
+    title: Makan
+    tarsLines:
+    - '[PLACEHOLDER] TARS: Rasa kenyang Anda berkurang seiring waktu. Ambil kentang dari Storage, pilih kentang di tas (tombol 1), lalu tekan E untuk makan.'
   - id: 6
     title: Kembali dan tidur
     tarsLines:
-    - '[PLACEHOLDER] TARS: Kembali ke Control Room dan tidur di tempat tidur untuk mengakhiri hari.'
+    - '[PLACEHOLDER] TARS: Waktu hari ini habis. Kembali ke Control Room dan tidur di tempat tidur untuk mengakhiri hari.'
 --- !u!4 &1888017951
 Transform:
   m_ObjectHideFlags: 0

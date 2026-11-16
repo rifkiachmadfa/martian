@@ -10,6 +10,20 @@ Format:
 - **Test:** pengujian dan hasil.
 - **Follow-up:** pekerjaan tersisa.
 
+## 2026-11-17 (Farming: tumbuh waktu nyata dan panen acak)
+- **Changed:** `FarmingPlot`: setelah SATU kali siram tanaman tumbuh waktu nyata selama durasi acak 60 sampai 120 detik (`growSecondsMin/Max`), tahap visual dibagi rata, lalu matang. Timer ikut `TimeManager.IsPaused`. Pergantian hari tidak lagi mempengaruhi tumbuh (`HandleDayStarted` dihapus). Panen: 2 sampai 4 kentang dan 1 sampai 2 bibit acak (`potatoMin/Max`, `seedMin/Max`), diundi saat disiram. Field lama `potatoPerHarvest` dan `seedPerHarvest` diganti. Prompt menampilkan persen tumbuh. Teks langkah Farming di tutorial disesuaikan.
+- **Reason:** Permintaan developer: menanam terlalu lambat (harus lewat ganti hari). Ini PERUBAHAN DESAIN dari GDD v1.2 bagian 5.5 dan 10 (dicatat sebagai P-6).
+- **Files/systems:** `Assets/Script/Farming/FarmingPlot.cs`, `Assets/Script/Tutorial/TutorialManager.cs` (teks), `Assets/Scenes/SampleScene.unity` (teks Farming, dua field lama dihapus), `AI_CONTEXT/*`. Bertumpuk di atas `tutorial-eat-sleep.patch`.
+- **Test:** Tidak dikompilasi dan tidak dijalankan di Unity. Daftar tes di `09_TEST_CHECKLIST.md` (bagian Farming waktu nyata).
+- **Follow-up:** Revisi GDD 5.5 dan 10. Balancing: satu petak panen tiap 1 sampai 2 menit menghasilkan rata-rata 3 kentang dan 1,5 bibit (bibit bertambah tiap siklus); `drainPerSecond` hunger dan angka Water perlu dicek saat playtest. Visual tanpa sprite masih memakai warna penanda.
+
+## 2026-11-17 (Tutorial: makan, tidur menunggu waktu habis, garis setelah dialog)
+- **Changed:** (1) Langkah baru `TutorialStepId.Eat` (ID 8) di antara OxygenGenerator dan Sleep; selesai saat kenyang naik (`HungerSystem.OnSatietyChanged`). (2) Langkah Sleep: arahan TARS dan garis arah ke Bed baru muncul setelah timer hari habis (`TimeManager.IsDayOver` / `OnDayTimeEnded`). (3) `TutorialGuideUI` menyembunyikan garis selama `DialogueUI.IsOpen` atau `TARSSystem.HasPendingMessages`, sehingga dialog selesai dulu baru garis tampil. Teks Sleep di kode dan scene disesuaikan ("Waktu hari ini habis...").
+- **Reason:** Permintaan developer: tutorial makan belum ada; tutorial tidur tidak boleh muncul saat waktu belum habis; dialog dan garis tidak boleh tampil bersamaan agar pemain fokus membaca.
+- **Files/systems:** `Assets/Script/Tutorial/TutorialStepId.cs`, `TutorialManager.cs`, `TutorialGuideUI.cs`, `Assets/Script/TARS/TARSSystem.cs` (properti `HasPendingMessages`), `Assets/Scenes/SampleScene.unity` (array steps: elemen Eat, teks Sleep), `AI_CONTEXT/*`.
+- **Test:** Tidak dikompilasi dan tidak dijalankan di Unity. Daftar tes di `09_TEST_CHECKLIST.md` (bagian Tutorial: makan, tidur, dan dialog).
+- **Follow-up:** GDD 5.2 belum memuat langkah makan (usulan revisi dokumen). Pesan TARS `day:over` dan arahan Sleep keduanya tampil saat waktu habis (berurutan); bila terasa dobel, hilangkan salah satunya. Teks arahan masih PLACEHOLDER.
+
 ## 2026-11-17 (Tutorial: langkah melepas suit)
 - **Changed:** Langkah baru `TutorialStepId.RemoveSuit` ("Lepas suit") di `TutorialManager`, diletakkan setelah PurifyWater (tutorial kini 8 langkah). Selesai bila suit dilepas lewat `SuitSystem.OnEquippedChanged(false)`; dikunci seperti syarat lain. Garis arah menunjuk Suit Station. Teks arahan PLACEHOLDER. Enum ditambah di AKHIR (nilai 7) agar angka ID yang tersimpan di scene tidak bergeser; urutan tampil mengikuti array `steps`. Array `steps` di `SampleScene.unity` ikut ditambah satu elemen (`id: 7`) karena nilai scene mengalahkan default script.
 - **Reason:** Permintaan developer: tutorial tidak mengajarkan melepas suit. Sejak revisi 2026-11-15 oksigen suit berkurang selama suit dikenakan (termasuk di dalam habitat), dan keputusan itu mencatat "Day 1 tutorial perlu menjelaskan melepas suit" sebagai tindak lanjut.

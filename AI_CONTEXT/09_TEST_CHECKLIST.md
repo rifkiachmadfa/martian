@@ -255,3 +255,24 @@ Siapkan: jalankan ulang `Mars > Setup Tutorial` (memasang `TutorialGuideUI` di C
 - [ ] Water habis saat oksigen habitat di bawah 40 persen: status "berhenti, Water tidak cukup"; setelah Water ada, mesin lanjut sendiri.
 - [ ] Kenakan suit (tabung terisi dari habitat): oksigen suit turun 0,2 per detik (sekitar 12 per menit); tabung 100 bertahan sekitar 500 detik. Pemain sempat ke Ice Deposit, mengumpulkan es, dan kembali tanpa terburu-buru.
 - [ ] Catat untuk balancing: total Water terpakai untuk oksigen dalam satu hari penuh (600 detik) dengan pola bermain normal, dan Water tersisa untuk menyiram tanaman. Target usulan: oksigen memakai sebagian kecil Water, bukan seluruhnya.
+
+## Tutorial: makan, tidur, dan dialog (2026-11-17; BARU, belum dites di Unity)
+Siapkan: hapus status tutorial tersimpan (klik kanan `TutorialManager` > `Debug: Hapus status tutorial tersimpan`). Inspector `TutorialManager` > Steps harus berisi 9 elemen (Eat ID 8 sebelum Sleep ID 6); bila scene lama, cek manual.
+- [ ] Eat: setelah OxygenGenerator, TARS mengarahkan makan. Tas tanpa kentang: garis menuju Storage; tas berisi kentang: tidak ada garis. Makan kentang (tombol 1, lalu E): langkah maju ke Sleep.
+- [ ] Eat dikunci: makan kentang SEBELUM langkah Eat dimulai, langkah Eat dilewati saat tiba gilirannya.
+- [ ] Sleep: selesaikan semua langkah sebelum waktu habis: TIDAK ada dialog tidur dan TIDAK ada garis ke Bed selama timer masih berjalan (tunggu 120 detik pengingat: tetap tidak muncul).
+- [ ] Waktu hari habis (gunakan `TimeManager` > `Debug: Sisakan 5 detik`): dialog TARS tampil dulu; garis ke Bed baru muncul setelah semua dialog tertutup.
+- [ ] Bila waktu sudah habis sebelum langkah Sleep tiba (mis. langkah lain selesai terlambat): saat Sleep jadi aktif, dialog tidur tampil lalu garis menyusul.
+- [ ] Dialog dan garis tidak pernah tampil bersamaan: di setiap langkah, garis hilang saat dialog TARS terbuka (termasuk dialog E pada TARS NPC) dan muncul lagi setelah ditutup; tidak ada kedipan saat pesan TARS mengantre.
+- [ ] Tidur ke Day 2: tutorial selesai, tidak ada garis atau arahan di Day 2; Console tidak error.
+
+## Farming waktu nyata (2026-11-17; BARU, belum dites di Unity)
+Siapkan: Inspector `FarmingPlot` memakai nilai bawaan (grow 60 sampai 120 detik, kentang 2 sampai 4, bibit 1 sampai 2). Tidak perlu tidur untuk menguji.
+- [ ] Tanam bibit, siram SEKALI (Water berkurang 2): prompt berubah menjadi "Periksa tanaman (N%)" dan N naik terus tanpa pindah hari.
+- [ ] Tanaman melewati tahap visual (warna hijau muda ke hijau) lalu matang antara 60 dan 120 detik setelah disiram; prompt menjadi "Panen kentang". Ulangi beberapa kali: durasi bervariasi.
+- [ ] Tanaman belum disiram: tidak tumbuh, tidak mati (tunggu lebih dari 2 menit).
+- [ ] Menyiram lagi saat tumbuh: pesan "sudah disiram", Water tidak berkurang.
+- [ ] Tidur (ganti hari) saat tanaman tumbuh: timer berhenti selama transisi tidur dan lanjut setelahnya; tidak ada lompatan tahap.
+- [ ] Panen: kentang masuk tas sebanyak 2 sampai 4 dan bibit 1 sampai 2 (bibit ke storage bila tas bibit penuh); petak kosong lagi. Ulangi beberapa kali: jumlah bervariasi.
+- [ ] Tas kentang hampir penuh: panen ditolak dengan pesan ruang kurang; jumlah hasil TIDAK berubah setelah dicoba berulang (diundi saat disiram); setelah simpan ke storage, panen berhasil.
+- [ ] Tutorial langkah Farming selesai setelah tanam dan siram (tidak perlu menunggu matang); teks arahan baru tampil.

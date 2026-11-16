@@ -4,6 +4,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Garis arah tutorial (USULAN, hanya Day 1): garis UI dari tubuh pemain ke objek tujuan langkah tutorial yang
 /// sedang berjalan, dengan penanda di ujung tujuan. Tujuan ditentukan TutorialManager.GetGuideTarget.
+/// Garis disembunyikan selama dialog terbuka atau ada pesan TARS yang mengantre (dialog selesai dulu, baru garis).
 /// Hanya tampilan: tidak mengunci gerak, tidak mengubah resource, dan hilang sendiri saat tutorial tidak aktif.
 /// Dipasang pada Canvas (menu Mars > Setup Tutorial); UI dibuat lewat kode saat Awake sebagai anak PERTAMA Canvas
 /// sehingga berada di bawah HUD, dialog, dan fade. Garis ditarik di ruang layar (kamera dunia -> Canvas).
@@ -15,6 +16,7 @@ public class TutorialGuideUI : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [SerializeField] private PlayerMovement player;
     [SerializeField] private Camera worldCamera;
+    [SerializeField] private DialogueUI dialogueUI;
 
     [Header("Tampilan (USULAN)")]
     [SerializeField] private Color lineColor = new Color(0.3f, 0.9f, 1f, 0.9f);
@@ -52,6 +54,7 @@ public class TutorialGuideUI : MonoBehaviour
     {
         if (player == null) player = FindFirstObjectByType<PlayerMovement>();
         if (worldCamera == null) worldCamera = Camera.main;
+        if (dialogueUI == null) dialogueUI = FindFirstObjectByType<DialogueUI>();
 
         if (player == null) Debug.LogWarning("TutorialGuideUI: PlayerMovement tidak ditemukan; garis arah tidak tampil.", this);
     }
@@ -66,6 +69,15 @@ public class TutorialGuideUI : MonoBehaviour
     {
         TutorialManager tutorial = TutorialManager.Instance;
         if (tutorial == null || !tutorial.IsActive || player == null || (hideWhileStorageOpen && StorageUI.IsOpen))
+        {
+            SetVisible(false);
+            return;
+        }
+
+        // Dialog dulu, baru garis: selama dialog terbuka atau masih ada pesan TARS yang mengantre, garis disembunyikan
+        // agar pemain fokus membaca.
+        if ((dialogueUI != null && dialogueUI.IsOpen) ||
+            (TARSSystem.Instance != null && TARSSystem.Instance.HasPendingMessages))
         {
             SetVisible(false);
             return;
