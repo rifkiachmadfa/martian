@@ -16190,6 +16190,7 @@ GameObject:
   - component: {fileID: 1505348190}
   - component: {fileID: 1505348192}
   - component: {fileID: 1505348191}
+  - component: {fileID: 1505348193}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -16364,6 +16365,29 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InventoryHotbarUI
   canvas: {fileID: 0}
+--- !u!114 &1505348193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505348183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89022f294f204cf2a291b053e92268da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialGuideUI
+  canvas: {fileID: 0}
+  player: {fileID: 0}
+  worldCamera: {fileID: 0}
+  lineColor: {r: 0.3, g: 0.9, b: 1, a: 0.9}
+  thickness: 4
+  markerSize: 22
+  bodyOffset: {x: 0, y: 0}
+  hideWithinDistance: 1.5
+  pulseSpeed: 3
+  pulseDepth: 0.35
+  hideWhileStorageOpen: 1
 --- !u!1 &1588370289
 GameObject:
   m_ObjectHideFlags: 0
@@ -18703,6 +18727,87 @@ Transform:
   - {fileID: 1893377893}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1888017949
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1888017951}
+  - component: {fileID: 1888017950}
+  m_Layer: 0
+  m_Name: TutorialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1888017950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888017949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3b6a70144f142b78ad0ec4eece91874, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
+  tutorialDay: 1
+  skipTutorial: 0
+  pollIntervalSeconds: 0.25
+  reminderSeconds: 120
+  iceToCollect: 5
+  rememberCompletion: 1
+  skipKey: 9
+  steps:
+  - id: 0
+    title: Mengenal habitat
+    tarsLines:
+    - '[PLACEHOLDER] TARS: Selamat datang. Ini Control Room. Angka di HUD menunjukkan Food, Water, Oxygen, dan Energy. Ajak saya bicara untuk laporan.'
+    - '[PLACEHOLDER] TARS: Buka Storage untuk melihat bibit, es, dan kentang yang tersimpan.'
+  - id: 1
+    title: Astronaut Suit
+    tarsLines:
+    - '[PLACEHOLDER] TARS: Kenakan Astronaut Suit di Suit Station. Tabungnya terisi dari oksigen habitat.'
+  - id: 2
+    title: Kumpulkan Ice
+    tarsLines:
+    - '[PLACEHOLDER] TARS: Keluar lewat gerbang dan kumpulkan sedikit es di Ice Deposit. Awasi oksigen suit.'
+  - id: 3
+    title: Olah Ice menjadi Water
+    tarsLines:
+    - '[PLACEHOLDER] TARS: Bawa es ke Water Purifier. Pilih es di tas, lalu tekan E. Mesin memakai Energy untuk mengubahnya menjadi air.'
+  - id: 4
+    title: Tanam dan siram
+    tarsLines:
+    - '[PLACEHOLDER] TARS: Tanam bibit kentang di Farming Plot, lalu siram. Tanaman yang disiram tumbuh saat hari berganti.'
+  - id: 5
+    title: Oxygen Generator
+    tarsLines:
+    - '[PLACEHOLDER] TARS: Dekati Oxygen Generator. Mesin ini memakai Water dan Energy untuk menghasilkan oksigen habitat, jadi air dibagi antara tanaman dan oksigen.'
+  - id: 6
+    title: Kembali dan tidur
+    tarsLines:
+    - '[PLACEHOLDER] TARS: Kembali ke Control Room dan tidur di tempat tidur untuk mengakhiri hari.'
+--- !u!4 &1888017951
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1888017949}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1891779881
 GameObject:
   m_ObjectHideFlags: 0
@@ -19153,7 +19258,7 @@ MonoBehaviour:
     startAmount: 0
     maxAmount: 5
   - type: 1
-    startAmount: 10
+    startAmount: 20
     maxAmount: 30
   - type: 2
     startAmount: 50
@@ -19466,6 +19571,7 @@ MonoBehaviour:
   interactionPauseDuration: 3
   reinteractCooldown: 0.3
   dialogueUI: {fileID: 1505348185}
+  tarsSystem: {fileID: 2116275187}
   speakerName: TARS
   dialogueLines:
   - Selamat datang kembali. Saya TARS, asisten habitat ini.
@@ -19923,6 +20029,69 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2113428196}
   m_CullTransparentMesh: 1
+--- !u!1 &2116275186
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2116275188}
+  - component: {fileID: 2116275187}
+  m_Layer: 0
+  m_Name: TARSSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2116275187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116275186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e6bd0f388424d8e9f0cedbb3bd31e20, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TARSSystem
+  dialogueUI: {fileID: 1505348185}
+  speakerName: TARS
+  warnFraction: 0.3
+  dangerFraction: 0.1
+  globalCooldownSeconds: 4
+  repeatCooldownSeconds: 45
+  expirySeconds: 90
+  endOfDayWarnSeconds: 60
+  suitIndoorFirstSeconds: 30
+  suitIndoorRepeatSeconds: 90
+  announceDayAtStart: 1
+  earthMessages:
+  - '[PLACEHOLDER] Bumi: Sinyal Anda terdengar. Tim penjemput sedang dalam perjalanan.'
+  - '[PLACEHOLDER] Bumi: Kami menerima laporan habitat Anda. Bertahanlah.'
+  - '[PLACEHOLDER] Bumi: Penjemputan masih sesuai jadwal.'
+  - '[PLACEHOLDER] Bumi: Pertengahan perjalanan. Jaga kondisi Anda.'
+  - '[PLACEHOLDER] Bumi: Tim penjemput mendekati orbit Mars.'
+  - '[PLACEHOLDER] Bumi: Tinggal sedikit lagi.'
+  - '[PLACEHOLDER] Bumi: Tim penjemput tiba. Bertahanlah sampai akhir hari ini.'
+--- !u!4 &2116275188
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2116275186}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -19954,3 +20123,5 @@ SceneRoots:
   - {fileID: 2049177508}
   - {fileID: 1111719983}
   - {fileID: 413242649}
+  - {fileID: 2116275188}
+  - {fileID: 1888017951}

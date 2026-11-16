@@ -215,3 +215,32 @@ Setup: jalankan `Mars > Setup Hunger and Food Storage` dan `Mars > Setup Invento
 - [ ] Dialog E pada TARS: urutan pengantar, pesan Bumi hari ini, laporan fasilitas (jumlah panel normal/rusak, Energy per detik, status Water Purifier dan Oxygen Generator), kondisi (suit, kenyang), stok dan sisa waktu. Tidak ada quest atau perintah urutan aksi.
 - [ ] Menekan E untuk menutup dialog TARS spontan di dekat NPC TARS tidak langsung membuka dialog TARS baru.
 - [ ] Hapus objek `TARSSystem` dari scene: game tetap jalan; `SuitReminder`, `HungerReminder`, dan scheduler kembali memakai dialog langsung.
+
+## Tutorial Day 1 (2026-11-17; BARU, belum dites di Unity)
+Siapkan: jalankan `Mars > Setup Tutorial`. Untuk mengulang dari awal, klik kanan `TutorialManager` > `Debug: Hapus status tutorial tersimpan`.
+- [ ] Unity mengimpor `Assets/Script/Tutorial/*`, `MarsTutorialSetup`, dan `TarsWanderer` tanpa error kompilasi; menu setup dijalankan ulang tidak membuat duplikat.
+- [ ] Play di Day 1: arahan Intro (PLACEHOLDER) muncul lewat TARS setelah dialog lain tertutup. Tidak ada gerak yang terkunci dan tidak ada urutan wajib. Console tidak berisi peringatan "tidak ada" untuk objek yang ada di scene.
+- [ ] Intro: bicara dengan TARS (E) saja belum cukup; buka Storage juga: arahan Suit muncul. Urutan sebaliknya sama.
+- [ ] Suit: kenakan suit di Suit Station: arahan CollectIce muncul. Melepas suit tidak memundurkan langkah.
+- [ ] CollectIce: kumpulkan es di Ice Deposit; garis tetap ke Ice Deposit sampai 5 es terkumpul, lalu arahan PurifyWater muncul dan garis pindah ke Water Purifier. Mengambil es dari storage di dalam habitat TIDAK dihitung. Bila tas es penuh sebelum 5 (kapasitas lebih kecil), langkah tetap selesai. Tes ulang kasus bug: tas penuh tidak lagi membuat garis terus ke Ice Deposit.
+- [ ] PurifyWater: masukkan es ke Water Purifier dan tunggu selesai: arahan Farming muncul.
+- [ ] Farming: tanam bibit dan siram: arahan OxygenGenerator muncul.
+- [ ] OxygenGenerator: dekati mesin sampai prompt "[E] ..." muncul: arahan Sleep muncul.
+- [ ] Sleep: tidur ke Day 2: tutorial selesai dan tidak ada arahan di Day 2; Console tidak error.
+- [ ] Urutan bebas: kerjakan Farming dan Suit sebelum Intro selesai; setelah Intro selesai langkah yang sudah terpenuhi dilewati berurutan tanpa arahan yang menumpuk.
+- [ ] Arahan yang belum terbaca diulang kira-kira tiap 120 dtk selama langkahnya belum selesai (tidak lebih sering dari cooldown TARS).
+- [ ] Setelah tutorial selesai penuh, jalankan Play lagi (tanpa menghapus status): TARS memberi tahu tutorial dapat dilewati; Tab melewatinya tanpa error. Tab tidak berpengaruh bila status belum tersimpan. Tutorial yang dilewati tidak menyimpan status.
+- [ ] `Debug: Selesaikan langkah saat ini`, `Debug: Lewati tutorial`, dan centang `Skip Tutorial` bekerja tanpa error.
+- [ ] Hapus objek `TutorialManager`: game tetap berjalan. Hapus objek `TARSSystem`: arahan masuk Console, tidak ada error.
+
+## Tutorial: garis arah (2026-11-17; BARU, belum dites di Unity)
+Siapkan: jalankan ulang `Mars > Setup Tutorial` (memasang `TutorialGuideUI` di Canvas); Console tidak berisi error kompilasi.
+- [ ] Play di Day 1: garis berwarna dari tubuh Player ke Storage (langkah Intro) dengan berlian di ujung Storage; garis ikut bergerak saat Player dan kamera bergerak, tidak bergetar atau tertinggal terlihat.
+- [ ] Panel Storage terbuka: garis hilang; setelah ditutup dan Storage sudah dibuka, garis pindah ke TARS (bila belum diajak bicara), lalu ke Suit Station setelah Intro selesai.
+- [ ] Mendekati tujuan (dalam sekitar 1,5 satuan): garis hilang. Menjauh lagi: muncul.
+- [ ] CollectIce: garis ke Ice Deposit terdekat. PurifyWater: ke Ice Deposit bila tas tanpa es; setelah punya es berpindah ke Water Purifier.
+- [ ] Farming: tanpa bibit di tas garis ke Storage; setelah ambil bibit ke petak kosong; setelah tanam, ke petak itu sampai disiram.
+- [ ] OxygenGenerator dan Sleep: garis ke Oxygen Generator dan Bed.
+- [ ] Day 2 (atau `Debug: Lewati tutorial`): garis hilang dan tidak muncul lagi. Garis tampil di bawah HUD, dialog, dan layar fade.
+- [ ] Ubah resolusi/ukuran jendela Game: ujung garis tetap tepat di Player dan tujuan (Canvas Scale With Screen Size).
+- [ ] Hapus komponen `TutorialGuideUI`: tutorial tetap berjalan tanpa garis dan tanpa error.

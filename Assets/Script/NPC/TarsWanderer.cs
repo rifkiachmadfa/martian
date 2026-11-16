@@ -236,6 +236,9 @@ public class TarsWanderer : MonoBehaviour, IInteractable
 
     // ---------- Interaction ----------
 
+    /// <summary>Dipanggil saat pemain mengajak TARS bicara (E) dan dialog dibuka. Dipakai TutorialManager.</summary>
+    public event System.Action OnPlayerTalked;
+
     public bool CanInteract(GameObject interactor)
     {
         // Tidak boleh membuka dialog baru saat dialog lain (misalnya pengingat TARS) masih terbuka.
@@ -258,6 +261,7 @@ public class TarsWanderer : MonoBehaviour, IInteractable
             // TARS diam sampai dialog selesai, lalu Resume() dipanggil otomatis.
             string[] lines = tarsSystem != null ? tarsSystem.BuildConversationLines(dialogueLines) : dialogueLines;
             dialogueUI.Show(speakerName, lines, Resume);
+            OnPlayerTalked?.Invoke();
             return;
         }
 

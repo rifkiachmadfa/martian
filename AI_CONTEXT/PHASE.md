@@ -10,7 +10,7 @@
 |---|---|
 | Repo | https://github.com/rifkiachmadfa/martian.git |
 | Branch | `main` |
-| Revisi terakhir diperiksa | `95a2aa97` (2026-11-16, commit "tars system setup", clone `main`); patch Milestone 11 (`TARSSystem`) dibuat di atas revisi ini |
+| Revisi terakhir diperiksa | `80bc5a6d` (2026-11-17, commit "phase11", clone `main`); patch tutorial Day 1 (Milestone 12, `TutorialManager`) dibuat di atas revisi ini |
 | Unity | 6000.6.8f1 |
 | Paket penting | Input System 1.20.1 (kode memakai `Input.GetAxisRaw` / `KeyCode`), URP 17.6.0, 2D Animation 16.0.1, Tilemap, Cinemachine |
 | Scene | Satu scene: `Assets/Scenes/SampleScene.unity` |
@@ -37,7 +37,7 @@ Hasil tes (bila ada) dicatat terpisah di `09_TEST_CHECKLIST.md`, bukan di sini.
 
 ## 2. Ringkasan progres
 
-Dihitung dari checklist bagian 3 (revisi `95a2aa97` + patch Milestone 11).
+Dihitung dari checklist bagian 3 (revisi `80bc5a6d` + patch tutorial Day 1).
 
 | # | Milestone | Status | Selesai | Sebagian | Belum | Total |
 |---|---|---|---|---|---|---|
@@ -52,11 +52,11 @@ Dihitung dari checklist bagian 3 (revisi `95a2aa97` + patch Milestone 11).
 | 9 | Solar Panel dan produksi Energy | SEBAGIAN | 7 | 0 | 1 | 8 |
 | 10 | Panel rusak dan minigame kabel | SEBAGIAN | 10 | 1 | 0 | 11 |
 | 11 | TARS monitoring dan reminder | SEBAGIAN | 14 | 2 | 2 | 18 |
-| 12 | Integrasi loop dan tutorial Day 1 | BELUM | 0 | 0 | 11 | 11 |
+| 12 | Integrasi loop dan tutorial Day 1 | SEBAGIAN | 11 | 1 | 1 | 13 |
 | 13 | Day 2–7, Game Over/Victory, balancing | SEBAGIAN | 0 | 1 | 12 | 13 |
 | 14 | Audio, animasi, polish | SEBAGIAN | 1 | 2 | 11 | 14 |
 | 15 | Playtest penuh dan build | BELUM | 0 | 0 | 4 | 4 |
-| | **Total** | | **96** | **14** | **50** | **160** |
+| | **Total** | | **107** | **15** | **40** | **162** |
 
 Usulan urutan berikutnya (**belum disetujui developer**): 13 (loop menang/kalah minimal: Food berkurang, Game Over, Victory, perilaku `Bed` di Day 7) agar game bisa dimainkan Day 1 sampai Day 7, lalu 11 (`TARSSystem` sudah dibuat, menunggu tes Unity), 12 (tutorial), 14, 15. Urutan jadwal GDD: 10, 11, 12, 13, 14, 15. Build WebGL percobaan sebaiknya lebih awal.
 Jika jadwal mundur: kurangi polish dan fitur Should Have dulu; jangan korbankan loop resource inti dan sistem tujuh hari.
@@ -298,21 +298,23 @@ Latar: keduanya dihapus 2026-11-16 atas permintaan developer (HUD dan Storage su
 - [ ] `11.4.5` Pesan penutup Day 7 (konfirmasi penjemputan) milik ending Victory (13.3.3); API siap: `TARSSystem.Announce(key, prioritas, teks)`
 
 ### Milestone 12 — Integrasi loop dan tutorial Day 1
-Acuan: GDD 19 hari 12; GDD 5.2. Status: **BELUM** (0 selesai, 0 sebagian, 11 belum dari 11).
+Acuan: GDD 19 hari 12; GDD 5.2. Status: **SEBAGIAN** (11 selesai, 1 sebagian, 1 belum dari 13). Kode dibuat 2026-11-17, belum dikompilasi/dites di Unity. Semua syarat langkah adalah USULAN (lihat `TutorialManager`); teks arahan masih PLACEHOLDER.
 
-**12.1 Alur tutorial Day 1** (0/7)
-- [ ] `12.1.1` Mengenal Control Room, TARS, HUD, dan Storage (Resource Monitor sudah dihapus)
-- [ ] `12.1.2` Mengambil dan mengisi Astronaut Suit
-- [ ] `12.1.3` Keluar dan mengumpulkan Ice dalam jumlah kecil
-- [ ] `12.1.4` Membawa Ice ke Water Purifier dan menghasilkan Water
-- [ ] `12.1.5` Menanam dan menyiram di Farming Plot
-- [ ] `12.1.6` Mengenal Oxygen Generator dan hubungan Water/Energy
-- [ ] `12.1.7` Kembali ke Control Room dan tidur
+**12.1 Alur tutorial Day 1** (7/7)
+- [x] `12.1.1` Mengenal Control Room, TARS, HUD, dan Storage (Resource Monitor sudah dihapus): selesai bila pemain mengajak TARS bicara DAN membuka Storage (yang ada di scene)
+- [x] `12.1.2` Mengambil dan mengisi Astronaut Suit: selesai bila `SuitSystem.IsEquipped` (Suit Station mengisi tabung otomatis)
+- [x] `12.1.3` Keluar dan mengumpulkan Ice dalam jumlah kecil: selesai bila 5 es (`iceToCollect`, USULAN, dibatasi kapasitas tas) berhasil dikumpulkan di Ice Deposit (`IceDeposit.OnCollected`) atau tas es penuh
+- [x] `12.1.4` Membawa Ice ke Water Purifier dan menghasilkan Water: selesai bila satu batch `WaterPurifier` selesai (`OnProcessingChanged` false)
+- [x] `12.1.5` Menanam dan menyiram di Farming Plot: selesai bila ada `FarmingPlot` dengan `HasPlant` dan `IsWatered`
+- [x] `12.1.6` Mengenal Oxygen Generator dan hubungan Water/Energy: selesai bila `OxygenGenerator` menjadi target interaksi pemain (didekati); penjelasan Water/Energy ada di arahan TARS (keputusan USULAN, lihat P-5)
+- [x] `12.1.7` Kembali ke Control Room dan tidur: selesai saat Day 2 mulai (`Bed` memanggil `StartDay`)
 
-**12.2 Mekanik tutorial** (0/3)
-- [ ] `12.2.1` Arahan TARS langkah demi langkah (bukan quest harian)
-- [ ] `12.2.2` Status tutorial selesai tersimpan
-- [ ] `12.2.3` Tutorial dapat dilewati setelah pernah dimainkan (Should Have)
+**12.2 Mekanik tutorial** (4/5)
+- [~] `12.2.1` Arahan TARS langkah demi langkah (bukan quest harian): `TutorialManager` mengumumkan arahan tiap langkah lewat `TARSSystem.Announce`; teks masih PLACEHOLDER
+- [x] `12.2.2` Status tutorial selesai tersimpan: `PlayerPrefs` kunci `Mars.TutorialCompleted` (USULAN sementara sampai ada SaveSystem; hanya disimpan bila tutorial selesai penuh, bukan dilewati)
+- [x] `12.2.3` Tutorial dapat dilewati setelah pernah dimainkan (Should Have): bila status tersimpan ada, TARS memberi tahu dan tombol `skipKey` (default Tab, USULAN) melewati tutorial; flag Inspector `skipTutorial` untuk uji
+- [x] `12.2.4` `TutorialManager`: tujuh langkah (`TutorialStepId`), data (`TutorialStepData`), event, `TryCompleteStep`, syarat dikunci (latched) sehingga urutan bebas, pengumuman ulang arahan tiap `reminderSeconds` (120, USULAN), selesai otomatis saat Day 2 mulai
+- [x] `12.2.5` Garis arah tutorial (USULAN, hanya Day 1): `TutorialGuideUI` menggambar garis UI dari tubuh pemain ke tujuan langkah aktif (`TutorialManager.GetGuideTarget`: Intro = Storage lalu TARS, Suit = Suit Station, CollectIce = Ice Deposit, PurifyWater = Ice Deposit bila tas tanpa es lalu Water Purifier, Farming = petak/Storage sesuai kebutuhan, OxygenGenerator, Sleep = Bed); disembunyikan saat tutorial tidak aktif, panel Storage terbuka, atau pemain sudah dekat
 
 **12.3 Integrasi** (0/1)
 - [ ] `12.3.1` Loop harian berjalan dari awal sampai akhir tanpa urutan wajib
@@ -418,6 +420,7 @@ Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), angka balancing se
 | `Suit/SuitSystem` | Equip/Unequip, refill dari habitat, drain oksigen, `IsOutdoors`, event `OnSuitOxygenEmpty` |
 | `Suit/SuitStation`, `SuitGate`, `IndoorZone`, `SuitReminder` | Interaksi suit, tembok pintu keluar, zona dalam habitat, pengingat "lepas suit" (`SuitReminder` menonaktifkan diri bila `TARSSystem` ada) |
 | `TARS/TARSSystem` | Antrean pesan TARS (prioritas, cooldown, kedaluwarsa), pemantau ambang resource dan oksigen suit, panel rusak, awal/akhir hari, pesan Bumi, laporan untuk dialog E pada NPC TARS; `Announce(...)` untuk sistem lain |
+| `Tutorial/TutorialManager`, `TutorialStepId`, `TutorialStepData` | KERANGKA tutorial Day 1: urutan 7 langkah, arahan TARS per langkah via `TARSSystem.Announce`, event `OnStepStarted/OnStepCompleted/OnTutorialFinished`, `TryCompleteStep(id)`, selesai saat Day 2 mulai. Syarat selesai tiap langkah belum diisi |
 | `Outdoor/IceDeposit` | Deposit es: E, pemain berhenti ±3 dtk, Ice +1 (batas kapasitas Ice), perlu suit (usulan) |
 | `Outdoor/SolarPanel` | Energy otomatis per tick; `Damage()`/`Repair()`, `IsDamaged`, `OnDamagedChanged`; banyak panel menjumlah |
 | `Outdoor/RepairPoint` | Membuka `WiringMinigameUI`; memperbaiki satu `SolarPanel` setelah minigame sukses (cadangan langsung bila minigame tidak ada) |
@@ -432,11 +435,11 @@ Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), angka balancing se
 
 ### Editor setup scripts (Assets/Editor) — pola kerja proyek
 Menu yang aman dijalankan berulang, tidak menimpa referensi yang sudah diisi:
-`Mars > Setup Dialogue and Prompt UI`, `Setup HUD and Time`, `Setup Bed and Fade`, `Setup Suit and Gate`, `Setup TARS Animation`, `Setup Interactive Objects` (8 objek placeholder + panel Ice), `Setup Panel Damage and Wiring Minigame` (pasang `WiringMinigameUI` di Canvas, buat `SolarPanelDamageScheduler`, sambungkan `RepairPoint`), `Setup TARS System` (baru: buat objek `TARSSystem`, sambungkan `DialogueUI` dan `TarsWanderer`).
+`Mars > Setup Dialogue and Prompt UI`, `Setup HUD and Time`, `Setup Bed and Fade`, `Setup Suit and Gate`, `Setup TARS Animation`, `Setup Interactive Objects` (8 objek placeholder + panel Ice), `Setup Panel Damage and Wiring Minigame` (pasang `WiringMinigameUI` di Canvas, buat `SolarPanelDamageScheduler`, sambungkan `RepairPoint`), `Setup TARS System` (buat objek `TARSSystem`, sambungkan `DialogueUI` dan `TarsWanderer`), `Setup Tutorial` (baru: buat objek `TutorialManager`).
 Milestone baru sebaiknya memakai pola yang sama (satu menu setup per milestone, objek placeholder di sekitar Player).
 
 ### Objek penting di SampleScene
-`Player`, `TARS`, `TarsArea`, `TARSSystem` (dibuat menu `Setup TARS System`, lokal developer sampai di-commit), `Bed`, `SpawnPoint`, `SuitStation`, `SuitGate`, `IndoorZone`, `SuitSystem`, `ResourceManager`, `TimeManager`, `DialogueManager`, `Canvas` (`HudRoot`, `DialogueRoot`, `PromptRoot`, `FadeOverlay`), `CinemachineCamera`, `Grid`, `Ground`, `PasirMars`, `Wall`, `Tangga`.
+`Player`, `TARS`, `TarsArea`, `TARSSystem` (dibuat menu `Setup TARS System`, lokal developer sampai di-commit), `TutorialManager` (dibuat menu `Setup Tutorial`), `Bed`, `SpawnPoint`, `SuitStation`, `SuitGate`, `IndoorZone`, `SuitSystem`, `ResourceManager`, `TimeManager`, `DialogueManager`, `Canvas` (`HudRoot`, `DialogueRoot`, `PromptRoot`, `FadeOverlay`), `CinemachineCamera`, `Grid`, `Ground`, `PasirMars`, `Wall`, `Tangga`.
 Objek interaktif berikut ada di scene lokal developer (**Dilaporkan developer**); belum ada di `SampleScene.unity` yang ter-commit (tidak ada GUID script objek interaktif di scene): `IceDeposit`, `SolarPanel`, `RepairPoint`, `WaterPurifier`, `OxygenGenerator`, `FarmingPlot`, `HudRoot/IcePanel` (masih di sekitar Player; developer memindahkan ke lokasi akhir). `ResourceMonitor` dan `CommunicationTerminal` dihapus 2026-11-16 (hapus juga GameObject-nya di scene).
 Layer `Interactable` sudah ada (layer 3).
 
@@ -473,3 +476,6 @@ Layer `Interactable` sudah ada (layer 3).
 | 2026-11-16 | Milestone 10: `SolarPanelDamageScheduler` (satu kerusakan acak per hari), `WiringMinigameUI`, `RepairPoint` membuka minigame, menu `Setup Panel Damage and Wiring Minigame`. Basis `16ca3c15`. Belum dikompilasi/dites di Unity. Butir 10.x diperbarui, total 86/14/58. |
 | 2026-11-16 | Hapus `ResourceMonitor` dan `CommunicationTerminal` (permintaan developer). Butir 11.4 (pengganti lewat TARS) ditambahkan. Total 84/13/63/160. Basis `63f64857`. Belum dikompilasi/dites di Unity. |
 | 2026-11-17 | Milestone 11: `TARSSystem` (antrean, ambang, panel, hari, pesan Bumi, laporan dialog E), menu `Setup TARS System`; `SuitReminder`, `HungerReminder`, `SolarPanelDamageScheduler`, `TarsWanderer` disambungkan. Total 96/14/50/160. Basis `95a2aa97`. Belum dikompilasi/dites di Unity. |
+| 2026-11-17 | Milestone 12: `TutorialManager`, `TutorialStepId`, `TutorialStepData`, menu `Setup Tutorial`; semua syarat 7 langkah, simpan/lewati tutorial (PlayerPrefs, Tab), event `TarsWanderer.OnPlayerTalked`. Total 106/15/40/161. Basis `80bc5a6d`. Belum dikompilasi/dites di Unity. |
+| 2026-11-17 | Milestone 12: `TutorialGuideUI` (garis arah UI ke tujuan langkah tutorial), `TutorialManager.GetGuideTarget`; menu `Setup Tutorial` memasang komponen di Canvas. Butir 12.2.5 ditambahkan. Total 107/15/40/162. Basis `80bc5a6d` + `tutorial-day1.patch`. Belum dikompilasi/dites di Unity. |
+| 2026-11-17 | Perbaikan tutorial: langkah CollectIce selesai setelah 5 es dikumpulkan (event `IceDeposit.OnCollected`) atau tas es penuh, tidak lagi bergantung `IsOutdoors`; garis arah tidak macet di Ice Deposit. Total tidak berubah (107/15/40/162). |

@@ -1,6 +1,6 @@
 # Scenes & Assets
 
-Terakhir diperbarui: 2026-11-17 (basis `95a2aa97` + patch Milestone 11). Label: [Repo] terverifikasi, [Dev] dilaporkan developer.
+Terakhir diperbarui: 2026-11-17 (basis `80bc5a6d` + patch tutorial Day 1). Label: [Repo] terverifikasi, [Dev] dilaporkan developer.
 
 ## Area desain yang direncanakan
 - Control Room
@@ -24,7 +24,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Script/Interaction/InteractionDetector.cs` | Di Player. Cari objek interaktif terdekat (OverlapCircle + layer), tombol E |
 | `Assets/Script/Interaction/InteractionPromptUI.cs` | Menampilkan "[E] ..." (UI Text legacy) |
 | `Assets/Script/Dialogue/DialogueUI.cs` | Kotak dialog; E/Spasi/klik di mana saja untuk lanjut, tombol Tutup (opsional) untuk menutup langsung; callback saat selesai |
-| `Assets/Script/NPC/TarsWanderer.cs` | TARS acak di `BoxCollider2D` area; state Idle/Moving/Interacting; sprite per arah lewat array Inspector |
+| `Assets/Script/NPC/TarsWanderer.cs` | TARS acak di `BoxCollider2D` area; state Idle/Moving/Interacting; sprite per arah lewat array Inspector; event `OnPlayerTalked` saat dialog E dibuka (dipakai `TutorialManager`) |
 | `Assets/Script/Resource/ResourceType.cs` | Enum jenis resource (Ice, Water, HabitatOxygen, SuitOxygen, Energy, Food) |
 | `Assets/Script/Resource/ResourceManager.cs` | Stok, kapasitas, `Add`/`TryConsume`, event perubahan. Dipasang pada GameObject `ResourceManager` di scene |
 | `Assets/Script/Resource/ResourceDebugPanel.cs` | Alat uji sementara (OnGUI). Hapus saat HUD sungguhan ada |
@@ -39,6 +39,11 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Script/Suit/IndoorZone.cs` | Trigger area dalam habitat; di luar semua zona = pemain di luar |
 | `Assets/Script/Suit/SuitReminder.cs` | Pengingat TARS "lepas suit" (dialog, cooldown). Dipasang pada GameObject `SuitSystem` oleh menu setup. Menonaktifkan diri bila `TARSSystem` ada (logikanya pindah ke sana) |
 | `Assets/Script/TARS/TARSSystem.cs` | Antrean pesan TARS (prioritas, cooldown), pemantau ambang resource/oksigen suit, panel rusak, awal/akhir hari, pesan Bumi, laporan dialog E. Objek `TARSSystem` di scene dibuat menu setup |
+| `Assets/Script/Tutorial/TutorialManager.cs` | Tutorial Day 1: 7 langkah, syarat dikunci (urutan bebas), arahan TARS via `TARSSystem.Announce`, event, `TryCompleteStep`, simpan/lewati (PlayerPrefs, Tab), selesai saat Day 2. Objek `TutorialManager` di scene dibuat menu setup |
+| `Assets/Script/Tutorial/TutorialStepId.cs` | Enum 7 langkah tutorial (GDD 5.2) |
+| `Assets/Script/Tutorial/TutorialStepData.cs` | Data satu langkah (id, judul, baris TARS) |
+| `Assets/Script/Tutorial/TutorialGuideUI.cs` | Garis UI dari tubuh Player ke tujuan langkah tutorial (hanya tampilan). Dipasang pada Canvas oleh menu setup |
+| `Assets/Editor/MarsTutorialSetup.cs` | Menu Editor `Mars > Setup Tutorial`: membuat objek `TutorialManager` dan memasang `TutorialGuideUI` pada Canvas |
 | `Assets/Editor/MarsTarsSystemSetup.cs` | Menu Editor `Mars > Setup TARS System`: membuat objek `TARSSystem`, menyambungkan `DialogueUI` dan `TarsWanderer.tarsSystem` |
 | `Assets/Script/Suit/SuitGate.cs` | Tembok tak terlihat di pintu keluar (BoxCollider2D solid) |
 | `Assets/Editor/MarsSuitSetup.cs` | Menu Editor `Mars > Setup Suit and Gate`: membuat SuitSystem, SuitStation, IndoorZone, SuitGate, dan `HudRoot/SuitPanel` |

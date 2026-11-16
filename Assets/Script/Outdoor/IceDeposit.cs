@@ -27,6 +27,9 @@ public class IceDeposit : MonoBehaviour, IInteractable
     private float gatherTimer;
     private float nextInteractTime;
 
+    /// <summary>Dipanggil setiap pengumpulan berhasil (parameter: jumlah es yang masuk ke tas). Dipakai TutorialManager.</summary>
+    public event System.Action<int> OnCollected;
+
     /// <summary>True selama pemain sedang mengumpulkan es.</summary>
     public bool IsGathering => isGathering;
 
@@ -113,6 +116,8 @@ public class IceDeposit : MonoBehaviour, IInteractable
 
         if (added <= 0)
             Debug.LogWarning("IceDeposit: tidak ada es yang masuk (tas penuh atau InventorySystem hilang).", this);
+        else
+            OnCollected?.Invoke(added);
 
         CancelGathering();
     }
