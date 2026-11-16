@@ -1345,6 +1345,12 @@ MonoBehaviour:
   dialogueUI: {fileID: 0}
   stageCount: 3
   waterPerWatering: 2
+  growSecondsMin: 60
+  growSecondsMax: 120
+  potatoMin: 2
+  potatoMax: 4
+  seedMin: 1
+  seedMax: 2
   spriteRenderer: {fileID: 610598006}
   emptySprite: {fileID: 0}
   stageSprites: []
@@ -1757,10 +1763,12 @@ MonoBehaviour:
   energyCostPerCycle: 2
   oxygenPerCycle: 10
   cycleSeconds: 5
+  restartBelowFraction: 0.4
   startOn: 1
   allowManualToggle: 1
   activeIndicator: {fileID: 0}
   reinteractCooldown: 0.3
+  showCostPopups: 0
 --- !u!61 &750604466
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -16378,6 +16386,7 @@ MonoBehaviour:
   canvas: {fileID: 0}
   player: {fileID: 0}
   worldCamera: {fileID: 0}
+  dialogueUI: {fileID: 0}
   lineColor: {r: 0.3, g: 0.9, b: 1, a: 0.9}
   thickness: 4
   markerSize: 22
@@ -18725,6 +18734,72 @@ Transform:
   - {fileID: 1893377893}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1883896325
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1883896327}
+  - component: {fileID: 1883896326}
+  m_Layer: 0
+  m_Name: FloatingPopupManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1883896326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1883896325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41b8e07a9c2d4f6ab35d8e1f70c4a926, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FloatingPopupManager
+  potatoIcon: {fileID: 0}
+  iceIcon: {fileID: 0}
+  waterIcon: {fileID: 0}
+  oxygenIcon: {fileID: 0}
+  energyIcon: {fileID: 0}
+  seedIcon: {fileID: 0}
+  hungerIcon: {fileID: 0}
+  repairIcon: {fileID: 0}
+  font: {fileID: 0}
+  fontSize: 64
+  characterSize: 0.045
+  gainColor: {r: 0.55, g: 1, b: 0.55, a: 1}
+  lossColor: {r: 1, g: 0.55, b: 0.45, a: 1}
+  shadowColor: {r: 0, g: 0, b: 0, a: 0.85}
+  iconWorldSize: 0.45
+  iconTextGap: 0.08
+  lifetime: 1.4
+  riseDistance: 0.9
+  stackSpacing: 0.45
+  maxActive: 24
+  sortingLayerName: Default
+  sortingOrder: 1000
+--- !u!4 &1883896327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1883896325}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1888017949
 GameObject:
   m_ObjectHideFlags: 0
@@ -19267,10 +19342,10 @@ MonoBehaviour:
     startAmount: 20
     maxAmount: 30
   - type: 2
-    startAmount: 50
+    startAmount: 100
     maxAmount: 100
   - type: 3
-    startAmount: 0
+    startAmount: 100
     maxAmount: 100
   - type: 4
     startAmount: 50
@@ -20131,3 +20206,4 @@ SceneRoots:
   - {fileID: 413242649}
   - {fileID: 2116275188}
   - {fileID: 1888017951}
+  - {fileID: 1883896327}

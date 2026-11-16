@@ -250,7 +250,14 @@ public class InventorySystem : MonoBehaviour
         HungerSystem hunger = HungerSystem.Instance;
         if (!RemoveFromBag(ItemType.Potato, 1)) return false;
 
-        hunger.Feed(hunger.SatietyPerPotato);
+        float gained = hunger.Feed(hunger.SatietyPerPotato);
+
+        if (player != null)
+        {
+            Vector3 popupAnchor = FloatingPopupManager.AnchorAbove(player);
+            FloatingPopupManager.ShowAmount(popupAnchor, PopupIcon.Potato, "Kentang", -1f);
+            FloatingPopupManager.ShowAmount(popupAnchor, PopupIcon.Hunger, "Kenyang", gained);
+        }
         return true;
     }
 

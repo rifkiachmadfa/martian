@@ -134,6 +134,10 @@ public class WaterPurifier : MonoBehaviour, IInteractable, IItemReceiver
         timer = 0f;
         SetProcessing(true);
 
+        Vector3 popupAnchor = FloatingPopupManager.AnchorAbove(this);
+        FloatingPopupManager.ShowAmount(popupAnchor, PopupIcon.Ice, "Es", -iceCost);
+        FloatingPopupManager.ShowAmount(popupAnchor, PopupIcon.Energy, "Energy", -energyCost);
+
         ShowMessage("Memproses " + iceCost + " es dan " + Mathf.CeilToInt(energyCost) +
             " Energy menjadi " + Mathf.CeilToInt(waterOutput) + " Water. Selesai dalam " +
             Mathf.CeilToInt(processSeconds) + " detik.");
@@ -149,6 +153,7 @@ public class WaterPurifier : MonoBehaviour, IInteractable, IItemReceiver
 
         timer = 0f;
         SetProcessing(false);
+        FloatingPopupManager.ShowAmount(FloatingPopupManager.AnchorAbove(this), PopupIcon.Water, "Water", added);
     }
 
     private void SetProcessing(bool processing)

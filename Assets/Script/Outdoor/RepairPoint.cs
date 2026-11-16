@@ -65,6 +65,7 @@ public class RepairPoint : MonoBehaviour, IInteractable
     private void OnRepairSucceeded()
     {
         panel.Repair();
+        FloatingPopupManager.Show(FloatingPopupManager.AnchorAbove(panel), PopupIcon.Repair, "Panel diperbaiki");
         ShowMessage("Solar Panel diperbaiki. Produksi Energy kembali normal (" +
             panel.CurrentEnergyPerSecond.ToString("0.0") + " per detik).");
     }

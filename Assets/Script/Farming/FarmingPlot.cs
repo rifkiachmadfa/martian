@@ -49,7 +49,18 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
     [SerializeField] private Color matureTint = new Color(0.3f, 1f, 0.3f);
     [SerializeField, Min(0f)] private float reinteractCooldown = 0.3f;
 
+    [Header("Label status di atas petak (hitung mundur panen)")]
+    [Tooltip("Menampilkan sisa waktu panen langsung di atas petak sejak ditanam, agar pemain tidak perlu menekan E berulang.")]
+    [SerializeField] private bool showStatusLabel = true;
+    [SerializeField, Min(0.1f)] private float statusLabelSize = 0.8f;
+    [SerializeField] private Color waitingColor = new Color(1f, 0.9f, 0.4f);
+    [SerializeField] private Color growingColor = Color.white;
+    [SerializeField] private Color readyColor = new Color(0.55f, 1f, 0.55f);
+
     private TimeManager time;
+    private TextMesh statusLabel;
+    private TextMesh statusShadow;
+    private string lastStatus;
     private Color baseColor = Color.white;
     private float nextInteractTime;
     private float growDuration;
@@ -79,6 +90,19 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
             return Mathf.Clamp01(growElapsed / growDuration);
         }
     }
+
+    /// <summary>Sisa detik sampai matang (durasi penuh bila belum disiram, 0 bila matang atau tanpa tanaman).</summary>
+    public float GrowSecondsRemaining
+    {
+        get
+        {
+            if (!HasPlant || IsMature) return 0f;
+            return Mathf.Max(0f, growDuration - growElapsed);
+        }
+    }
+
+    // Popup petak naik sedikit lebih tinggi agar tidak menimpa label status.
+    private Vector3 PopupAnchor => FloatingPopupManager.AnchorAbove(this) + Vector3.up * 0.45f;
 
     public string InteractionPrompt
     {
@@ -115,7 +139,9 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
         Stage = 0;
         IsWatered = false;
         growElapsed = 0f;
+        growDuration = Random.Range(growSecondsMin, growSecondsMax); // diundi saat tanam agar durasi langsung tampil; tumbuh baru jalan setelah disiram
         RefreshVisual();
+        FloatingPopupManager.ShowAmount(PopupAnchor, PopupIcon.Seed, "Bibit", -1f);
         ShowMessage("Bibit kentang ditanam. Siram tanaman sekali agar ia mulai tumbuh.");
     }
 
@@ -135,10 +161,67 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
         if (growSecondsMax < growSecondsMin) growSecondsMax = growSecondsMin;
 
         RefreshVisual();
+        CreateStatusLabel();
+    }
+
+    private void CreateStatusLabel()
+    {
+        if (!showStatusLabel) return;
+
+        statusLabel = FloatingPopupManager.CreateWorldLabel("StatusLabel", transform, statusLabelSize, 1);
+        statusShadow = FloatingPopupManager.CreateWorldLabel("StatusShadow", transform, statusLabelSize, 0);
+        if (statusLabel == null || statusShadow == null) return;
+
+        Vector3 anchor = FloatingPopupManager.AnchorAbove(this);
+        statusLabel.transform.position = anchor;
+        statusShadow.transform.position = anchor + new Vector3(0.025f, -0.025f, 0f);
+        statusShadow.color = new Color(0f, 0f, 0f, 0.85f);
+        RefreshStatusLabel();
+    }
+
+    // Teks status di atas petak: kosong (tersembunyi), "Belum disiram (M:SS)", "Matang M:SS", "Siap panen!".
+    private void RefreshStatusLabel()
+    {
+        if (statusLabel == null) return;
+
+        string text = string.Empty;
+        Color color = growingColor;
+
+        if (HasPlant)
+        {
+            if (IsMature)
+            {
+                text = "Siap panen!";
+                color = readyColor;
+            }
+            else
+            {
+                int seconds = Mathf.CeilToInt(GrowSecondsRemaining);
+                string clock = (seconds / 60) + ":" + (seconds % 60).ToString("00");
+                if (IsWatered)
+                {
+                    text = "Matang " + clock;
+                }
+                else
+                {
+                    text = "Belum disiram (" + clock + ")";
+                    color = waitingColor;
+                }
+            }
+        }
+
+        if (text == lastStatus) return;
+        lastStatus = text;
+
+        statusLabel.text = text;
+        statusLabel.color = color;
+        statusShadow.text = text;
     }
 
     private void Update()
     {
+        RefreshStatusLabel();
+
         if (!HasPlant || !IsWatered || IsMature) return;
         if (time != null && time.IsPaused) return; // tidur atau minigame: waktu tumbuh ikut berhenti
 
@@ -203,10 +286,10 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
 
         IsWatered = true;
         growElapsed = 0f;
-        growDuration = Random.Range(growSecondsMin, growSecondsMax);
         rolledPotatoes = Random.Range(potatoMin, potatoMax + 1); // batas atas int bersifat eksklusif
         rolledSeeds = Random.Range(seedMin, seedMax + 1);
         RefreshVisual();
+        FloatingPopupManager.ShowAmount(PopupAnchor, PopupIcon.Water, "Water", -waterPerWatering);
         ShowMessage("Tanaman disiram memakai " + Mathf.CeilToInt(waterPerWatering) +
             " Water. Ia mulai tumbuh dan akan matang dalam sekitar 1 sampai 2 menit.");
     }
@@ -237,6 +320,10 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
         IsWatered = false;
         growElapsed = 0f;
         RefreshVisual();
+
+        Vector3 popupAnchor = PopupAnchor;
+        FloatingPopupManager.ShowAmount(popupAnchor, PopupIcon.Potato, "Kentang", potatoes);
+        FloatingPopupManager.ShowAmount(popupAnchor, PopupIcon.Seed, "Bibit", seedsInBag + seedsStored);
 
         string message = "Kentang dipanen: " + potatoes + " kentang masuk ke tas.";
         if (seedsInBag > 0) message += " Bibit +" + seedsInBag + " masuk ke tas.";

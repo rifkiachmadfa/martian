@@ -10,7 +10,7 @@
 |---|---|
 | Repo | https://github.com/rifkiachmadfa/martian.git |
 | Branch | `main` |
-| Revisi terakhir diperiksa | `80bc5a6d` (2026-11-17, commit "phase11", clone `main`); patch tutorial Day 1 (Milestone 12, `TutorialManager`) dibuat di atas revisi ini; patch `tutorial-eat-sleep.patch` dibuat di atas `fe6dc9ae` (commit "tutorial update"); patch `farming-realtime.patch` bertumpuk di atasnya |
+| Revisi terakhir diperiksa | `7af5e74a` (2026-11-17, commit "final tutorial", clone `main`); patch `floating-popups.patch` (Milestone 14, popup ikon + teks) dibuat di atas revisi ini. Patch `farming-status-label.patch` (label hitung mundur panen) bertumpuk di atas `floating-popups.patch`. Sebelumnya: `80bc5a6d` (commit "phase11"); patch tutorial Day 1 (Milestone 12, `TutorialManager`) dibuat di atas revisi ini; patch `tutorial-eat-sleep.patch` dibuat di atas `fe6dc9ae` (commit "tutorial update"); patch `farming-realtime.patch` bertumpuk di atasnya |
 | Unity | 6000.6.8f1 |
 | Paket penting | Input System 1.20.1 (kode memakai `Input.GetAxisRaw` / `KeyCode`), URP 17.6.0, 2D Animation 16.0.1, Tilemap, Cinemachine |
 | Scene | Satu scene: `Assets/Scenes/SampleScene.unity` |
@@ -37,7 +37,7 @@ Hasil tes (bila ada) dicatat terpisah di `09_TEST_CHECKLIST.md`, bukan di sini.
 
 ## 2. Ringkasan progres
 
-Dihitung dari checklist bagian 3 (revisi `80bc5a6d` + patch tutorial Day 1).
+Dihitung dari checklist bagian 3 (revisi `7af5e74a` + patch popup 2026-11-17).
 
 | # | Milestone | Status | Selesai | Sebagian | Belum | Total |
 |---|---|---|---|---|---|---|
@@ -54,9 +54,9 @@ Dihitung dari checklist bagian 3 (revisi `80bc5a6d` + patch tutorial Day 1).
 | 11 | TARS monitoring dan reminder | SEBAGIAN | 14 | 2 | 2 | 18 |
 | 12 | Integrasi loop dan tutorial Day 1 | SEBAGIAN | 13 | 1 | 1 | 15 |
 | 13 | Day 2–7, Game Over/Victory, balancing | SEBAGIAN | 0 | 1 | 12 | 13 |
-| 14 | Audio, animasi, polish | SEBAGIAN | 1 | 2 | 11 | 14 |
+| 14 | Audio, animasi, polish | SEBAGIAN | 3 | 3 | 11 | 17 |
 | 15 | Playtest penuh dan build | BELUM | 0 | 0 | 4 | 4 |
-| | **Total** | | **108** | **15** | **40** | **163** |
+| | **Total** | | **110** | **16** | **40** | **166** |
 
 Usulan urutan berikutnya (**belum disetujui developer**): 13 (loop menang/kalah minimal: Food berkurang, Game Over, Victory, perilaku `Bed` di Day 7) agar game bisa dimainkan Day 1 sampai Day 7, lalu 11 (`TARSSystem` sudah dibuat, menunggu tes Unity), 12 (tutorial), 14, 15. Urutan jadwal GDD: 10, 11, 12, 13, 14, 15. Build WebGL percobaan sebaiknya lebih awal.
 Jika jadwal mundur: kurangi polish dan fitur Should Have dulu; jangan korbankan loop resource inti dan sistem tujuh hari.
@@ -348,7 +348,7 @@ Acuan: GDD 19 hari 13; GDD 5, 6, 17. Status: **SEBAGIAN** (1 selesai, 1 sebagian
 - [ ] `13.5.2` Pastikan Energy cukup menopang mesin (satu panel normal hanya sedikit di atas konsumsi Oxygen Generator)
 
 ### Milestone 14 — Audio, animasi, polish
-Acuan: GDD 19 hari 14; GDD 14, 15. Status: **SEBAGIAN** (1 selesai, 2 sebagian, 11 belum dari 14).
+Acuan: GDD 19 hari 14; GDD 14, 15. Status: **SEBAGIAN** (3 selesai, 3 sebagian, 11 belum dari 17).
 
 **14.1 Animasi** (1/5)
 - [x] `14.1.1` Animasi TARS
@@ -363,9 +363,12 @@ Acuan: GDD 19 hari 14; GDD 14, 15. Status: **SEBAGIAN** (1 selesai, 2 sebagian, 
 - [ ] `14.2.3` Notifikasi TARS dan alarm kritis
 - [ ] `14.2.4` Audio tidur dan ending
 
-**14.3 UI** (0/2)
+**14.3 UI** (2/5)
 - [ ] `14.3.1` Main Menu (Start, Settings, Quit)
 - [ ] `14.3.2` Pause dan tutup panel dengan Esc
+- [x] `14.3.3` Popup mengambang ikon + teks di dekat objek (2026-11-17, permintaan developer): `FloatingPopupManager` + hook di `IceDeposit` ("Es +N"), `FarmingPlot` (tanam "Bibit -1", siram "Water -N", panen "Kentang +N" dan "Bibit +N"), `WaterPurifier` ("Es -N", "Energy -N", lalu "Water +N"), `OxygenGenerator` ("Oxygen +N" per siklus; biaya Water/Energy opsional, bawaan mati), `RepairPoint` ("Panel diperbaiki"), `InventorySystem.UseDefault` (makan: "Kentang -1" dan "Kenyang +N" di atas Player). Hanya tampilan, tidak mengubah resource. Menu `Mars > Setup Floating Popups`. Kode ditulis tanpa Unity; belum dikompilasi/dites
+- [x] `14.3.5` Label status tetap di atas `FarmingPlot` (2026-11-17, permintaan developer, agar pemain tidak spam interaksi): "Belum disiram (M:SS)" sejak ditanam, "Matang M:SS" menghitung mundur setelah disiram, "Siap panen!" saat matang, kosong bila petak kosong. Durasi tumbuh kini diundi saat TANAM (sebelumnya saat siram) supaya langsung tampil; pertumbuhan tetap baru berjalan setelah disiram. Popup petak dinaikkan agar tidak menimpa label. `FloatingPopupManager.CreateWorldLabel`, flag `showStatusLabel`. Belum dikompilasi/dites
+- [~] `14.3.4` Ikon dan font popup final: saat ini ikon pixel 8x8 bawaan dibuat lewat kode (placeholder); sprite dari itch.io dan font piksel belum diimpor, diisi lewat slot Inspector `FloatingPopupManager`
 
 **14.4 Pembersihan** (0/3)
 - [ ] `14.4.1` Hapus `ResourceDebugPanel`
@@ -406,6 +409,7 @@ Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), angka balancing se
 - Alur kerja perubahan: AI menganalisis repo, lalu memberi patch `.patch`. Developer yang menerapkan (`git apply`). AI tidak commit atau push.
 - Resource Monitor dan Terminal komunikasi DIHAPUS (2026-11-16, permintaan developer; menyimpang dari GDD v1.2 bagian 3.1, 12.1.1 tutorial). Fungsinya pindah ke TARS (11.4). Pesan Bumi tetap cerita, bukan quest.
 - Sistem PHASE.md (2026-11-16): checklist per milestone dengan subphase; wajib diperbarui di setiap patch.
+- Popup mengambang (2026-11-17, permintaan developer): umpan balik visual ikon + teks di dekat objek saat resource/item berubah. Hanya tampilan (tidak mengubah resource), dipanggil langsung dari skrip interaksi setelah perubahan terjadi. Bukan quest dan bukan fitur Won't Have; menambah umpan balik interaksi (GDD 13.1 prompt/HUD minimal, GDD 15 efek interaksi) tanpa mengubah HUD. Perlu persetujuan developer bila ingin cakupan lebih luas (Storage, Suit Station, Solar Panel Energy per detik).
 - Pemicu kerusakan Solar Panel (2026-11-16, developer): satu event acak per hari. USULAN turunan (belum disetujui): mulai Day 2 (Day 1 tutorial bebas kerusakan, `firstDamageDay`), waktu kejadian acak 15-70 persen durasi hari, satu panel normal dipilih acak.
 
 ## 6. Inventaris implementasi saat ini
@@ -435,10 +439,11 @@ Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), angka balancing se
 | `NPC/TarsWanderer` | TARS jalan 4 arah langkah pendek, cek rintangan (`Rigidbody2D.Cast`), animasi frame 1-2-3-2 per arah, menembus Player (`IgnoreCollision`), dialog saat E |
 | `Dialogue/DialogueUI` | Dialog baris demi baris (E/Spasi/klik) |
 | `UI/HudUI`, `UI/FadeUI` | HUD (hari, timer, Food, Water, Oxygen, Energy, Ice opsional, panel Suit Oxygen) dan layar fade |
+| `UI/FloatingPopupManager` | Popup mengambang ikon + teks di dunia game (`ShowAmount`, `Show`, `AnchorAbove`, pool, tanpa Canvas); dipanggil `IceDeposit`, `FarmingPlot`, `WaterPurifier`, `OxygenGenerator`, `RepairPoint`, `InventorySystem`. Tanpa manager di scene, panggilan diabaikan (satu peringatan di Console) |
 
 ### Editor setup scripts (Assets/Editor) — pola kerja proyek
 Menu yang aman dijalankan berulang, tidak menimpa referensi yang sudah diisi:
-`Mars > Setup Dialogue and Prompt UI`, `Setup HUD and Time`, `Setup Bed and Fade`, `Setup Suit and Gate`, `Setup TARS Animation`, `Setup Interactive Objects` (8 objek placeholder + panel Ice), `Setup Panel Damage and Wiring Minigame` (pasang `WiringMinigameUI` di Canvas, buat `SolarPanelDamageScheduler`, sambungkan `RepairPoint`), `Setup TARS System` (buat objek `TARSSystem`, sambungkan `DialogueUI` dan `TarsWanderer`), `Setup Tutorial` (baru: buat objek `TutorialManager`).
+`Mars > Setup Dialogue and Prompt UI`, `Setup HUD and Time`, `Setup Bed and Fade`, `Setup Suit and Gate`, `Setup TARS Animation`, `Setup Interactive Objects` (8 objek placeholder + panel Ice), `Setup Panel Damage and Wiring Minigame` (pasang `WiringMinigameUI` di Canvas, buat `SolarPanelDamageScheduler`, sambungkan `RepairPoint`), `Setup TARS System` (buat objek `TARSSystem`, sambungkan `DialogueUI` dan `TarsWanderer`), `Setup Tutorial` (buat objek `TutorialManager`), `Setup Floating Popups` (baru: buat objek `FloatingPopupManager`).
 Milestone baru sebaiknya memakai pola yang sama (satu menu setup per milestone, objek placeholder di sekitar Player).
 
 ### Objek penting di SampleScene
@@ -484,3 +489,5 @@ Layer `Interactable` sudah ada (layer 3).
 | 2026-11-17 | Perbaikan tutorial: langkah CollectIce selesai setelah 5 es dikumpulkan (event `IceDeposit.OnCollected`) atau tas es penuh, tidak lagi bergantung `IsOutdoors`; garis arah tidak macet di Ice Deposit. Total tidak berubah (107/15/40/162). |
 | 2026-11-17 | Milestone 12: langkah tutorial `Eat` (makan kentang, 12.1.9); arahan dan garis arah Sleep menunggu timer hari habis; `TutorialGuideUI` disembunyikan saat dialog terbuka atau pesan TARS mengantre (`TARSSystem.HasPendingMessages`). Total 108/15/40/163. Basis `fe6dc9ae` + `tutorial-eat-sleep.patch`. Belum dikompilasi/dites di Unity. |
 | 2026-11-17 | Milestone 7: pertumbuhan `FarmingPlot` waktu nyata (durasi acak 60 sampai 120 detik setelah satu kali siram), panen acak 2 sampai 4 kentang dan 1 sampai 2 bibit; tidak lagi bergantung `OnDayStarted`. Penyimpangan P-6. Total butir tidak berubah (108/15/40/163). Basis `fe6dc9ae` + `tutorial-eat-sleep.patch` + `farming-realtime.patch`. Belum dikompilasi/dites di Unity. |
+| 2026-11-17 | Milestone 14: label hitung mundur panen di atas `FarmingPlot` (14.3.5); durasi tumbuh diundi saat tanam. Total 110/16/40/166. Basis `7af5e74a` + `floating-popups.patch`. Belum dikompilasi/dites di Unity. |
+| 2026-11-17 | Milestone 14: popup mengambang ikon + teks (`FloatingPopupManager`, menu `Setup Floating Popups`) dan hook di `IceDeposit`, `FarmingPlot`, `WaterPurifier`, `OxygenGenerator`, `RepairPoint`, `InventorySystem`. Butir 14.3.3 (selesai di kode) dan 14.3.4 (sebagian, ikon placeholder) ditambahkan. Total 109/16/40/165. Basis `7af5e74a`. Belum dikompilasi/dites di Unity. |

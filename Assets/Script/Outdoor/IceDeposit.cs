@@ -117,7 +117,10 @@ public class IceDeposit : MonoBehaviour, IInteractable
         if (added <= 0)
             Debug.LogWarning("IceDeposit: tidak ada es yang masuk (tas penuh atau InventorySystem hilang).", this);
         else
+        {
+            FloatingPopupManager.ShowAmount(FloatingPopupManager.AnchorAbove(this), PopupIcon.Ice, "Es", added);
             OnCollected?.Invoke(added);
+        }
 
         CancelGathering();
     }

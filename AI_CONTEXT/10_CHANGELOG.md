@@ -10,6 +10,20 @@ Format:
 - **Test:** pengujian dan hasil.
 - **Follow-up:** pekerjaan tersisa.
 
+## 2026-11-17 (UI: label hitung mundur panen di atas petak)
+- **Changed:** `FarmingPlot` menampilkan label tetap di atas petak: "Belum disiram (M:SS)" setelah ditanam, "Matang M:SS" menghitung mundur setelah disiram, "Siap panen!" saat matang. Durasi tumbuh acak (60 sampai 120 dtk) kini diundi saat tanam (sebelumnya saat siram); pertumbuhan tetap baru berjalan setelah disiram. Popup petak dinaikkan 0,45 agar tidak menimpa label. `FloatingPopupManager.CreateWorldLabel` ditambahkan. Flag `showStatusLabel` untuk mematikan.
+- **Reason:** Permintaan developer: pemain tahu durasi panen tanpa menekan E berulang.
+- **Files/systems:** `Assets/Script/Farming/FarmingPlot.cs`, `Assets/Script/UI/FloatingPopupManager.cs`, `PHASE.md` 14.3.5.
+- **Test:** Hanya `git apply --check`; belum dikompilasi atau dijalankan di Unity [?].
+- **Follow-up:** Tes tampilan label di kamera; bila perlu ubah `statusLabelSize`.
+
+## 2026-11-17 (UI: popup mengambang ikon + teks)
+- **Changed:** Menambah `FloatingPopupManager` (+ enum `PopupIcon`): popup dunia-game berisi ikon dan teks yang naik dan memudar di dekat objek, misalnya "Es +1", "Kentang +3", "Water -2", "Oxygen +10", "Kenyang +12.5". Dipanggil setelah perubahan terjadi di `IceDeposit`, `FarmingPlot` (tanam, siram, panen), `WaterPurifier` (mulai dan selesai), `OxygenGenerator` (hasil Oxygen per siklus; biaya Water/Energy opsional lewat `showCostPopups`, bawaan mati), `RepairPoint` (panel diperbaiki), dan `InventorySystem.UseDefault` (makan, di atas Player). Ikon bawaan 8x8 dibuat lewat kode; sprite dan font dapat diganti lewat Inspector. Menu baru `Mars > Setup Floating Popups`.
+- **Reason:** Permintaan developer: UI lebih menarik dan umpan balik jelas untuk setiap pemakaian/interaksi farming dan gathering.
+- **Files/systems:** `Assets/Script/UI/FloatingPopupManager.cs` (+ `.meta`), `Assets/Editor/MarsPopupSetup.cs` (+ `.meta`) baru; `IceDeposit.cs`, `FarmingPlot.cs`, `WaterPurifier.cs`, `OxygenGenerator.cs`, `RepairPoint.cs`, `InventorySystem.cs` (masing-masing 1 sampai 12 baris tambahan). Scene diubah lewat menu Editor oleh developer, bukan oleh patch. `PHASE.md` 14.3.3 dan 14.3.4.
+- **Test:** Tidak ada compiler C# atau Unity di lingkungan AI; kode hanya dibaca dan diperiksa lewat `git apply --check`. Belum dikompilasi atau dijalankan di Unity [?].
+- **Follow-up:** Developer mengimpor sprite ikon (itch.io) dan font piksel, lalu menyetel `characterSize` dan `iconWorldSize` sesuai kamera. Opsional: popup di Storage, Suit Station (isi suit), dan laporan Energy Solar Panel; popup "Tanaman matang".
+
 ## 2026-11-17 (Farming: tumbuh waktu nyata dan panen acak)
 - **Changed:** `FarmingPlot`: setelah SATU kali siram tanaman tumbuh waktu nyata selama durasi acak 60 sampai 120 detik (`growSecondsMin/Max`), tahap visual dibagi rata, lalu matang. Timer ikut `TimeManager.IsPaused`. Pergantian hari tidak lagi mempengaruhi tumbuh (`HandleDayStarted` dihapus). Panen: 2 sampai 4 kentang dan 1 sampai 2 bibit acak (`potatoMin/Max`, `seedMin/Max`), diundi saat disiram. Field lama `potatoPerHarvest` dan `seedPerHarvest` diganti. Prompt menampilkan persen tumbuh. Teks langkah Farming di tutorial disesuaikan.
 - **Reason:** Permintaan developer: menanam terlalu lambat (harus lewat ganti hari). Ini PERUBAHAN DESAIN dari GDD v1.2 bagian 5.5 dan 10 (dicatat sebagai P-6).

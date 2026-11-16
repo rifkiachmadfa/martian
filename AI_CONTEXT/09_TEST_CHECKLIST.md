@@ -276,3 +276,19 @@ Siapkan: Inspector `FarmingPlot` memakai nilai bawaan (grow 60 sampai 120 detik,
 - [ ] Panen: kentang masuk tas sebanyak 2 sampai 4 dan bibit 1 sampai 2 (bibit ke storage bila tas bibit penuh); petak kosong lagi. Ulangi beberapa kali: jumlah bervariasi.
 - [ ] Tas kentang hampir penuh: panen ditolak dengan pesan ruang kurang; jumlah hasil TIDAK berubah setelah dicoba berulang (diundi saat disiram); setelah simpan ke storage, panen berhasil.
 - [ ] Tutorial langkah Farming selesai setelah tanam dan siram (tidak perlu menunggu matang); teks arahan baru tampil.
+
+## Popup mengambang ikon + teks (2026-11-17; BARU, belum dites di Unity)
+Siapkan: jalankan `Mars > Setup Floating Popups`, simpan scene. Ikon bawaan placeholder tampil bila slot sprite kosong.
+- [ ] Console bersih dari error saat Play; tanpa objek `FloatingPopupManager`, hanya satu peringatan dan game tetap jalan.
+- [ ] Ice Deposit: setelah pengumpulan selesai muncul ikon es + "Es +1" di atas deposit, naik dan memudar; tas es penuh: tidak ada popup.
+- [ ] Farming Plot: tanam = "Bibit -1" (ikon bibit); siram = "Water -2" (ikon water); panen = "Kentang +N" dan "Bibit +N" bertumpuk, tidak saling menimpa; panen ditunda karena tas penuh = tidak ada popup.
+- [ ] Water Purifier: saat mulai "Es -1" dan "Energy -5" bertumpuk; setelah proses selesai "Water +4". Mulai ditolak (Es/Energy kurang) = tidak ada popup.
+- [ ] Oxygen Generator: tiap siklus kerja muncul "Oxygen +10" (siklus terakhir bisa kurang dari 10); saat siaga atau mati tidak ada popup; centang `Show Cost Popups` menambah "Water -1" dan "Energy -2".
+- [ ] Repair Point: setelah minigame sukses muncul "Panel diperbaiki" di atas Solar Panel.
+- [ ] Makan (tombol 1, lalu E): "Kentang -1" dan "Kenyang +N" di atas Player; makan saat kenyang penuh = tidak ada popup.
+- [ ] Teks terbaca di kamera Cinemachine dan tidak tertutup Tilemap (urutan gambar); ikon dan teks sejajar di tengah titik popup; atur `Character Size` / `Icon World Size` bila perlu.
+- [ ] Popup tetap bergerak dan memudar saat layar tidur (timer berhenti); tidak ada popup yang tersangkut setelah lama bermain.
+- [ ] Mengganti sprite ikon dan font di Inspector berlaku pada popup berikutnya.
+- [ ] Label petak: petak kosong tanpa label; setelah tanam muncul "Belum disiram (M:SS)" (kuning) dengan durasi 1:00 sampai 2:00; setelah siram berubah "Matang M:SS" dan menghitung mundur; selesai "Siap panen!" (hijau); setelah panen label hilang.
+- [ ] Hitung mundur berhenti saat timer berhenti (tidur, minigame) dan lanjut sesudahnya; angka cocok dengan waktu matang sebenarnya (selisih maksimal 1 detik).
+- [ ] Popup "Water -2" / "Kentang +N" di petak tidak menimpa label; beberapa petak berdampingan tidak saling menimpa label.

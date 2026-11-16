@@ -34,6 +34,8 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
     [Tooltip("Objek yang dinyalakan selama mesin benar-benar menghasilkan oksigen.")]
     [SerializeField] private GameObject activeIndicator;
     [SerializeField, Min(0f)] private float reinteractCooldown = 0.3f;
+    [Tooltip("Jika dicentang, popup \"Water -N\" dan \"Energy -N\" juga tampil tiap siklus (bawaan mati agar layar tidak ramai).")]
+    [SerializeField] private bool showCostPopups;
 
     private float cycleTimer;
     private float nextInteractTime;
@@ -110,7 +112,15 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
         // Syarat sudah dicek lewat GetBlocker di frame yang sama (biaya penuh >= biaya sebanding), jadi kedua TryConsume pasti berhasil.
         resources.TryConsume(ResourceType.Water, waterCostPerCycle * fraction);
         resources.TryConsume(ResourceType.Energy, energyCostPerCycle * fraction);
-        resources.Add(ResourceType.HabitatOxygen, oxygenPerCycle);
+        float produced = resources.Add(ResourceType.HabitatOxygen, oxygenPerCycle);
+
+        Vector3 popupAnchor = FloatingPopupManager.AnchorAbove(this);
+        if (showCostPopups)
+        {
+            FloatingPopupManager.ShowAmount(popupAnchor, PopupIcon.Water, "Water", -waterCostPerCycle * fraction);
+            FloatingPopupManager.ShowAmount(popupAnchor, PopupIcon.Energy, "Energy", -energyCostPerCycle * fraction);
+        }
+        FloatingPopupManager.ShowAmount(popupAnchor, PopupIcon.Oxygen, "Oxygen", produced);
     }
 
     public bool CanInteract(GameObject interactor)

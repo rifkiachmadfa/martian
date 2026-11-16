@@ -69,6 +69,8 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Script/Farming/FarmingPlot.cs` | Satu petak kentang (IInteractable): tanam, siram (Water), tumbuh waktu nyata setelah satu kali siram, panen acak (kentang dan bibit). Satu objek = satu petak |
 | `Assets/Editor/MarsObjectsSetup.cs` | Menu Editor `Mars > Setup Interactive Objects`: membuat 7 objek interaktif placeholder + `SolarPanel` + panel Ice di HUD |
 | `Assets/Welcome/Welcome2DScript.cs` | Bawaan template Unity; bukan bagian game |
+| `Assets/Script/UI/FloatingPopupManager.cs` | Popup mengambang ikon + teks di dunia game (SpriteRenderer + TextMesh, pool, ikon pixel 8x8 bawaan lewat kode); API statis `ShowAmount`, `Show`, `AnchorAbove`, `CreateWorldLabel` (label tetap untuk `FarmingPlot`); enum `PopupIcon` di file yang sama. Satu instance di scene |
+| `Assets/Editor/MarsPopupSetup.cs` | Menu Editor `Mars > Setup Floating Popups`: membuat objek `FloatingPopupManager` (tidak menimpa yang sudah ada) |
 
 ## Aset
 | Path | Isi |
@@ -88,6 +90,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 **Objek interaktif (patch 2026-11-15):** dibuat lewat menu Mars > Setup Interactive Objects: `IceDeposit`, `SolarPanel`, `RepairPoint`, `WaterPurifier`, `OxygenGenerator`, `FarmingPlot` (SpriteRenderer kotak placeholder, BoxCollider2D trigger 1.5x1.5, layer `Interactable`, diletakkan di sekitar Player) dan `HudRoot/IcePanel` (+ `iceText`). WAJIB developer: memindahkan tiap objek ke lokasi akhirnya (Outdoor: IceDeposit, SolarPanel, RepairPoint; Farming Area: WaterPurifier, OxygenGenerator, FarmingPlot; Control Room: tidak ada; ResourceMonitor dan CommunicationTerminal dihapus 2026-11-16), mengganti sprite placeholder, dan menyimpan scene. Posisi akhir: [Dev], belum diverifikasi [?]. Objek belum ada di `SampleScene.unity` di repo [Repo].
 **Status scene objek interaktif (2026-11-16):** [Repo, d96d9b6f] `SampleScene.unity` yang ter-commit belum berisi objek tersebut. [Dev] scene lokal sudah berisi objek hasil setup dan tes interaksi lolos; belum di-commit.
 **Kerusakan panel dan minigame (patch 2026-11-16):** jalankan menu Mars > Setup Panel Damage and Wiring Minigame (komponen `WiringMinigameUI` pada Canvas; GameObject `SolarPanelDamageScheduler`; field Minigame pada `RepairPoint`). Simpan scene dengan Ctrl+S. [Belum dijalankan/dites]
+**Popup mengambang (patch 2026-11-17):** jalankan menu Mars > Setup Floating Popups (GameObject `FloatingPopupManager`). Ikon final: impor PNG (Sprite, Filter Mode Point, Compression None), seret ke slot ikon; font piksel: seret TTF ke slot Font. Simpan scene dengan Ctrl+S. [Belum dijalankan/dites]
 **Canvas:** dibuat lewat menu Mars > Setup Dialogue and Prompt UI (berisi `DialogueUI` dan `InteractionPromptUI`).
 
 ## Saat menambah/mengubah asset
