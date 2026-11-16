@@ -1,6 +1,6 @@
 # Scenes & Assets
 
-Terakhir diperbarui: 2026-11-16 (basis `16ca3c15` + patch Milestone 10). Label: [Repo] terverifikasi, [Dev] dilaporkan developer.
+Terakhir diperbarui: 2026-11-17 (basis `95a2aa97` + patch Milestone 11). Label: [Repo] terverifikasi, [Dev] dilaporkan developer.
 
 ## Area desain yang direncanakan
 - Control Room
@@ -37,18 +37,20 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Script/Suit/SuitSystem.cs` | Status suit, isi ulang dari oksigen habitat, lepas suit, konsumsi oksigen suit selama dikenakan. Dipasang pada GameObject `SuitSystem` |
 | `Assets/Script/Suit/SuitStation.cs` | Suit Station (IInteractable): "Kenakan suit" atau "Lepas suit"; tabung diisi otomatis dari oksigen habitat saat dikenakan dan saat dilepas. Layer `Interactable`, Collider2D Is Trigger |
 | `Assets/Script/Suit/IndoorZone.cs` | Trigger area dalam habitat; di luar semua zona = pemain di luar |
-| `Assets/Script/Suit/SuitReminder.cs` | Pengingat TARS "lepas suit" (dialog, cooldown). Dipasang pada GameObject `SuitSystem` oleh menu setup |
+| `Assets/Script/Suit/SuitReminder.cs` | Pengingat TARS "lepas suit" (dialog, cooldown). Dipasang pada GameObject `SuitSystem` oleh menu setup. Menonaktifkan diri bila `TARSSystem` ada (logikanya pindah ke sana) |
+| `Assets/Script/TARS/TARSSystem.cs` | Antrean pesan TARS (prioritas, cooldown), pemantau ambang resource/oksigen suit, panel rusak, awal/akhir hari, pesan Bumi, laporan dialog E. Objek `TARSSystem` di scene dibuat menu setup |
+| `Assets/Editor/MarsTarsSystemSetup.cs` | Menu Editor `Mars > Setup TARS System`: membuat objek `TARSSystem`, menyambungkan `DialogueUI` dan `TarsWanderer.tarsSystem` |
 | `Assets/Script/Suit/SuitGate.cs` | Tembok tak terlihat di pintu keluar (BoxCollider2D solid) |
 | `Assets/Editor/MarsSuitSetup.cs` | Menu Editor `Mars > Setup Suit and Gate`: membuat SuitSystem, SuitStation, IndoorZone, SuitGate, dan `HudRoot/SuitPanel` |
 | `Assets/Editor/MarsSleepSetup.cs` | Menu Editor `Mars > Setup Bed and Fade`: membuat FadeOverlay dan Bed (+SpawnPoint), menyambungkan referensi tanpa menimpa isian manual |
 | `Assets/Script/Outdoor/IceDeposit.cs` | Deposit es (IInteractable): E, pemain berhenti beberapa detik, Ice +1 ke inventory (batas = kapasitas Ice). Perlu suit. Layer `Interactable`, Collider2D |
 | `Assets/Script/Outdoor/SolarPanel.cs` | Panel surya: Energy otomatis per tick; `Damage()`/`Repair()`, `IsDamaged`, event `OnDamagedChanged`. Bukan IInteractable. Beberapa panel menjumlah |
 | `Assets/Script/Outdoor/RepairPoint.cs` | Titik perbaikan (IInteractable) untuk satu `SolarPanel` (field `panel`). Membuka `WiringMinigameUI`; panel diperbaiki setelah minigame sukses (cadangan langsung bila minigame tidak ada) |
-| `Assets/Script/Outdoor/SolarPanelDamageScheduler.cs` | Satu kerusakan acak per hari pada satu panel normal; pengumuman dialog TARS. Objek `SolarPanelDamageScheduler` di scene (dibuat menu setup) |
+| `Assets/Script/Outdoor/SolarPanelDamageScheduler.cs` | Satu kerusakan acak per hari pada satu panel normal; pengumuman lewat `TARSSystem` (dialog langsung hanya bila `TARSSystem` tidak ada). Objek `SolarPanelDamageScheduler` di scene (dibuat menu setup) |
 | `Assets/Script/UI/WiringMinigameUI.cs` | Minigame kabel (3-4 kabel, drag-and-drop mouse). Dipasang pada Canvas; UI dibuat lewat kode saat Awake (anak `WiringMinigameRoot`) |
 | `Assets/Editor/MarsRepairSetup.cs` | Menu Editor `Mars > Setup Panel Damage and Wiring Minigame`: pasang `WiringMinigameUI` di Canvas, buat `SolarPanelDamageScheduler`, sambungkan `RepairPoint` |
 | `Assets/Script/Survival/HungerSystem.cs` | Kenyang pemain (0-100), berkurang selama gameplay, `Feed()` dipanggil InventorySystem saat makan kentang, event `OnSatietyChanged`, `OnStarvationFailure`. Dipasang pada GameObject `HungerSystem` |
-| `Assets/Script/Survival/HungerReminder.cs` | Dialog TARS (teks tetap) saat kenyang melewati 30%, 10%, 0. Dipasang pada GameObject `HungerSystem` oleh menu setup |
+| `Assets/Script/Survival/HungerReminder.cs` | Pesan TARS (teks tetap) saat kenyang melewati 30%, 10%, 0; lewat antrean `TARSSystem` bila ada, dialog langsung bila tidak. Dipasang pada GameObject `HungerSystem` oleh menu setup |
 | `Assets/Script/Station/FoodStorage.cs` | Storage di Control Room (IInteractable "Buka storage"): membuka `StorageUI`. Nama class lama dipertahankan. Layer `Interactable`, Collider2D Is Trigger |
 | `Assets/Script/Inventory/ItemType.cs` | Enum item tas: Potato (1), Ice (2), Seed (3) |
 | `Assets/Script/Inventory/InventorySystem.cs` | Tas pemain (kentang 10, es 10, bibit 5), storage es dan bibit, pilihan slot (tombol 1-3), aksi bawaan (makan). Dipasang pada GameObject `InventorySystem` |
@@ -71,7 +73,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/COPY SPRIGHT/` | Asset pack astronot (demo scene) |
 
 ## Setup objek di scene (agar bisa direproduksi)
-**TARS:** SpriteRenderer, Rigidbody2D (Dynamic, Gravity Scale 0, Freeze Rotation Z), BoxCollider2D (bukan trigger), layer `Interactable`, komponen `TarsWanderer` (isi Wander Area, Dialogue UI, array frame per arah).
+**TARS:** SpriteRenderer, Rigidbody2D (Dynamic, Gravity Scale 0, Freeze Rotation Z), BoxCollider2D (bukan trigger), layer `Interactable`, komponen `TarsWanderer` (isi Wander Area, Dialogue UI, Tars System (otomatis dicari), array frame per arah).
 **TarsArea:** GameObject dengan BoxCollider2D, Is Trigger dicentang.
 **Player:** komponen `InteractionDetector` dengan Interactable Layer = `Interactable`.
 **ResourceManager:** GameObject kosong `ResourceManager` di scene dengan komponen `ResourceManager` dan `ResourceDebugPanel` (dipasang manual oleh developer; tidak ada di patch) [Dev].

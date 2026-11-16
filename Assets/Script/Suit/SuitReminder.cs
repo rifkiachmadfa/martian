@@ -6,7 +6,8 @@ using UnityEngine;
 /// Pesan memakai dialog TARS yang sudah ada (teks tetap, tanpa AI generatif). Hitungan hanya berjalan saat
 /// suit dikenakan, pemain di dalam habitat, game tidak dijeda, dan tidak ada dialog terbuka; hitungan diulang
 /// dari awal begitu pemain melepas suit atau keluar. Pesan berikutnya muncul setelah jeda ulang (cooldown).
-/// Sementara pengganti TARSSystem: saat TARSSystem dibuat, logika ini boleh dipindahkan ke sana.
+/// DIPINDAHKAN ke TARSSystem (Milestone 11, 11.3.1): bila TARSSystem ada di scene, komponen ini menonaktifkan diri
+/// agar pengingat tidak ganda. Komponen ini boleh dihapus dari objek SuitSystem.
 /// </summary>
 public class SuitReminder : MonoBehaviour
 {
@@ -25,6 +26,12 @@ public class SuitReminder : MonoBehaviour
 
     private void Start()
     {
+        if (FindFirstObjectByType<TARSSystem>() != null)
+        {
+            enabled = false;
+            return;
+        }
+
         if (suit == null) suit = FindFirstObjectByType<SuitSystem>();
         if (dialogueUI == null) dialogueUI = FindFirstObjectByType<DialogueUI>();
 

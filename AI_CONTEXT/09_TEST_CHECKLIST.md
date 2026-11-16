@@ -200,3 +200,18 @@ Setup: jalankan `Mars > Setup Hunger and Food Storage` dan `Mars > Setup Invento
 - [ ] Setelah patch: Unity mengimpor tanpa error kompilasi; Console tidak memberi peringatan "missing script" saat Play.
 - [ ] Menu `Mars > Setup Interactive Objects` dijalankan: tidak membuat ResourceMonitor/CommunicationTerminal; objek lain tidak berubah.
 - [ ] Interaksi lain (Bed, Suit Station, Storage, Water Purifier, Oxygen Generator, Repair Point) tetap berfungsi dengan E.
+
+## TARSSystem (2026-11-17; BARU, belum dites di Unity)
+- [ ] Menu `Mars > Setup TARS System` dijalankan: objek `TARSSystem` dibuat, `TarsWanderer` terhubung; dijalankan lagi tidak membuat duplikat. Unity mengimpor tanpa error kompilasi.
+- [ ] Tekan Play: pesan "Hari 1 dari 7 dimulai" + pesan Bumi (placeholder) muncul sekali; `SuitReminder` tidak lagi memunculkan pengingat ganda (Console tidak ada pengingat dari dua sumber).
+- [ ] Turunkan Water (ResourceDebugPanel) sampai di bawah 30 persen: satu pesan "menipis"; sampai 10 persen: pesan "sangat rendah"; sampai 0: pesan "habis". Tiap tingkat hanya muncul sekali, tidak berulang tiap detik. Naikkan lagi di atas 30 persen lalu turunkan: pesan muncul lagi setelah cooldown (45 dtk).
+- [ ] Ulangi untuk Oxygen habitat, Energy, dan stok Food di storage; teks petunjuk sesuai resource.
+- [ ] Kenakan suit, oksigen suit turun ke 30 persen lalu 10 persen: pesan di dalam habitat menyarankan melepas suit, di luar habitat menyarankan kembali. Lepas suit: pesan oksigen suit tidak muncul lagi.
+- [ ] Suit dikenakan di dalam habitat 30 detik: pengingat "lepas suit" muncul (dari `TARSSystem`), lalu ulang tiap 90 detik; tidak muncul bila suit dilepas.
+- [ ] Panel rusak (menu konteks `Debug: Picu kerusakan` pada scheduler, atau tunggu kejadian acak Day 2+): satu pesan TARS menyebut nama panel dan Repair Point; setelah diperbaiki sebelum pesan tampil, pesan dibuang.
+- [ ] Banyak resource rendah sekaligus: pesan tampil satu per satu, Critical lebih dulu, tidak ada dialog yang saling menimpa; pesan tidak muncul saat dialog lain, panel storage, minigame kabel, atau transisi tidur sedang berjalan, dan tampil setelahnya.
+- [ ] Hari: saat sisa waktu <= 60 dtk muncul pengingat akhir hari (varian "masih di luar habitat" bila di luar); saat waktu habis muncul pesan "waktu habis"; setelah tidur, pesan "Hari N" + pesan Bumi muncul setelah fade selesai.
+- [ ] Lapar (`HungerReminder`): pesan 30 persen/10 persen/0 tetap muncul, kini lewat antrean TARS; sisa waktu kelaparan di teks adalah nilai terbaru saat tampil.
+- [ ] Dialog E pada TARS: urutan pengantar, pesan Bumi hari ini, laporan fasilitas (jumlah panel normal/rusak, Energy per detik, status Water Purifier dan Oxygen Generator), kondisi (suit, kenyang), stok dan sisa waktu. Tidak ada quest atau perintah urutan aksi.
+- [ ] Menekan E untuk menutup dialog TARS spontan di dekat NPC TARS tidak langsung membuka dialog TARS baru.
+- [ ] Hapus objek `TARSSystem` dari scene: game tetap jalan; `SuitReminder`, `HungerReminder`, dan scheduler kembali memakai dialog langsung.

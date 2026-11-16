@@ -44,6 +44,8 @@ public class TarsWanderer : MonoBehaviour, IInteractable
 
     [Header("Dialogue")]    
     [SerializeField] private DialogueUI dialogueUI;
+    [Tooltip("Opsional. Bila ada, dialog E ditambah laporan (pesan Bumi, fasilitas, kondisi, stok) dari TARSSystem. Dicari otomatis jika kosong.")]
+    [SerializeField] private TARSSystem tarsSystem;
     [SerializeField] private string speakerName = "TARS";
     [TextArea(2, 4)]
     [SerializeField] private string[] dialogueLines =
@@ -93,6 +95,7 @@ public class TarsWanderer : MonoBehaviour, IInteractable
 
     private void Start()
     {
+        if (tarsSystem == null) tarsSystem = FindFirstObjectByType<TARSSystem>();
         IgnorePlayerCollision();
         StartIdle();
         ApplyFrame(0);
@@ -235,6 +238,8 @@ public class TarsWanderer : MonoBehaviour, IInteractable
 
     public bool CanInteract(GameObject interactor)
     {
+        // Tidak boleh membuka dialog baru saat dialog lain (misalnya pengingat TARS) masih terbuka.
+        if (dialogueUI != null && dialogueUI.IsOpen) return false;
         return state != State.Interacting && Time.time >= nextInteractTime;
     }
 
@@ -251,7 +256,8 @@ public class TarsWanderer : MonoBehaviour, IInteractable
         if (dialogueUI != null && dialogueLines != null && dialogueLines.Length > 0)
         {
             // TARS diam sampai dialog selesai, lalu Resume() dipanggil otomatis.
-            dialogueUI.Show(speakerName, dialogueLines, Resume);
+            string[] lines = tarsSystem != null ? tarsSystem.BuildConversationLines(dialogueLines) : dialogueLines;
+            dialogueUI.Show(speakerName, lines, Resume);
             return;
         }
 

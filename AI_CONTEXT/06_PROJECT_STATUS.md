@@ -37,7 +37,7 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 | Resource Monitor | DIHAPUS 2026-11-16 (permintaan developer); HUD dan Storage menggantikan, fungsi laporan fasilitas pindah ke TARS (`PHASE.md` 11.4) | [Dev] |
 | Terminal komunikasi | DIHAPUS 2026-11-16 (permintaan developer); pesan Bumi pindah ke TARS (`PHASE.md` 11.4.1) | [Dev] |
 | Farming / Potato | Script dibuat; tes interaksi dilaporkan lolos (satu petak per objek, tanpa sprite) | [Repo setelah patch] `Assets/Script/Farming/FarmingPlot.cs`: tanam, siram, tumbuh saat hari berganti, panen. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
-| TARS reminder berbasis resource | Belum ada | Dialog TARS saat ini teks tetap lewat Inspector |
+| TARSSystem (antrean, ambang resource, panel rusak, akhir hari, pesan Bumi, laporan dialog E) | Script dibuat 2026-11-17 (belum dites) | [Repo setelah patch] `Assets/Script/TARS/TARSSystem.cs`, `Assets/Editor/MarsTarsSystemSetup.cs`; `TarsWanderer`, `SuitReminder`, `HungerReminder`, `SolarPanelDamageScheduler` disambungkan. Belum dikompilasi/dites di Unity [?]. Objek `TARSSystem` di scene dibuat lewat menu `Mars > Setup TARS System` [?]. Teks `earthMessages` bawaan hanyalah placeholder |
 | Save system | Belum ada | [Repo] |
 | Tiga scene area (Control Room, Farming, Outdoor) | Belum ada | [Repo] hanya `SampleScene` |
 
@@ -60,6 +60,8 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 - Satu `FarmingPlot` = satu petak; petak tambahan dibuat dengan menduplikasi objek. Pertumbuhan hanya terjadi lewat `TimeManager.OnDayStarted` (jadi lewat Bed atau menu Debug TimeManager) [?].
 
 - Milestone 10 (2026-11-16): kode ditulis tanpa compiler/Unity [?]. Belum diverifikasi: kompilasi, menu `Setup Panel Damage and Wiring Minigame`, tampilan dan hit-test drag-and-drop pada Canvas (Scale With Screen Size), jeda timer/oksigen suit selama minigame, durasi nyata 15-30 detik, urutan dialog TARS saat panel rusak. Frekuensi kerusakan (1 per hari mulai Day 2) mungkin tinggi untuk balancing.
+
+- Milestone 11 (2026-11-17): kode ditulis tanpa compiler/Unity [?]. Belum diverifikasi: kompilasi, menu `Setup TARS System`, urutan dan cooldown pesan di Play Mode (terutama saat banyak resource rendah bersamaan), pesan awal hari setelah fade tidur, kenyamanan dialog TARS spontan saat pemain sibuk, nilai ambang 30/10 persen dan Energy/Water awal (Water awal 10/30 sudah dekat batas menipis), dan teks laporan dialog E.
 
 ## Housekeeping
 - `phase-sync.patch` ter-commit di root repo (`interactive-objects.patch` sudah dihapus di `b09da2e3`). File `.patch` tidak perlu ikut repo; hapus dan tambahkan `*.patch` ke `.gitignore`.

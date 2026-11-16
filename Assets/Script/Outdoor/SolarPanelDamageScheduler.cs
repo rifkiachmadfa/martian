@@ -7,7 +7,8 @@ using UnityEngine;
 /// di dalam hari itu. Saat waktu tersebut tercapai, satu panel yang masih normal dipilih acak lalu dirusak
 /// lewat SolarPanel.Damage(). Panel yang sudah rusak tidak dipilih lagi; bila semua panel rusak, kejadian hari itu dilewati.
 /// Waktu hanya berjalan saat TimeManager tidak dijeda (tidur dan minigame kabel ikut menjeda).
-/// Pemain diberi tahu lewat dialog TARS (teks tetap). Sementara pengganti TARSSystem: pindahkan pengumumannya ke sana nanti.
+/// Pemain diberi tahu TARS: bila TARSSystem ada di scene, TARSSystem sendiri yang mengumumkan (ia memantau
+/// SolarPanel.OnDamagedChanged); bila tidak ada, scheduler memakai dialog TARS langsung seperti sebelumnya.
 /// Semua angka di bawah adalah USULAN, ubah lewat Inspector setelah playtest.
 /// </summary>
 public class SolarPanelDamageScheduler : MonoBehaviour
@@ -106,7 +107,7 @@ public class SolarPanelDamageScheduler : MonoBehaviour
         chosen.Damage();
         Debug.Log("SolarPanelDamageScheduler: " + chosen.name + " rusak (hari " + timeManager.CurrentDay + ").");
 
-        if (announceWithDialogue)
+        if (announceWithDialogue && TARSSystem.Instance == null)
             pendingMessage = chosen.name + " mengalami gangguan. Produksi energi menurun.";
     }
 

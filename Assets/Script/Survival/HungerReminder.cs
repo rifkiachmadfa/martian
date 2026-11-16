@@ -5,7 +5,8 @@ using UnityEngine;
 /// (tanpa AI generatif) saat kenyang turun melewati batas peringatan, batas bahaya, dan saat kelaparan (0).
 /// Setiap batas hanya diumumkan sekali per penurunan; setelah pemain makan dan kenyang naik di atas batas itu,
 /// batas tersebut bisa diumumkan lagi. Bila dialog lain sedang terbuka, pesan menunggu sampai dialog tertutup.
-/// Sementara pengganti TARSSystem: saat TARSSystem dibuat, logika ini boleh dipindahkan ke sana.
+/// Bila TARSSystem ada di scene, pesan dikirim lewat antreannya (prioritas, cooldown, tidak menumpuk dengan pesan
+/// TARS lain); bila tidak ada, dialog ditampilkan langsung seperti sebelumnya.
 /// </summary>
 public class HungerReminder : MonoBehaviour
 {
@@ -47,6 +48,21 @@ public class HungerReminder : MonoBehaviour
     private void Update()
     {
         if (pendingLevel <= announcedLevel) return;
+
+        TARSSystem tars = TARSSystem.Instance;
+        if (tars != null)
+        {
+            // Antrean TARS mengatur waktu tampil; teks dibuat saat tampil agar sisa waktu kelaparan selalu terbaru.
+            int level = pendingLevel;
+            announcedLevel = level;
+            pendingLevel = 0;
+            tars.Announce("hunger:" + level,
+                level == 1 ? TARSSystem.Priority.Warning : TARSSystem.Priority.Critical,
+                () => new[] { BuildLine(level) },
+                () => hunger != null && GetLevel() >= level);
+            return;
+        }
+
         if (dialogueUI != null && dialogueUI.IsOpen) return;
 
         announcedLevel = pendingLevel;
