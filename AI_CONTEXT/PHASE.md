@@ -52,7 +52,7 @@ Dihitung dari checklist bagian 3 (revisi `80bc5a6d` + patch tutorial Day 1).
 | 9 | Solar Panel dan produksi Energy | SEBAGIAN | 7 | 0 | 1 | 8 |
 | 10 | Panel rusak dan minigame kabel | SEBAGIAN | 10 | 1 | 0 | 11 |
 | 11 | TARS monitoring dan reminder | SEBAGIAN | 14 | 2 | 2 | 18 |
-| 12 | Integrasi loop dan tutorial Day 1 | SEBAGIAN | 11 | 1 | 1 | 13 |
+| 12 | Integrasi loop dan tutorial Day 1 | SEBAGIAN | 12 | 1 | 1 | 14 |
 | 13 | Day 2–7, Game Over/Victory, balancing | SEBAGIAN | 0 | 1 | 12 | 13 |
 | 14 | Audio, animasi, polish | SEBAGIAN | 1 | 2 | 11 | 14 |
 | 15 | Playtest penuh dan build | BELUM | 0 | 0 | 4 | 4 |
@@ -298,9 +298,9 @@ Latar: keduanya dihapus 2026-11-16 atas permintaan developer (HUD dan Storage su
 - [ ] `11.4.5` Pesan penutup Day 7 (konfirmasi penjemputan) milik ending Victory (13.3.3); API siap: `TARSSystem.Announce(key, prioritas, teks)`
 
 ### Milestone 12 — Integrasi loop dan tutorial Day 1
-Acuan: GDD 19 hari 12; GDD 5.2. Status: **SEBAGIAN** (11 selesai, 1 sebagian, 1 belum dari 13). Kode dibuat 2026-11-17, belum dikompilasi/dites di Unity. Semua syarat langkah adalah USULAN (lihat `TutorialManager`); teks arahan masih PLACEHOLDER.
+Acuan: GDD 19 hari 12; GDD 5.2. Status: **SEBAGIAN** (12 selesai, 1 sebagian, 1 belum dari 14). Kode dibuat 2026-11-17, belum dikompilasi/dites di Unity. Semua syarat langkah adalah USULAN (lihat `TutorialManager`); teks arahan masih PLACEHOLDER.
 
-**12.1 Alur tutorial Day 1** (7/7)
+**12.1 Alur tutorial Day 1** (8/8)
 - [x] `12.1.1` Mengenal Control Room, TARS, HUD, dan Storage (Resource Monitor sudah dihapus): selesai bila pemain mengajak TARS bicara DAN membuka Storage (yang ada di scene)
 - [x] `12.1.2` Mengambil dan mengisi Astronaut Suit: selesai bila `SuitSystem.IsEquipped` (Suit Station mengisi tabung otomatis)
 - [x] `12.1.3` Keluar dan mengumpulkan Ice dalam jumlah kecil: selesai bila 5 es (`iceToCollect`, USULAN, dibatasi kapasitas tas) berhasil dikumpulkan di Ice Deposit (`IceDeposit.OnCollected`) atau tas es penuh
@@ -308,12 +308,13 @@ Acuan: GDD 19 hari 12; GDD 5.2. Status: **SEBAGIAN** (11 selesai, 1 sebagian, 1 
 - [x] `12.1.5` Menanam dan menyiram di Farming Plot: selesai bila ada `FarmingPlot` dengan `HasPlant` dan `IsWatered`
 - [x] `12.1.6` Mengenal Oxygen Generator dan hubungan Water/Energy: selesai bila `OxygenGenerator` menjadi target interaksi pemain (didekati); penjelasan Water/Energy ada di arahan TARS (keputusan USULAN, lihat P-5)
 - [x] `12.1.7` Kembali ke Control Room dan tidur: selesai saat Day 2 mulai (`Bed` memanggil `StartDay`)
+- [x] `12.1.8` Melepas suit di Suit Station (ditambahkan 2026-11-17; tindak lanjut keputusan 2026-11-15 "Day 1 tutorial perlu menjelaskan melepas suit"): selesai bila `SuitSystem.OnEquippedChanged(false)`. Letak dalam alur: setelah 12.1.4 (array `steps`); `TutorialStepId.RemoveSuit` bernilai 7 agar ID lama di scene tidak bergeser
 
 **12.2 Mekanik tutorial** (4/5)
 - [~] `12.2.1` Arahan TARS langkah demi langkah (bukan quest harian): `TutorialManager` mengumumkan arahan tiap langkah lewat `TARSSystem.Announce`; teks masih PLACEHOLDER
 - [x] `12.2.2` Status tutorial selesai tersimpan: `PlayerPrefs` kunci `Mars.TutorialCompleted` (USULAN sementara sampai ada SaveSystem; hanya disimpan bila tutorial selesai penuh, bukan dilewati)
 - [x] `12.2.3` Tutorial dapat dilewati setelah pernah dimainkan (Should Have): bila status tersimpan ada, TARS memberi tahu dan tombol `skipKey` (default Tab, USULAN) melewati tutorial; flag Inspector `skipTutorial` untuk uji
-- [x] `12.2.4` `TutorialManager`: tujuh langkah (`TutorialStepId`), data (`TutorialStepData`), event, `TryCompleteStep`, syarat dikunci (latched) sehingga urutan bebas, pengumuman ulang arahan tiap `reminderSeconds` (120, USULAN), selesai otomatis saat Day 2 mulai
+- [x] `12.2.4` `TutorialManager`: delapan langkah (`TutorialStepId`), data (`TutorialStepData`), event, `TryCompleteStep`, syarat dikunci (latched) sehingga urutan bebas, pengumuman ulang arahan tiap `reminderSeconds` (120, USULAN), selesai otomatis saat Day 2 mulai
 - [x] `12.2.5` Garis arah tutorial (USULAN, hanya Day 1): `TutorialGuideUI` menggambar garis UI dari tubuh pemain ke tujuan langkah aktif (`TutorialManager.GetGuideTarget`: Intro = Storage lalu TARS, Suit = Suit Station, CollectIce = Ice Deposit, PurifyWater = Ice Deposit bila tas tanpa es lalu Water Purifier, Farming = petak/Storage sesuai kebutuhan, OxygenGenerator, Sleep = Bed); disembunyikan saat tutorial tidak aktif, panel Storage terbuka, atau pemain sudah dekat
 
 **12.3 Integrasi** (0/1)

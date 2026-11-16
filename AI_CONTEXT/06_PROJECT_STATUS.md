@@ -1,6 +1,6 @@
 # Project Status
 
-Terakhir diperbarui: 2026-11-17 (tutorial Day 1, basis `80bc5a6d`)
+Terakhir diperbarui: 2026-11-17 (tutorial: langkah melepas suit, ditumpuk di atas patch balancing; basis `dd702427`)
 Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `d96d9b6f` (audit lama; patch tutorial 2026-11-17 memakai `80bc5a6d`) (dicek ulang 2026-11-16; kode tidak berubah sejak `afc2453c`). Patch objek interaktif sudah ter-commit [Repo]. Developer melaporkan tes interaksi objek interaktif lolos semua [Dev]; scene lokal belum di-commit.
 
 Label sumber: **[Repo]** terverifikasi dari file di repo, **[Dev]** dilaporkan developer (belum bisa dicek AI), **[?]** belum diverifikasi.
@@ -38,7 +38,7 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 | Terminal komunikasi | DIHAPUS 2026-11-16 (permintaan developer); pesan Bumi pindah ke TARS (`PHASE.md` 11.4.1) | [Dev] |
 | Farming / Potato | Script dibuat; tes interaksi dilaporkan lolos (satu petak per objek, tanpa sprite) | [Repo setelah patch] `Assets/Script/Farming/FarmingPlot.cs`: tanam, siram, tumbuh saat hari berganti, panen. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
 | TARSSystem (antrean, ambang resource, panel rusak, akhir hari, pesan Bumi, laporan dialog E) | Script dibuat 2026-11-17 (belum dites) | [Repo setelah patch] `Assets/Script/TARS/TARSSystem.cs`, `Assets/Editor/MarsTarsSystemSetup.cs`; `TarsWanderer`, `SuitReminder`, `HungerReminder`, `SolarPanelDamageScheduler` disambungkan. Belum dikompilasi/dites di Unity [?]. Objek `TARSSystem` di scene dibuat lewat menu `Mars > Setup TARS System` [?]. Teks `earthMessages` bawaan hanyalah placeholder |
-| Tutorial Day 1 | Script dibuat 2026-11-17 (belum dites) | [Repo setelah patch] `Assets/Script/Tutorial/{TutorialManager,TutorialStepId,TutorialStepData,TutorialGuideUI}.cs`, `Assets/Editor/MarsTutorialSetup.cs`, event `TarsWanderer.OnPlayerTalked`. 7 langkah dengan syarat USULAN (dikunci, urutan bebas), arahan TARS PLACEHOLDER, status selesai di `PlayerPrefs`, lewati dengan Tab, garis arah UI ke tujuan tiap langkah. Belum dikompilasi/dites di Unity [?] |
+| Tutorial Day 1 | Script dibuat 2026-11-17 (belum dites) | [Repo setelah patch] `Assets/Script/Tutorial/{TutorialManager,TutorialStepId,TutorialStepData,TutorialGuideUI}.cs`, `Assets/Editor/MarsTutorialSetup.cs`, event `TarsWanderer.OnPlayerTalked`. 8 langkah dengan syarat USULAN (dikunci, urutan bebas; langkah RemoveSuit ditambah 2026-11-17), arahan TARS PLACEHOLDER, status selesai di `PlayerPrefs`, lewati dengan Tab, garis arah UI ke tujuan tiap langkah. Belum dikompilasi/dites di Unity [?] |
 | Save system | Belum ada | [Repo] |
 | Tiga scene area (Control Room, Farming, Outdoor) | Belum ada | [Repo] hanya `SampleScene` |
 
@@ -57,7 +57,7 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 - Player masih bisa bergerak saat dialog terbuka (kini disengaja: waktu dan resource tetap berjalan saat dialog).
 - **[Repo, d96d9b6f]** `SampleScene.unity` yang ter-commit belum berisi objek interaktif baru (tidak ada GUID script objek interaktif di scene). **[Dev]** setup di scene lokal sudah dilakukan dan tes interaksi lolos; belum di-commit. Layer `Interactable` ada di `TagManager.asset` [Repo].
 - Objek interaktif (patch 2026-11-15): tidak ada compiler C# atau Unity di lingkungan AI; kode hanya diperiksa dengan membaca dan `git apply --check` [?]. Posisi, sprite, dan collider objek di scene ditentukan developer [?].
-- Keseimbangan: `OxygenGenerator` menyala sejak awal dan memakai Water (usulan 1 per 5 detik) sehingga Water awal (10) bisa habis dalam sekitar 50 detik bila tidak dimatikan; Energy tidak dihasilkan kecuali ada `SolarPanel` di scene. Angka perlu playtest [?].
+- Keseimbangan (DIREVISI 2026-11-17): sebelumnya `OxygenGenerator` praktis menyala terus (mengisi tiap oksigen turun sedikit dari penuh) dan memakai sekitar 1 Water per 5 detik [Repo, dibaca dari kode]. Patch balancing 2026-11-17 menambah histeresis (mulai di <= 40 persen, isi sampai penuh), `oxygenPerCycle` 10, dan `SuitSystem.drainPerSecond` 0,2 (script dan `SampleScene.unity`). Belum dikompilasi atau dites di Unity [?]; angka perlu playtest, terutama kebutuhan Water per hari terhadap jumlah petak. Energy tidak dihasilkan kecuali ada `SolarPanel` di scene [?].
 - Satu `FarmingPlot` = satu petak; petak tambahan dibuat dengan menduplikasi objek. Pertumbuhan hanya terjadi lewat `TimeManager.OnDayStarted` (jadi lewat Bed atau menu Debug TimeManager) [?].
 
 - Milestone 10 (2026-11-16): kode ditulis tanpa compiler/Unity [?]. Belum diverifikasi: kompilasi, menu `Setup Panel Damage and Wiring Minigame`, tampilan dan hit-test drag-and-drop pada Canvas (Scale With Screen Size), jeda timer/oksigen suit selama minigame, durasi nyata 15-30 detik, urutan dialog TARS saat panel rusak. Frekuensi kerusakan (1 per hari mulai Day 2) mungkin tinggi untuk balancing.

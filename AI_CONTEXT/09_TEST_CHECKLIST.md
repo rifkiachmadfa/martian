@@ -123,11 +123,11 @@ Status [x] = dilaporkan developer 2026-11-16 (seluruh butir bagian ini lolos; bu
 - [x] Indikator aktif (jika diisi) menyala hanya selama proses.
 
 ### Oxygen Generator
-- [x] Dengan Water dan Energy cukup dan oksigen habitat belum penuh: oksigen habitat naik 5 tiap sekitar 5 detik sambil Water -1 dan Energy -2 per siklus.
+- [x] Dengan Water dan Energy cukup dan oksigen habitat belum penuh: oksigen habitat naik 5 tiap sekitar 5 detik sambil Water -1 dan Energy -2 per siklus. (Tes lama; sejak 2026-11-17 kenaikan 10 per siklus dan mesin hanya bekerja di bawah 40 persen, lihat bagian "Balancing hemat Water".)
 - [x] Water habis atau Energy < 2: mesin berhenti; E menampilkan alasannya. Setelah stok ada lagi, mesin lanjut sendiri.
 - [x] Oksigen habitat penuh: mesin siaga dan tidak memakai Water/Energy.
 - [x] E mematikan mesin: Water/Energy tidak berkurang lagi; E lagi menyalakan kembali. Oksigen suit tidak tersentuh mesin.
-- [ ] (BARU) Mesin menyala sejak awal (`startOn`): dengan Energy cukup, Water awal 10 habis dalam sekitar 50 detik bila mesin tidak dimatikan. Catat hasilnya untuk keputusan P-5 (saklar E).
+- [ ] (BARU, USANG 2026-11-17) Mesin menyala sejak awal (`startOn`): dengan Energy cukup, Water awal 10 habis dalam sekitar 50 detik bila mesin tidak dimatikan. Perilaku ini adalah bug boros yang diperbaiki patch balancing 2026-11-17 (mesin kini siaga di atas 40 persen).
 
 ### Solar Panel dan Repair Point
 - [x] Panel normal menambah Energy sekitar 0,5 per detik (naik tiap 1 detik, maksimum 100). Dua panel menambah dua kali lipat.
@@ -187,7 +187,7 @@ Setup: jalankan `Mars > Setup Hunger and Food Storage` dan `Mars > Setup Invento
 ## Konsumsi oksigen habitat (ditambahkan 2026-11-16, BARU, belum dites di Unity)
 - [ ] Tekan Play tanpa menambah objek ke scene: di Hierarchy muncul objek `HabitatOxygenDrain` (dibuat otomatis).
 - [ ] Matikan Oxygen Generator (E di mesin). Oksigen habitat di HUD turun sekitar 3 unit tiap 60 detik (0,05/detik, usulan).
-- [ ] Nyalakan lagi generator dengan Water dan Energy cukup: oksigen habitat naik kembali (+5 per 5 detik) sampai penuh, lalu mesin siaga; setelah turun sedikit mesin bekerja lagi.
+- [ ] Nyalakan lagi generator dengan Water dan Energy cukup: oksigen habitat naik kembali (+10 per 5 detik sejak 2026-11-17; sebelumnya +5) sampai penuh, lalu mesin siaga; sejak 2026-11-17 mesin baru bekerja lagi setelah oksigen habitat turun ke 40 persen atau kurang (bukan setelah turun sedikit).
 - [ ] Transisi tidur (layar hitam): oksigen habitat tidak berkurang selama jeda.
 - [ ] Dengan generator mati dan oksigen habitat dibuat 0 (ResourceDebugPanel): Console menampilkan peringatan "oksigen habitat habis" sekali; nilai tetap 0 dan tidak negatif; tidak ada Game Over.
 - [ ] Isi suit di Suit Station saat oksigen habitat 0: pesan "Oksigen habitat tidak cukup untuk mengisi suit".
@@ -223,7 +223,8 @@ Siapkan: jalankan `Mars > Setup Tutorial`. Untuk mengulang dari awal, klik kanan
 - [ ] Intro: bicara dengan TARS (E) saja belum cukup; buka Storage juga: arahan Suit muncul. Urutan sebaliknya sama.
 - [ ] Suit: kenakan suit di Suit Station: arahan CollectIce muncul. Melepas suit tidak memundurkan langkah.
 - [ ] CollectIce: kumpulkan es di Ice Deposit; garis tetap ke Ice Deposit sampai 5 es terkumpul, lalu arahan PurifyWater muncul dan garis pindah ke Water Purifier. Mengambil es dari storage di dalam habitat TIDAK dihitung. Bila tas es penuh sebelum 5 (kapasitas lebih kecil), langkah tetap selesai. Tes ulang kasus bug: tas penuh tidak lagi membuat garis terus ke Ice Deposit.
-- [ ] PurifyWater: masukkan es ke Water Purifier dan tunggu selesai: arahan Farming muncul.
+- [ ] PurifyWater: masukkan es ke Water Purifier dan tunggu selesai: arahan RemoveSuit ("Lepas suit") muncul (sejak 2026-11-17; sebelumnya Farming) dan garis pindah ke Suit Station.
+- [ ] (BARU 2026-11-17) RemoveSuit: sebelum suit dilepas, arahan tidak maju walau pemain menanam/menyiram (syarat Farming dikunci). E di Suit Station ("Lepas suit"): arahan Farming muncul (atau dilewati bila sudah terpenuhi). Suit dilepas lebih awal (sebelum langkah ini aktif): langkah dilewati tanpa arahan. Di Inspector `TutorialManager > Steps` ada 8 elemen dan elemen ke-4 berjudul "Lepas suit" (id 7).
 - [ ] Farming: tanam bibit dan siram: arahan OxygenGenerator muncul.
 - [ ] OxygenGenerator: dekati mesin sampai prompt "[E] ..." muncul: arahan Sleep muncul.
 - [ ] Sleep: tidur ke Day 2: tutorial selesai dan tidak ada arahan di Day 2; Console tidak error.
@@ -244,3 +245,13 @@ Siapkan: jalankan ulang `Mars > Setup Tutorial` (memasang `TutorialGuideUI` di C
 - [ ] Day 2 (atau `Debug: Lewati tutorial`): garis hilang dan tidak muncul lagi. Garis tampil di bawah HUD, dialog, dan layar fade.
 - [ ] Ubah resolusi/ukuran jendela Game: ujung garis tetap tepat di Player dan tujuan (Canvas Scale With Screen Size).
 - [ ] Hapus komponen `TutorialGuideUI`: tutorial tetap berjalan tanpa garis dan tanpa error.
+
+## Balancing hemat Water dan oksigen suit (2026-11-17; BARU, belum dites di Unity)
+- [ ] Inspector `OxygenGenerator`: `Oxygen Per Cycle` = 10 dan field baru `Restart Below Fraction` = 0,4. Inspector `SuitSystem`: `Drain Per Second` = 0,2. Bila Inspector masih menampilkan 5 / 1, scene lokal belum memakai nilai baru: ubah manual.
+- [ ] Mulai game dengan Water 20, oksigen habitat 50, Energy cukup. Tanpa menyentuh apa pun: Water TIDAK berkurang selama oksigen habitat di atas 40 persen. Di HUD oksigen habitat turun pelan (sekitar 3 per 60 detik).
+- [ ] Oksigen habitat penuh (100) lalu turun ke 99: generator TIDAK menyala dan Water tidak berkurang (bug lama: mesin langsung memakai 1 Water).
+- [ ] Oksigen habitat turun ke 40 atau kurang (misalnya lewat ResourceDebugPanel atau isi suit): generator menyala, oksigen +10 per 5 detik dengan Water -1 dan Energy -2 per siklus, terus sampai penuh, lalu siaga. Siklus terakhir memakai Water kurang dari 1 (sebanding), bukan 1 penuh.
+- [ ] E pada Oxygen Generator saat siaga: pesan menyebut "di bawah 40 persen" dan status "siaga, oksigen habitat masih cukup".
+- [ ] Water habis saat oksigen habitat di bawah 40 persen: status "berhenti, Water tidak cukup"; setelah Water ada, mesin lanjut sendiri.
+- [ ] Kenakan suit (tabung terisi dari habitat): oksigen suit turun 0,2 per detik (sekitar 12 per menit); tabung 100 bertahan sekitar 500 detik. Pemain sempat ke Ice Deposit, mengumpulkan es, dan kembali tanpa terburu-buru.
+- [ ] Catat untuk balancing: total Water terpakai untuk oksigen dalam satu hari penuh (600 detik) dengan pola bermain normal, dan Water tersisa untuk menyiram tanaman. Target usulan: oksigen memakai sebagian kecil Water, bukan seluruhnya.

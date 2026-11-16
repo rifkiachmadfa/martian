@@ -20,9 +20,9 @@ public class SuitSystem : MonoBehaviour
     [Header("Aturan suit (USULAN, ubah lewat Inspector setelah playtest)")]
     [Tooltip("Oksigen suit minimum agar pemain boleh melewati gerbang keluar.")]
     [SerializeField, Min(0f)] private float minimumOxygenToExit = 20f;
-    [Tooltip("Oksigen suit yang berkurang per detik selama suit dikenakan (di dalam maupun di luar habitat).")]
+    [Tooltip("Oksigen suit yang berkurang per detik selama suit dikenakan (di dalam maupun di luar habitat). 0,2 = tabung penuh (100) bertahan sekitar 500 detik.")]
     [FormerlySerializedAs("outdoorDrainPerSecond")]
-    [SerializeField, Min(0f)] private float drainPerSecond = 1f;
+    [SerializeField, Min(0f)] private float drainPerSecond = 0.2f;
 
     private ResourceManager resources;
     private int indoorZoneCount;

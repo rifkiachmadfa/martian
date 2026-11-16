@@ -5,6 +5,9 @@ using UnityEngine;
 /// Oxygen Generator di Farming Area: Water + Energy -> Oxygen habitat (stok HabitatOxygen, terpisah dari
 /// oksigen suit). Bekerja OTOMATIS selama menyala dan resource cukup (GDD 11.2): tiap siklus mengurangi
 /// Water dan Energy lalu menambah HabitatOxygen. Berhenti sendiri bila Water/Energy kurang atau oksigen penuh.
+/// Hemat Water (2026-11-17): mesin siaga sampai oksigen habitat turun di bawah batas restartBelowFraction, lalu
+/// mengisi sampai penuh dan siaga lagi (histeresis), bukan menambal penurunan kecil di bawah 100 terus-menerus.
+/// Siklus terakhir hanya memakai Water/Energy sebanding dengan oksigen yang benar-benar masuk.
 /// Tombol E menyalakan/mematikan mesin, supaya pemain bisa menghemat Water untuk tanaman (GDD 7.1 membahas
 /// pembagian Water). Tombol ini USULAN, belum ada di GDD; matikan dengan Allow Manual Toggle di Inspector.
 /// Siklus ikut jeda TimeManager.IsPaused. Hanya logika: tampilan lewat OnRunningChanged / indikator opsional.
@@ -18,8 +21,11 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
     [Header("Aturan mesin (USULAN, ubah lewat Inspector setelah playtest)")]
     [SerializeField, Min(0f)] private float waterCostPerCycle = 1f;
     [SerializeField, Min(0f)] private float energyCostPerCycle = 2f;
-    [SerializeField, Min(0f)] private float oxygenPerCycle = 5f;
+    [SerializeField, Min(0f)] private float oxygenPerCycle = 10f;
     [SerializeField, Min(0.1f)] private float cycleSeconds = 5f;
+    [Tooltip("Mesin siaga (tidak memakai Water/Energy) sampai oksigen habitat turun ke batas ini atau lebih rendah, " +
+             "lalu mengisi sampai penuh. 0,4 = mulai bekerja di 40 persen kapasitas. 1 = perilaku lama (mengisi tiap turun sedikit dari penuh).")]
+    [SerializeField, Range(0.05f, 1f)] private float restartBelowFraction = 0.4f;
     [SerializeField] private bool startOn = true;
     [Tooltip("Jika dimatikan, mesin selalu menyala dan tombol E hanya menampilkan status.")]
     [SerializeField] private bool allowManualToggle = true;
@@ -31,6 +37,7 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
 
     private float cycleTimer;
     private float nextInteractTime;
+    private bool refilling;
 
     /// <summary>Saklar mesin (menyala/mati oleh pemain).</summary>
     public bool IsOn { get; private set; }
@@ -80,6 +87,8 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
         TimeManager time = TimeManager.Instance;
         if (time != null && time.IsPaused) return;
 
+        UpdateRefillState(resources);
+
         bool canRun = IsOn && GetBlocker(resources) == null;
         SetRunning(canRun);
 
@@ -94,9 +103,13 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
 
         cycleTimer -= cycleSeconds;
 
-        // Syarat sudah dicek lewat GetBlocker di frame yang sama, jadi kedua TryConsume pasti berhasil.
-        resources.TryConsume(ResourceType.Water, waterCostPerCycle);
-        resources.TryConsume(ResourceType.Energy, energyCostPerCycle);
+        // Siklus terakhir (ruang kosong < oxygenPerCycle) hanya memakai Water/Energy sebanding dengan oksigen yang masuk.
+        float freeOxygen = resources.GetMax(ResourceType.HabitatOxygen) - resources.Get(ResourceType.HabitatOxygen);
+        float fraction = oxygenPerCycle > 0f ? Mathf.Clamp01(freeOxygen / oxygenPerCycle) : 1f;
+
+        // Syarat sudah dicek lewat GetBlocker di frame yang sama (biaya penuh >= biaya sebanding), jadi kedua TryConsume pasti berhasil.
+        resources.TryConsume(ResourceType.Water, waterCostPerCycle * fraction);
+        resources.TryConsume(ResourceType.Energy, energyCostPerCycle * fraction);
         resources.Add(ResourceType.HabitatOxygen, oxygenPerCycle);
     }
 
@@ -114,9 +127,11 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
             ? (IsOn ? "Oxygen Generator dinyalakan. " : "Oxygen Generator dimatikan. Water dan Energy tidak dipakai mesin ini. ")
             : "";
 
-        message += "Status: " + StatusText + ". Setiap " + Mathf.CeilToInt(cycleSeconds) + " detik mesin memakai " +
-            Mathf.CeilToInt(waterCostPerCycle) + " Water dan " + Mathf.CeilToInt(energyCostPerCycle) +
-            " Energy untuk menghasilkan " + Mathf.CeilToInt(oxygenPerCycle) + " Oxygen habitat.";
+        message += "Status: " + StatusText + ". Mesin mulai bekerja bila oksigen habitat di bawah " +
+            Mathf.RoundToInt(restartBelowFraction * 100f) + " persen, lalu mengisi sampai penuh. Setiap " +
+            Mathf.CeilToInt(cycleSeconds) + " detik mesin memakai " + Mathf.CeilToInt(waterCostPerCycle) +
+            " Water dan " + Mathf.CeilToInt(energyCostPerCycle) + " Energy untuk menghasilkan " +
+            Mathf.CeilToInt(oxygenPerCycle) + " Oxygen habitat.";
 
         ShowMessage(message);
     }
@@ -129,7 +144,18 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
         if (!resources.Has(ResourceType.Energy, energyCostPerCycle)) return "berhenti, Energy tidak cukup";
         if (resources.Get(ResourceType.HabitatOxygen) >= resources.GetMax(ResourceType.HabitatOxygen) - 0.001f)
             return "siaga, oksigen habitat sudah penuh";
+        if (!refilling) return "siaga, oksigen habitat masih cukup";
         return null;
+    }
+
+    // Histeresis: mulai mengisi saat oksigen habitat turun sampai batas, berhenti mengisi saat penuh.
+    private void UpdateRefillState(ResourceManager resources)
+    {
+        float current = resources.Get(ResourceType.HabitatOxygen);
+        float max = resources.GetMax(ResourceType.HabitatOxygen);
+
+        if (current >= max - 0.001f) refilling = false;
+        else if (current <= max * restartBelowFraction) refilling = true;
     }
 
     private void SetRunning(bool running)

@@ -1,6 +1,7 @@
 /// <summary>
-/// Pengenal tujuh langkah tutorial Day 1 (GDD 5.2, PHASE.md 12.1). Urutan enum = urutan langkah bawaan.
-/// ID bersifat tetap; jangan dipakai ulang bila langkah dihapus.
+/// Pengenal langkah tutorial Day 1 (GDD 5.2, PHASE.md 12.1). Urutan langkah ditentukan oleh array steps di
+/// TutorialManager, bukan oleh nilai enum. ID bersifat tetap (tersimpan di scene sebagai angka): jangan dipakai ulang
+/// bila langkah dihapus dan jangan menyisipkan ID baru di tengah; tambahkan di akhir.
 /// </summary>
 public enum TutorialStepId
 {
@@ -10,5 +11,6 @@ public enum TutorialStepId
     PurifyWater,    // 12.1.4 Membawa Ice ke Water Purifier dan menghasilkan Water
     Farming,        // 12.1.5 Menanam dan menyiram di Farming Plot
     OxygenGenerator,// 12.1.6 Mengenal Oxygen Generator dan hubungan Water/Energy
-    Sleep           // 12.1.7 Kembali ke Control Room dan tidur
+    Sleep,          // 12.1.7 Kembali ke Control Room dan tidur
+    RemoveSuit      // 12.1.8 Melepas suit di Suit Station (ditambahkan 2026-11-17; ditaruh di akhir agar ID lama di scene tidak bergeser)
 }

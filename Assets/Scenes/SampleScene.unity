@@ -1757,7 +1757,7 @@ MonoBehaviour:
   dialogueUI: {fileID: 0}
   waterCostPerCycle: 1
   energyCostPerCycle: 2
-  oxygenPerCycle: 5
+  oxygenPerCycle: 10
   cycleSeconds: 5
   startOn: 1
   allowManualToggle: 1
@@ -2407,7 +2407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SuitSystem
   minimumOxygenToExit: 20
-  drainPerSecond: 1
+  drainPerSecond: 0.2
 --- !u!114 &968218323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18781,6 +18781,10 @@ MonoBehaviour:
     title: Olah Ice menjadi Water
     tarsLines:
     - '[PLACEHOLDER] TARS: Bawa es ke Water Purifier. Pilih es di tas, lalu tekan E. Mesin memakai Energy untuk mengubahnya menjadi air.'
+  - id: 7
+    title: Lepas suit
+    tarsLines:
+    - '[PLACEHOLDER] TARS: Anda sudah di dalam habitat. Oksigen suit tetap berkurang selama suit dikenakan. Lepas suit di Suit Station; tabungnya terisi lagi dari oksigen habitat.'
   - id: 4
     title: Tanam dan siram
     tarsLines:

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Tutorial Day 1 (Milestone 12, PHASE.md 12.1 dan 12.2): tujuh langkah arahan TARS. BUKAN quest harian.
+/// Tutorial Day 1 (Milestone 12, PHASE.md 12.1 dan 12.2): delapan langkah arahan TARS. BUKAN quest harian.
 ///
 /// Prinsip (GDD 5.2, 12):
 /// - Hanya di Day 1 (tutorialDay). Mulai Day 2 tutorial selesai sendiri, apa pun langkah terakhirnya.
@@ -19,6 +19,8 @@ using UnityEngine;
 /// - Suit: suit dikenakan (SuitSystem.IsEquipped).
 /// - CollectIce: kumpulkan iceToCollect (default 5) es di Ice Deposit (event IceDeposit.OnCollected), atau tas es penuh.
 /// - PurifyWater: satu batch Water Purifier selesai (OnProcessingChanged true lalu false).
+/// - RemoveSuit: suit dilepas di Suit Station (SuitSystem.OnEquippedChanged false; hanya bisa di dalam habitat).
+///   Langkah ini diletakkan setelah PurifyWater (pemain sudah kembali ke habitat); urutan ada di array steps.
 /// - Farming: ada FarmingPlot dengan tanaman yang sudah disiram.
 /// - OxygenGenerator: Oxygen Generator menjadi target interaksi pemain (pemain mendekatinya); penjelasan
 ///   hubungan Water/Energy ada di arahan TARS. Mesin menyala sejak awal (P-5), jadi status "menyala" tidak dipakai.
@@ -70,6 +72,7 @@ public class TutorialManager : MonoBehaviour
     private IceDeposit[] iceDeposits = new IceDeposit[0];
     private FoodStorage storage;
     private SuitStation suitStation;
+    private SuitSystem suitSystem;
     private OxygenGenerator oxygenGenerator;
     private Bed bed;
 
@@ -311,6 +314,7 @@ public class TutorialManager : MonoBehaviour
         iceDeposits = FindObjectsByType<IceDeposit>(FindObjectsSortMode.None);
         storage = FindFirstObjectByType<FoodStorage>();
         suitStation = FindFirstObjectByType<SuitStation>();
+        suitSystem = SuitSystem.Instance;
         oxygenGenerator = FindFirstObjectByType<OxygenGenerator>();
         bed = FindFirstObjectByType<Bed>();
 
@@ -323,6 +327,7 @@ public class TutorialManager : MonoBehaviour
         foreach (IceDeposit deposit in iceDeposits) deposit.OnCollected += HandleIceCollected;
         foreach (TarsWanderer npc in tarsNpcs) npc.OnPlayerTalked += HandlePlayerTalked;
         foreach (WaterPurifier purifier in purifiers) purifier.OnProcessingChanged += HandlePurifierProcessing;
+        if (suitSystem != null) suitSystem.OnEquippedChanged += HandleSuitEquippedChanged;
     }
 
     private void UnsubscribeWatchers()
@@ -330,6 +335,7 @@ public class TutorialManager : MonoBehaviour
         foreach (IceDeposit deposit in iceDeposits) if (deposit != null) deposit.OnCollected -= HandleIceCollected;
         foreach (TarsWanderer npc in tarsNpcs) if (npc != null) npc.OnPlayerTalked -= HandlePlayerTalked;
         foreach (WaterPurifier purifier in purifiers) if (purifier != null) purifier.OnProcessingChanged -= HandlePurifierProcessing;
+        if (suitSystem != null) suitSystem.OnEquippedChanged -= HandleSuitEquippedChanged;
     }
 
     private void HandlePlayerTalked() => talkedToTars = true;
@@ -363,6 +369,13 @@ public class TutorialManager : MonoBehaviour
         if (!processing) achieved.Add(TutorialStepId.PurifyWater);
     }
 
+    // Suit hanya bisa dilepas di dalam habitat (SuitSystem.Unequip), jadi event 'false' berarti pemain melepas suit
+    // di Suit Station (atau Bed saat tidur). Dikunci seperti syarat lain, kapan pun terjadi.
+    private void HandleSuitEquippedChanged(bool equipped)
+    {
+        if (!equipped) achieved.Add(TutorialStepId.RemoveSuit);
+    }
+
     // Syarat yang tidak punya event: dicek berkala dan dikunci.
     private void EvaluateConditions()
     {
@@ -388,7 +401,7 @@ public class TutorialManager : MonoBehaviour
     /// <summary>
     /// Objek tujuan untuk langkah yang sedang berjalan, atau null bila tidak ada (tutorial tidak aktif atau objek tidak ada).
     /// Hanya petunjuk arah; tidak mengubah apa pun. 'from' = posisi pemain (untuk memilih objek terdekat).
-    /// Tujuan (USULAN): Intro = Storage lalu TARS; Suit = Suit Station; CollectIce = Ice Deposit terdekat;
+    /// Tujuan (USULAN): Intro = Storage lalu TARS; Suit dan RemoveSuit = Suit Station; CollectIce = Ice Deposit terdekat;
     /// PurifyWater = Ice Deposit bila tas belum berisi es, selain itu Water Purifier; Farming = petak bertanaman yang belum
     /// disiram, atau petak kosong bila ada bibit di tas, selain itu Storage (ambil bibit); OxygenGenerator; Sleep = Bed.
     /// </summary>
@@ -405,6 +418,7 @@ public class TutorialManager : MonoBehaviour
                 return null;
 
             case TutorialStepId.Suit:
+            case TutorialStepId.RemoveSuit:
                 return suitStation != null ? suitStation.transform : null;
 
             case TutorialStepId.CollectIce:
@@ -510,6 +524,8 @@ public class TutorialManager : MonoBehaviour
                 "[PLACEHOLDER] TARS: Keluar lewat gerbang dan kumpulkan 5 es di Ice Deposit. Awasi oksigen suit."),
             new TutorialStepData(TutorialStepId.PurifyWater, "Olah Ice menjadi Water",
                 "[PLACEHOLDER] TARS: Bawa es ke Water Purifier. Pilih es di tas, lalu tekan E. Mesin memakai Energy untuk mengubahnya menjadi air."),
+            new TutorialStepData(TutorialStepId.RemoveSuit, "Lepas suit",
+                "[PLACEHOLDER] TARS: Anda sudah di dalam habitat. Oksigen suit tetap berkurang selama suit dikenakan. Lepas suit di Suit Station; tabungnya terisi lagi dari oksigen habitat."),
             new TutorialStepData(TutorialStepId.Farming, "Tanam dan siram",
                 "[PLACEHOLDER] TARS: Tanam bibit kentang di Farming Plot, lalu siram. Tanaman yang disiram tumbuh saat hari berganti."),
             new TutorialStepData(TutorialStepId.OxygenGenerator, "Oxygen Generator",

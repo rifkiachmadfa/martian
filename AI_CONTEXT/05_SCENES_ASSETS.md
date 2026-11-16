@@ -39,8 +39,8 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Script/Suit/IndoorZone.cs` | Trigger area dalam habitat; di luar semua zona = pemain di luar |
 | `Assets/Script/Suit/SuitReminder.cs` | Pengingat TARS "lepas suit" (dialog, cooldown). Dipasang pada GameObject `SuitSystem` oleh menu setup. Menonaktifkan diri bila `TARSSystem` ada (logikanya pindah ke sana) |
 | `Assets/Script/TARS/TARSSystem.cs` | Antrean pesan TARS (prioritas, cooldown), pemantau ambang resource/oksigen suit, panel rusak, awal/akhir hari, pesan Bumi, laporan dialog E. Objek `TARSSystem` di scene dibuat menu setup |
-| `Assets/Script/Tutorial/TutorialManager.cs` | Tutorial Day 1: 7 langkah, syarat dikunci (urutan bebas), arahan TARS via `TARSSystem.Announce`, event, `TryCompleteStep`, simpan/lewati (PlayerPrefs, Tab), selesai saat Day 2. Objek `TutorialManager` di scene dibuat menu setup |
-| `Assets/Script/Tutorial/TutorialStepId.cs` | Enum 7 langkah tutorial (GDD 5.2) |
+| `Assets/Script/Tutorial/TutorialManager.cs` | Tutorial Day 1: 8 langkah (termasuk RemoveSuit, 2026-11-17), syarat dikunci (urutan bebas), arahan TARS via `TARSSystem.Announce`, event, `TryCompleteStep`, simpan/lewati (PlayerPrefs, Tab), selesai saat Day 2. Objek `TutorialManager` di scene dibuat menu setup |
+| `Assets/Script/Tutorial/TutorialStepId.cs` | Enum 8 langkah tutorial (GDD 5.2 + RemoveSuit); urutan langkah = array `steps`, bukan nilai enum |
 | `Assets/Script/Tutorial/TutorialStepData.cs` | Data satu langkah (id, judul, baris TARS) |
 | `Assets/Script/Tutorial/TutorialGuideUI.cs` | Garis UI dari tubuh Player ke tujuan langkah tutorial (hanya tampilan). Dipasang pada Canvas oleh menu setup |
 | `Assets/Editor/MarsTutorialSetup.cs` | Menu Editor `Mars > Setup Tutorial`: membuat objek `TutorialManager` dan memasang `TutorialGuideUI` pada Canvas |
@@ -65,7 +65,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Editor/MarsInventorySetup.cs` | Menu Editor `Mars > Setup Inventory and Storage`: InventorySystem, hotbar, StorageUI, objek Storage, menyembunyikan IcePanel lama |
 | `Assets/Editor/MarsHungerSetup.cs` | Menu Editor `Mars > Setup Hunger and Food Storage`: membuat HungerSystem, HungerReminder, FoodStorage, dan `HudRoot/HungerPanel` (teks Kenyang) |
 | `Assets/Script/Machines/WaterPurifier.cs` | Water Purifier (IInteractable): Ice + Energy -> Water, proses beberapa detik, `IsProcessing`, `OnProcessingChanged`, indikator opsional |
-| `Assets/Script/Machines/OxygenGenerator.cs` | Oxygen Generator (IInteractable): Water + Energy -> HabitatOxygen otomatis per siklus; E = nyalakan/matikan (USULAN); `IsOn`, `IsRunning`, `StatusText` |
+| `Assets/Script/Machines/OxygenGenerator.cs` | Oxygen Generator (IInteractable): Water + Energy -> HabitatOxygen otomatis per siklus (10 Oxygen per 1 Water sejak 2026-11-17); siaga sampai oksigen habitat <= `restartBelowFraction` (0,4) lalu mengisi sampai penuh; E = nyalakan/matikan (USULAN); `IsOn`, `IsRunning`, `StatusText`. Nilai serialized di `SampleScene.unity` (`oxygenPerCycle`, `SuitSystem.drainPerSecond`) ikut diubah 2026-11-17 |
 | `Assets/Script/Farming/FarmingPlot.cs` | Satu petak kentang (IInteractable): tanam, siram (Water), tumbuh saat hari berganti bila disiram, panen (Food). Satu objek = satu petak |
 | `Assets/Editor/MarsObjectsSetup.cs` | Menu Editor `Mars > Setup Interactive Objects`: membuat 7 objek interaktif placeholder + `SolarPanel` + panel Ice di HUD |
 | `Assets/Welcome/Welcome2DScript.cs` | Bawaan template Unity; bukan bagian game |
