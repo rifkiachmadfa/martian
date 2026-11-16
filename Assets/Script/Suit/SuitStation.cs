@@ -2,9 +2,9 @@ using UnityEngine;
 
 /// <summary>
 /// Suit Station di Control Room. Interaksi (tombol E, berubah sesuai keadaan):
-/// 1. Suit belum dikenakan: kenakan suit dan isi tabung dari stok oksigen habitat.
-/// 2. Suit dikenakan dan tabung bisa diisi: isi ulang.
-/// 3. Suit dikenakan dan tidak ada yang bisa diisi (tabung penuh atau stok habitat habis): lepas suit.
+/// 1. Suit belum dikenakan: kenakan suit. Tabung oksigen diisi otomatis oleh sistem dari stok habitat.
+/// 2. Suit dikenakan: lepas suit. Tabung oksigen diisi otomatis oleh sistem dari stok habitat saat suit dilepas.
+/// Tidak ada tombol "isi oksigen" terpisah; pengisian terjadi otomatis di balik layar.
 /// Oksigen suit berkurang selama suit dikenakan, jadi pemain perlu melepasnya di sini bila tidak ke luar.
 /// Pasang pada objek ber-layer Interactable dengan Collider2D (Is Trigger).
 /// </summary>
@@ -22,8 +22,7 @@ public class SuitStation : MonoBehaviour, IInteractable
     {
         get
         {
-            if (suit == null || !suit.IsEquipped) return "Kenakan suit";
-            return suit.CanRefill ? "Isi oksigen suit" : "Lepas suit";
+            return suit == null || !suit.IsEquipped ? "Kenakan suit" : "Lepas suit";
         }
     }
 
@@ -53,41 +52,48 @@ public class SuitStation : MonoBehaviour, IInteractable
             return;
         }
 
-        float current = resources.Get(ResourceType.SuitOxygen);
-        float max = resources.GetMax(ResourceType.SuitOxygen);
-
-        // Suit dikenakan dan tidak ada yang bisa diisi: tombol berfungsi sebagai "Lepas suit".
-        if (suit.IsEquipped && !suit.CanRefill)
+        // Suit dikenakan: tombol berfungsi sebagai "Lepas suit". Pengisian tabung otomatis oleh sistem setelah suit dilepas.
+        if (suit.IsEquipped)
         {
-            if (suit.Unequip())
-                ShowMessage("Suit dilepas. Oksigen suit tidak berkurang selama suit dilepas. Oksigen suit: " +
-                    Mathf.RoundToInt(current) + " / " + Mathf.RoundToInt(max) + ".");
-            else
+            if (!suit.Unequip())
+            {
                 ShowMessage("Suit tidak bisa dilepas di luar habitat.");
+                return;
+            }
+
+            float refilled = suit.RefillFromHabitat();
+            ShowMessage("Suit dilepas. Oksigen suit tidak berkurang selama suit dilepas. " +
+                BuildRefillText(resources, refilled, "diisi otomatis"));
             return;
         }
 
-        bool justEquipped = !suit.IsEquipped;
+        // Suit belum dikenakan: kenakan, lalu isi tabung otomatis agar pemain tidak berangkat dengan tabung kosong.
         suit.Equip();
         float added = suit.RefillFromHabitat();
 
-        current = resources.Get(ResourceType.SuitOxygen);
-
-        string message = justEquipped ? "Suit dikenakan. Oksigen suit berkurang selama suit dikenakan, termasuk di dalam habitat. " : "";
-
-        if (added > 0f)
-            message += "Oksigen suit terisi " + Mathf.RoundToInt(added) + " unit.";
-        else if (current >= max - 0.001f)
-            message += "Tabung oksigen suit sudah penuh.";
-        else
-            message += "Oksigen habitat tidak cukup untuk mengisi suit.";
-
-        message += " Oksigen suit: " + Mathf.RoundToInt(current) + " / " + Mathf.RoundToInt(max) + ".";
+        string message = "Suit dikenakan. Oksigen suit berkurang selama suit dikenakan, termasuk di dalam habitat. " +
+            BuildRefillText(resources, added, "terisi otomatis");
 
         if (!suit.CanExit)
             message += " Belum cukup untuk keluar (minimum " + Mathf.CeilToInt(suit.MinimumOxygenToExit) + ").";
 
         ShowMessage(message);
+    }
+
+    private static string BuildRefillText(ResourceManager resources, float added, string addedVerb)
+    {
+        float current = resources.Get(ResourceType.SuitOxygen);
+        float max = resources.GetMax(ResourceType.SuitOxygen);
+
+        string text;
+        if (added > 0f)
+            text = "Tabung oksigen suit " + addedVerb + " " + Mathf.RoundToInt(added) + " unit.";
+        else if (current >= max - 0.001f)
+            text = "Tabung oksigen suit sudah penuh.";
+        else
+            text = "Oksigen habitat tidak cukup untuk mengisi suit.";
+
+        return text + " Oksigen suit: " + Mathf.RoundToInt(current) + " / " + Mathf.RoundToInt(max) + ".";
     }
 
     private void ShowMessage(string message)

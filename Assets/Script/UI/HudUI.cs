@@ -4,7 +4,9 @@ using UnityEngine.UI;
 /// <summary>
 /// HUD gameplay: hari, timer, serta Food, Water, Oxygen (habitat), dan Energy.
 /// Hanya tampilan: membaca ResourceManager (lewat event) dan TimeManager.
-/// Suit Oxygen tampil di panel opsional (suitPanel) hanya saat suit dikenakan. Ice tampil di iceText (opsional).
+/// Kenyang (hunger pemain) tampil di hungerText (opsional) dan membaca HungerSystem lewat event.
+/// Suit Oxygen tampil di panel opsional (suitPanel) hanya saat suit dikenakan. Isi tas tampil di InventoryHotbarUI.
+/// Food = jumlah kentang di storage.
 /// </summary>
 public class HudUI : MonoBehaviour
 {
@@ -15,8 +17,11 @@ public class HudUI : MonoBehaviour
     [SerializeField] private Text oxygenText;
     [SerializeField] private Text energyText;
 
-    [Header("Ice (opsional; diisi menu Mars > Setup Interactive Objects)")]
+    [Header("Ice (TIDAK DIPAKAI LAGI sejak ada tas; ditampilkan InventoryHotbarUI. Biarkan kosong)")]
     [SerializeField] private Text iceText;
+
+    [Header("Kenyang / hunger (opsional; diisi menu Mars > Setup Hunger and Food Storage)")]
+    [SerializeField] private Text hungerText;
 
     [Header("Suit (opsional; diisi menu Mars > Setup Suit and Gate)")]
     [SerializeField] private GameObject suitPanel;
@@ -28,6 +33,8 @@ public class HudUI : MonoBehaviour
     private ResourceManager resources;
     private TimeManager time;
     private SuitSystem suit;
+    private HungerSystem hunger;
+    private int shownHungerValue = -1;
     private int shownSeconds = -1;
     private int shownSuitValue = -1;
 
@@ -49,7 +56,6 @@ public class HudUI : MonoBehaviour
             RefreshResource(ResourceType.Water);
             RefreshResource(ResourceType.HabitatOxygen);
             RefreshResource(ResourceType.Energy);
-            RefreshResource(ResourceType.Ice);
         }
         else
         {
@@ -70,6 +76,10 @@ public class HudUI : MonoBehaviour
         suit = SuitSystem.Instance;
         if (suit != null) suit.OnEquippedChanged += HandleSuitEquippedChanged;
         RefreshSuit();
+
+        hunger = HungerSystem.Instance;
+        if (hunger != null) hunger.OnSatietyChanged += HandleSatietyChanged;
+        RefreshHunger();
     }
 
     private void OnDestroy()
@@ -77,6 +87,7 @@ public class HudUI : MonoBehaviour
         if (resources != null) resources.OnResourceChanged -= HandleResourceChanged;
         if (time != null) time.OnDayStarted -= HandleDayStarted;
         if (suit != null) suit.OnEquippedChanged -= HandleSuitEquippedChanged;
+        if (hunger != null) hunger.OnSatietyChanged -= HandleSatietyChanged;
     }
 
     private void Update()
@@ -103,6 +114,27 @@ public class HudUI : MonoBehaviour
     private void HandleSuitEquippedChanged(bool equipped)
     {
         RefreshSuit();
+    }
+
+    private void HandleSatietyChanged(float satiety, float max)
+    {
+        RefreshHunger();
+    }
+
+    private void RefreshHunger()
+    {
+        if (hungerText == null || hunger == null) return;
+
+        int rounded = Mathf.RoundToInt(hunger.Satiety);
+        if (rounded == shownHungerValue) return; // kenyang berubah tiap frame; hindari menulis teks yang sama
+        shownHungerValue = rounded;
+
+        hungerText.text = "Kenyang: " + rounded + " / " + Mathf.RoundToInt(hunger.MaxSatiety);
+
+        float fraction = hunger.Fraction;
+        if (fraction <= hunger.DangerFraction) hungerText.color = new Color(1f, 0.35f, 0.3f);
+        else if (fraction <= hunger.WarnFraction) hungerText.color = new Color(1f, 0.85f, 0.3f);
+        else hungerText.color = Color.white;
     }
 
     private void RefreshSuit()
@@ -149,9 +181,7 @@ public class HudUI : MonoBehaviour
             case ResourceType.Water: label = "Water"; target = waterText; break;
             case ResourceType.HabitatOxygen: label = "Oxygen"; target = oxygenText; break;
             case ResourceType.Energy: label = "Energy"; target = energyText; break;
-            case ResourceType.Ice:
-                if (iceText == null) return; // panel Ice opsional
-                label = "Ice"; target = iceText; break;
+            case ResourceType.Ice: return; // Ice kini ada di tas (InventorySystem), tampil di InventoryHotbarUI
             case ResourceType.SuitOxygen: RefreshSuit(); return;
             default: return;
         }

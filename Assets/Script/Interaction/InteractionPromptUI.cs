@@ -26,13 +26,13 @@ public class InteractionPromptUI : MonoBehaviour
 
     private void Update()
     {
-        IInteractable target = detector.CurrentTarget;
-        bool canShow = target != null && target.CanInteract(detector.gameObject);
+        string prompt = detector.CurrentPrompt;
+        bool canShow = !string.IsNullOrEmpty(prompt);
 
         if (promptRoot.activeSelf != canShow)
             promptRoot.SetActive(canShow);
 
         if (canShow)
-            promptText.text = "[" + keyLabel + "] " + target.InteractionPrompt;
+            promptText.text = "[" + keyLabel + "] " + prompt;
     }
 }

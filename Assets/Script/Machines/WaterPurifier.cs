@@ -2,20 +2,21 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Water Purifier di Farming Area: Ice + Energy -> Water (stok Water bersama).
-/// Tekan E memulai satu proses: Ice dan Energy langsung dikurangi, Water masuk setelah beberapa detik.
+/// Water Purifier di Farming Area: Es + Energy -> Water (stok Water bersama).
+/// Pilih Es di tas (tombol 2), dekati mesin, lalu tekan E untuk memulai satu proses: Es (dari tas) dan Energy
+/// langsung dikurangi, Water masuk setelah beberapa detik.
 /// Tidak berjalan bila Ice atau Energy kurang, atau tangki Water tidak muat; pemain diberi alasannya.
 /// Proses ikut jeda TimeManager.IsPaused. Hanya logika: tampilan lewat event OnProcessingChanged
 /// atau objek indikator opsional. Semua angka adalah USULAN.
 /// Pasang pada objek ber-layer Interactable dengan Collider2D.
 /// </summary>
-public class WaterPurifier : MonoBehaviour, IInteractable
+public class WaterPurifier : MonoBehaviour, IInteractable, IItemReceiver
 {
     [Header("Referensi (otomatis dicari jika kosong)")]
     [SerializeField] private DialogueUI dialogueUI;
 
     [Header("Aturan mesin (USULAN, ubah lewat Inspector setelah playtest)")]
-    [SerializeField, Min(0f)] private float iceCost = 1f;
+    [SerializeField, Min(1)] private int iceCost = 1;
     [SerializeField, Min(0f)] private float energyCost = 5f;
     [SerializeField, Min(0f)] private float waterOutput = 4f;
     [SerializeField, Min(0.1f)] private float processSeconds = 4f;
@@ -41,7 +42,17 @@ public class WaterPurifier : MonoBehaviour, IInteractable
     public event Action<bool> OnProcessingChanged;
 
     public string InteractionPrompt =>
-        IsProcessing ? "Water Purifier bekerja... " + Mathf.CeilToInt(RemainingSeconds) + " dtk" : "Proses Ice menjadi Water";
+        IsProcessing ? "Water Purifier bekerja... " + Mathf.CeilToInt(RemainingSeconds) + " dtk" : "Water Purifier (pilih es, tombol 2)";
+
+    public bool CanUseItem(ItemType item) => item == ItemType.Ice;
+
+    public string GetItemPrompt(ItemType item) =>
+        IsProcessing ? "Water Purifier bekerja... " + Mathf.CeilToInt(RemainingSeconds) + " dtk" : "Masukkan es ke Water Purifier";
+
+    public void UseItem(GameObject user, ItemType item)
+    {
+        if (item == ItemType.Ice) StartProcess();
+    }
 
     private void Start()
     {
@@ -69,10 +80,23 @@ public class WaterPurifier : MonoBehaviour, IInteractable
 
     public void Interact(GameObject interactor)
     {
-        ResourceManager resources = ResourceManager.Instance;
-        if (resources == null)
+        if (IsProcessing)
         {
-            Debug.LogError("WaterPurifier: ResourceManager tidak ada di scene.", this);
+            ShowMessage("Water Purifier sedang bekerja. Sisa " + Mathf.CeilToInt(RemainingSeconds) + " detik.");
+            return;
+        }
+
+        ShowMessage("Pilih es di tas (tombol 2), lalu tekan E untuk memasukkannya ke Water Purifier.");
+    }
+
+    // Dipanggil lewat UseItem (pemain memilih Es di tas lalu menekan E di dekat mesin).
+    private void StartProcess()
+    {
+        ResourceManager resources = ResourceManager.Instance;
+        InventorySystem inventory = InventorySystem.Instance;
+        if (resources == null || inventory == null)
+        {
+            Debug.LogError("WaterPurifier: ResourceManager atau InventorySystem tidak ada di scene.", this);
             return;
         }
 
@@ -82,10 +106,9 @@ public class WaterPurifier : MonoBehaviour, IInteractable
             return;
         }
 
-        if (!resources.Has(ResourceType.Ice, iceCost))
+        if (inventory.GetBag(ItemType.Ice) < iceCost)
         {
-            ShowMessage("Tidak ada Ice untuk diproses (butuh " + Mathf.CeilToInt(iceCost) +
-                "). Kumpulkan es di Outdoor.");
+            ShowMessage("Tidak ada es di tas (butuh " + iceCost + "). Kumpulkan es di Outdoor atau ambil dari storage.");
             return;
         }
 
@@ -104,14 +127,14 @@ public class WaterPurifier : MonoBehaviour, IInteractable
             return;
         }
 
-        // Semua syarat sudah dicek di atas, jadi kedua TryConsume pasti berhasil.
-        resources.TryConsume(ResourceType.Ice, iceCost);
+        // Semua syarat sudah dicek di atas, jadi kedua pengurangan pasti berhasil.
+        inventory.RemoveFromBag(ItemType.Ice, iceCost);
         resources.TryConsume(ResourceType.Energy, energyCost);
 
         timer = 0f;
         SetProcessing(true);
 
-        ShowMessage("Memproses " + Mathf.CeilToInt(iceCost) + " Ice dan " + Mathf.CeilToInt(energyCost) +
+        ShowMessage("Memproses " + iceCost + " es dan " + Mathf.CeilToInt(energyCost) +
             " Energy menjadi " + Mathf.CeilToInt(waterOutput) + " Water. Selesai dalam " +
             Mathf.CeilToInt(processSeconds) + " detik.");
     }

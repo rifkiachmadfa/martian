@@ -48,11 +48,24 @@ public class ResourceMonitor : MonoBehaviour, IInteractable
                 (seconds / 60).ToString("00") + ":" + (seconds % 60).ToString("00") + ".");
         }
 
-        lines.Add("Food " + Format(resources, ResourceType.Food) +
+        lines.Add("Food (kentang di storage) " + Format(resources, ResourceType.Food) +
             "  |  Water " + Format(resources, ResourceType.Water) +
             "  |  Oxygen habitat " + Format(resources, ResourceType.HabitatOxygen) +
-            "  |  Energy " + Format(resources, ResourceType.Energy) +
-            "  |  Ice " + Format(resources, ResourceType.Ice));
+            "  |  Energy " + Format(resources, ResourceType.Energy));
+
+        InventorySystem inventory = InventorySystem.Instance;
+        if (inventory != null)
+        {
+            lines.Add("Tas: " + FormatItem(inventory, ItemType.Potato, false) + ", " + FormatItem(inventory, ItemType.Ice, false) +
+                ", " + FormatItem(inventory, ItemType.Seed, false) + ".");
+            lines.Add("Storage: " + FormatItem(inventory, ItemType.Potato, true) + ", " + FormatItem(inventory, ItemType.Ice, true) +
+                ", " + FormatItem(inventory, ItemType.Seed, true) + ".");
+        }
+
+        HungerSystem hunger = HungerSystem.Instance;
+        if (hunger != null)
+            lines.Add("Kenyang " + Mathf.RoundToInt(hunger.Satiety) + "/" + Mathf.RoundToInt(hunger.MaxSatiety) +
+                (hunger.IsStarving ? ". Anda kelaparan, segera makan." : "."));
 
         SuitSystem suit = SuitSystem.Instance;
         bool equipped = suit != null && suit.IsEquipped;
@@ -68,6 +81,13 @@ public class ResourceMonitor : MonoBehaviour, IInteractable
     private static string Format(ResourceManager resources, ResourceType type)
     {
         return Mathf.RoundToInt(resources.Get(type)) + "/" + Mathf.RoundToInt(resources.GetMax(type));
+    }
+
+    private static string FormatItem(InventorySystem inventory, ItemType item, bool storage)
+    {
+        int count = storage ? inventory.GetStorage(item) : inventory.GetBag(item);
+        int max = storage ? inventory.GetStorageMax(item) : inventory.GetBagMax(item);
+        return InventorySystem.NameOf(item) + " " + count + "/" + max;
     }
 
     private static string BuildFacilityLine()

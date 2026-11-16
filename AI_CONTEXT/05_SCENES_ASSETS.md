@@ -35,7 +35,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Editor/MarsUISetup.cs` | Menu Editor: membuat/memperbaiki Canvas, dialog, prompt, dan menyambungkan ke TARS/Player. Helper `internal` dipakai `MarsHudSetup` |
 | `Assets/Editor/MarsHudSetup.cs` | Menu Editor `Mars > Setup HUD and Time`: membuat TimeManager, HudRoot (TimePanel, ResourcePanel), dan menyambungkan referensi |
 | `Assets/Script/Suit/SuitSystem.cs` | Status suit, isi ulang dari oksigen habitat, lepas suit, konsumsi oksigen suit selama dikenakan. Dipasang pada GameObject `SuitSystem` |
-| `Assets/Script/Suit/SuitStation.cs` | Suit Station (IInteractable): kenakan + isi, isi ulang, atau lepas suit. Layer `Interactable`, Collider2D Is Trigger |
+| `Assets/Script/Suit/SuitStation.cs` | Suit Station (IInteractable): "Kenakan suit" atau "Lepas suit"; tabung diisi otomatis dari oksigen habitat saat dikenakan dan saat dilepas. Layer `Interactable`, Collider2D Is Trigger |
 | `Assets/Script/Suit/IndoorZone.cs` | Trigger area dalam habitat; di luar semua zona = pemain di luar |
 | `Assets/Script/Suit/SuitReminder.cs` | Pengingat TARS "lepas suit" (dialog, cooldown). Dipasang pada GameObject `SuitSystem` oleh menu setup |
 | `Assets/Script/Suit/SuitGate.cs` | Tembok tak terlihat di pintu keluar (BoxCollider2D solid) |
@@ -47,6 +47,16 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Script/Outdoor/SolarPanelDamageScheduler.cs` | Satu kerusakan acak per hari pada satu panel normal; pengumuman dialog TARS. Objek `SolarPanelDamageScheduler` di scene (dibuat menu setup) |
 | `Assets/Script/UI/WiringMinigameUI.cs` | Minigame kabel (3-4 kabel, drag-and-drop mouse). Dipasang pada Canvas; UI dibuat lewat kode saat Awake (anak `WiringMinigameRoot`) |
 | `Assets/Editor/MarsRepairSetup.cs` | Menu Editor `Mars > Setup Panel Damage and Wiring Minigame`: pasang `WiringMinigameUI` di Canvas, buat `SolarPanelDamageScheduler`, sambungkan `RepairPoint` |
+| `Assets/Script/Survival/HungerSystem.cs` | Kenyang pemain (0-100), berkurang selama gameplay, `Feed()` dipanggil InventorySystem saat makan kentang, event `OnSatietyChanged`, `OnStarvationFailure`. Dipasang pada GameObject `HungerSystem` |
+| `Assets/Script/Survival/HungerReminder.cs` | Dialog TARS (teks tetap) saat kenyang melewati 30%, 10%, 0. Dipasang pada GameObject `HungerSystem` oleh menu setup |
+| `Assets/Script/Station/FoodStorage.cs` | Storage di Control Room (IInteractable "Buka storage"): membuka `StorageUI`. Nama class lama dipertahankan. Layer `Interactable`, Collider2D Is Trigger |
+| `Assets/Script/Inventory/ItemType.cs` | Enum item tas: Potato (1), Ice (2), Seed (3) |
+| `Assets/Script/Inventory/InventorySystem.cs` | Tas pemain (kentang 10, es 10, bibit 5), storage es dan bibit, pilihan slot (tombol 1-3), aksi bawaan (makan). Dipasang pada GameObject `InventorySystem` |
+| `Assets/Script/Interaction/IItemReceiver.cs` | Antarmuka opsional untuk objek yang menerima item tas (FarmingPlot, WaterPurifier) |
+| `Assets/Script/UI/InventoryHotbarUI.cs` | Hotbar 3 slot di bawah tengah layar (dibuat lewat kode di bawah Canvas) |
+| `Assets/Script/UI/StorageUI.cs` | Panel storage (dibuat lewat kode di bawah Canvas): Simpan/Ambil dengan mouse, Esc menutup |
+| `Assets/Editor/MarsInventorySetup.cs` | Menu Editor `Mars > Setup Inventory and Storage`: InventorySystem, hotbar, StorageUI, objek Storage, menyembunyikan IcePanel lama |
+| `Assets/Editor/MarsHungerSetup.cs` | Menu Editor `Mars > Setup Hunger and Food Storage`: membuat HungerSystem, HungerReminder, FoodStorage, dan `HudRoot/HungerPanel` (teks Kenyang) |
 | `Assets/Script/Machines/WaterPurifier.cs` | Water Purifier (IInteractable): Ice + Energy -> Water, proses beberapa detik, `IsProcessing`, `OnProcessingChanged`, indikator opsional |
 | `Assets/Script/Machines/OxygenGenerator.cs` | Oxygen Generator (IInteractable): Water + Energy -> HabitatOxygen otomatis per siklus; E = nyalakan/matikan (USULAN); `IsOn`, `IsRunning`, `StatusText` |
 | `Assets/Script/Farming/FarmingPlot.cs` | Satu petak kentang (IInteractable): tanam, siram (Water), tumbuh saat hari berganti bila disiram, panen (Food). Satu objek = satu petak |

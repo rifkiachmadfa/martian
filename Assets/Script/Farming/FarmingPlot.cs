@@ -2,14 +2,15 @@ using UnityEngine;
 
 /// <summary>
 /// Satu petak tanam kentang di Farming Area (GDD bagian 10). Siklus lewat tombol E:
-/// kosong -> tanam; tumbuh dan belum disiram -> siram (memakai Water bersama); matang -> panen (menambah Food).
+/// kosong -> tanam (pilih Bibit di tas, tombol 3, lalu E); tumbuh dan belum disiram -> siram (memakai Water bersama);
+/// matang -> panen (Kentang masuk ke tas; bila tas tidak muat, panen ditunda sampai pemain menyimpan di storage).
 /// Tanaman yang SUDAH disiram maju satu tahap saat hari berganti (TimeManager.OnDayStarted, jadi lewat Bed);
 /// yang belum disiram tidak maju dan tidak mati. Tahap terakhir = matang.
-/// Tidak ada seed sebagai resource, pupuk, hama, atau jenis tanaman lain. Semua angka adalah USULAN.
+/// Tidak ada pupuk, hama, atau jenis tanaman lain. Bibit adalah item tas. Semua angka adalah USULAN.
 /// Pasang pada objek ber-layer Interactable dengan Collider2D. Satu objek = satu petak; duplikat untuk petak lain.
 /// Status (HasPlant, Stage, IsWatered) disediakan sebagai properti untuk SaveSystem nanti.
 /// </summary>
-public class FarmingPlot : MonoBehaviour, IInteractable
+public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
 {
     [Header("Referensi (otomatis dicari jika kosong)")]
     [SerializeField] private DialogueUI dialogueUI;
@@ -18,7 +19,10 @@ public class FarmingPlot : MonoBehaviour, IInteractable
     [Tooltip("Jumlah tahap pertumbuhan (GDD: 2-3 tahap). Tahap terakhir = matang.")]
     [SerializeField, Range(2, 3)] private int stageCount = 3;
     [SerializeField, Min(0f)] private float waterPerWatering = 2f;
-    [SerializeField, Min(0f)] private float foodPerHarvest = 20f;
+    [Tooltip("Kentang yang didapat per panen (masuk ke tas; kapasitas tas 10).")]
+    [SerializeField, Min(1)] private int potatoPerHarvest = 4;
+    [Tooltip("Bibit yang dikembalikan per panen (masuk tas; bila penuh, masuk storage).")]
+    [SerializeField, Min(0)] private int seedPerHarvest = 1;
 
     [Header("Tampilan opsional")]
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -51,10 +55,38 @@ public class FarmingPlot : MonoBehaviour, IInteractable
     {
         get
         {
-            if (!HasPlant) return "Tanam kentang";
+            if (!HasPlant) return "Petak kosong (pilih bibit, tombol 3)";
             if (IsMature) return "Panen kentang";
             return IsWatered ? "Periksa tanaman" : "Siram tanaman";
         }
+    }
+
+    public bool CanUseItem(ItemType item) => item == ItemType.Seed && !HasPlant;
+
+    public string GetItemPrompt(ItemType item) => "Tanam bibit kentang";
+
+    public void UseItem(GameObject user, ItemType item)
+    {
+        if (item != ItemType.Seed || HasPlant) return;
+
+        InventorySystem inventory = InventorySystem.Instance;
+        if (inventory == null)
+        {
+            Debug.LogError("FarmingPlot: InventorySystem tidak ada di scene. Jalankan menu Mars > Setup Inventory and Storage.", this);
+            return;
+        }
+
+        if (!inventory.RemoveFromBag(ItemType.Seed, 1))
+        {
+            ShowMessage("Tidak ada bibit di tas. Ambil bibit dari storage.");
+            return;
+        }
+
+        HasPlant = true;
+        Stage = 0;
+        IsWatered = false;
+        RefreshVisual();
+        ShowMessage("Bibit kentang ditanam. Siram tanaman agar maju satu tahap saat hari berganti.");
     }
 
     private void Awake()
@@ -96,17 +128,13 @@ public class FarmingPlot : MonoBehaviour, IInteractable
 
         if (!HasPlant)
         {
-            HasPlant = true;
-            Stage = 0;
-            IsWatered = false;
-            RefreshVisual();
-            ShowMessage("Benih kentang ditanam. Siram tanaman agar maju satu tahap saat hari berganti.");
+            ShowMessage("Petak kosong. Pilih bibit di tas (tombol 3), lalu tekan E untuk menanam. Ambil bibit di storage bila tas kosong.");
             return;
         }
 
         if (IsMature)
         {
-            Harvest(resources);
+            Harvest();
             return;
         }
 
@@ -129,22 +157,36 @@ public class FarmingPlot : MonoBehaviour, IInteractable
             " Water. Ia akan maju satu tahap saat hari berganti.");
     }
 
-    private void Harvest(ResourceManager resources)
+    private void Harvest()
     {
-        if (resources.Get(ResourceType.Food) >= resources.GetMax(ResourceType.Food) - 0.001f)
+        InventorySystem inventory = InventorySystem.Instance;
+        if (inventory == null)
         {
-            ShowMessage("Stok Food penuh. Panen ditunda sampai ada ruang.");
+            Debug.LogError("FarmingPlot: InventorySystem tidak ada di scene. Jalankan menu Mars > Setup Inventory and Storage.", this);
             return;
         }
 
-        float added = resources.Add(ResourceType.Food, foodPerHarvest);
+        int space = inventory.BagSpace(ItemType.Potato);
+        if (space < potatoPerHarvest)
+        {
+            ShowMessage("Tas tidak muat " + potatoPerHarvest + " kentang (ruang " + space +
+                "). Simpan kentang di storage dulu, lalu panen lagi.");
+            return;
+        }
+
+        int potatoes = inventory.AddToBag(ItemType.Potato, potatoPerHarvest);
+        int seedsInBag = inventory.AddToBag(ItemType.Seed, seedPerHarvest);
+        int seedsStored = seedsInBag < seedPerHarvest ? inventory.AddToStorage(ItemType.Seed, seedPerHarvest - seedsInBag) : 0;
 
         HasPlant = false;
         Stage = 0;
         IsWatered = false;
         RefreshVisual();
 
-        ShowMessage("Kentang dipanen. Food bertambah " + Mathf.RoundToInt(added) + ". Petak kosong lagi dan siap ditanami.");
+        string message = "Kentang dipanen: " + potatoes + " kentang masuk ke tas.";
+        if (seedsInBag > 0) message += " Bibit +" + seedsInBag + " masuk ke tas.";
+        if (seedsStored > 0) message += " Bibit +" + seedsStored + " masuk ke storage (tas penuh).";
+        ShowMessage(message + " Petak kosong lagi dan siap ditanami.");
     }
 
     // Pertumbuhan: hanya tanaman yang disiram dan belum matang yang maju. Status siram direset tiap hari.

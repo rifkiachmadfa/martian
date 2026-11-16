@@ -161,3 +161,26 @@ Setup: jalankan `Mars > Setup Panel Damage and Wiring Minigame`, Ctrl+S, tekan P
 - [x] Resource Monitor: dialog berisi hari/waktu, stok semua resource (nilai sama dengan HUD), status suit, kondisi panel (jumlah normal/rusak), Water Purifier, Oxygen Generator. Fasilitas yang tidak ada di scene tidak muncul. Tidak mengubah stok apa pun.
 - [x] Terminal: E menampilkan pesan Day 1; setelah tidur, E menampilkan pesan hari berikutnya; tidak ada pesan yang berisi tugas atau mengubah stok.
 - [x] Semua dialog objek baru bisa ditutup dengan E/Spasi/klik/X dan prompt tidak muncul ulang sendiri.
+
+## Hunger dan makan (ditambahkan 2026-11-16, direvisi: makan dari tas; BARU, belum dites di Unity)
+Setup: jalankan `Mars > Setup Hunger and Food Storage` dan `Mars > Setup Inventory and Storage`, pindahkan objek Storage ke Control Room, ubah Food di Inspector ResourceManager (Start 10, Max 50), simpan scene.
+- [ ] HUD menampilkan "Kenyang: 100 / 100" di kanan atas dan turun pelan saat bermain (sekitar 1 poin per 12 detik).
+- [ ] Kenyang tidak berkurang saat transisi tidur.
+- [ ] Kentang di tas, kenyang di bawah 100: tekan 1 lalu E mengurangi kentang 1 dan menambah kenyang 12,5. Kenyang penuh: E tidak makan (prompt "Makan kentang" tidak muncul).
+- [ ] Debug: ContextMenu "Kenyang jadi 0" pada HungerSystem. Dialog TARS muncul di 30%, 10%, dan 0 (sekali tiap batas); setelah makan, batas bisa diumumkan lagi.
+- [ ] Kenyang 0 selama 60 detik tanpa makan: Console menampilkan peringatan kelaparan (Game Over belum ada). Makan sebelum 60 detik membatalkan hitung mundur.
+- [ ] Resource Monitor menampilkan baris Kenyang, isi Tas, dan isi Storage.
+- [ ] Suit Station: prompt hanya "Kenakan suit" lalu "Lepas suit" (tidak ada "Isi oksigen suit"); suit selalu bisa dilepas di dalam habitat dan tabung terisi otomatis; di luar habitat suit tidak bisa dilepas.
+
+## Tas pemain, storage, bibit (ditambahkan 2026-11-16, BARU, belum dites di Unity)
+- [ ] Hotbar tiga slot di bawah tengah layar: "1 Kentang 0 / 10", "2 Es 0 / 10", "3 Bibit 0 / 5".
+- [ ] Tombol 1, 2, 3 (dan keypad) menyalakan slot; menekan tombol yang sama lagi mematikannya; tidak bisa memilih saat dialog atau panel storage terbuka.
+- [ ] Storage: E membuka panel; Ambil 1 / Ambil Semua memindahkan ke tas sampai batas tas; Simpan 1 / Simpan Semua memindahkan ke storage; angka tas, storage, dan Food di HUD (kentang) konsisten; Esc atau Tutup menutup; Player tidak bisa bergerak selama terbuka; waktu hari tetap berjalan.
+- [ ] Ambil Semua bibit dari storage: tas terisi maks 5, sisanya tetap di storage. Ambil Semua es: maks 10.
+- [ ] Ice Deposit: pakai suit, E mengumpulkan es ke tas (hotbar naik). Tas es penuh (10): pesan "Tas penuh", es tidak bertambah; setelah Simpan di storage bisa mengumpulkan lagi.
+- [ ] Water Purifier: tanpa slot terpilih E menampilkan petunjuk "Pilih es"; dengan slot 2 terpilih prompt "Masukkan es ke Water Purifier", E memakai 1 es dari tas + Energy dan menghasilkan Water; tas tanpa es menampilkan pesan.
+- [ ] Farming Plot: petak kosong tanpa bibit terpilih menampilkan petunjuk; slot 3 terpilih + E menanam dan mengurangi bibit 1; tanpa bibit di tas ada pesan. Siram dan tumbuh seperti sebelumnya.
+- [ ] Panen: 4 kentang masuk tas dan bibit +1; bila ruang tas kentang kurang dari 4, panen ditunda dengan pesan dan tanaman tetap; bibit masuk storage bila tas bibit penuh.
+- [ ] Loop lengkap: ambil bibit dari storage, tanam, siram, tidur sampai matang, panen ke tas, simpan atau makan.
+- [ ] Interaksi lain (Bed, Resource Monitor, Suit Station, Repair Point) tetap berfungsi dengan E tanpa slot terpilih; dengan kentang terpilih dan kenyang penuh, E tetap berinteraksi biasa.
+- [ ] HUD tidak lagi menampilkan panel Ice lama.

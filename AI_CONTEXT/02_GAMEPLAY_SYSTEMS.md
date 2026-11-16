@@ -9,6 +9,8 @@
 | Solar Panel | Menghasilkan Energy; panel rusak menurunkan produksi. Satu panel rusak tidak mematikan seluruh habitat. |
 | Outdoor | Gunakan suit; kumpulkan Ice dan perbaiki panel; kembali sebelum Suit Oxygen habis. |
 | Farming | Potato saja; 2–3 tahap pertumbuhan. Tanaman yang disiram maju satu tahap per hari; tanpa air tidak maju. |
+| Food dan Hunger | **Revisi GDD 2026-11-16:** pemain punya kenyang (hunger) yang berkurang seiring waktu. Pemain makan kentang dari tas (tombol 1, lalu E). Food di HUD = jumlah kentang di storage. Kenyang 0 terlalu lama = kegagalan. |
+| Tas dan storage | **Revisi GDD 2026-11-16:** tas pemain: kentang 10, es 10, bibit 5. Tombol 1-3 memilih slot, E memakai (makan / masukkan es ke Water Purifier / tanam bibit). Tas penuh = item tidak bisa diambil; simpan di storage (Control Room). Panen = kentang ke tas. |
 | Water | Penyiraman dan mesin memakai stok Water bersama sesuai rancangan GDD. |
 | Wire minigame | Hubungkan 3–4 kabel berwarna dengan drag/drop; sederhana, target 15–30 detik. |
 | TARS | Dialog/pengingat berdasarkan event atau ambang; bukan rangkaian quest. |

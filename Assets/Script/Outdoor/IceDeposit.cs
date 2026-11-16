@@ -1,10 +1,10 @@
 using UnityEngine;
 
 /// <summary>
-/// Deposit es di Outdoor. Tekan E: pemain berhenti beberapa detik mengumpulkan es, lalu Ice masuk ke
-/// inventory (stok ResourceType.Ice di ResourceManager; batasnya = kapasitas Ice di sana).
+/// Deposit es di Outdoor. Tekan E: pemain berhenti beberapa detik mengumpulkan es, lalu Es masuk ke
+/// tas pemain (InventorySystem, maks 10). Bila tas penuh, es tidak bisa diambil: simpan dulu di storage.
 /// Deposit tidak habis (USULAN, keputusan terbuka). Perlu suit dikenakan (bisa dimatikan lewat Inspector).
-/// Hanya logika interaksi; tampilan Ice ada di HudUI. Waktu pengumpulan ikut TimeManager.IsPaused.
+/// Hanya logika interaksi; tampilan tas ada di InventoryHotbarUI. Waktu pengumpulan ikut TimeManager.IsPaused.
 /// Pasang pada objek ber-layer Interactable dengan Collider2D.
 /// </summary>
 public class IceDeposit : MonoBehaviour, IInteractable
@@ -17,8 +17,8 @@ public class IceDeposit : MonoBehaviour, IInteractable
     [Header("Aturan pengumpulan (USULAN, ubah lewat Inspector setelah playtest)")]
     [Tooltip("Lama pengumpulan per interaksi (detik). Pemain tidak bisa bergerak selama itu.")]
     [SerializeField, Min(0.1f)] private float gatherSeconds = 3f;
-    [Tooltip("Jumlah Ice yang didapat per interaksi.")]
-    [SerializeField, Min(0.1f)] private float icePerGather = 1f;
+    [Tooltip("Jumlah es yang didapat per interaksi.")]
+    [SerializeField, Min(1)] private int icePerGather = 1;
     [Tooltip("Jika dicentang, pemain harus mengenakan suit untuk mengumpulkan es.")]
     [SerializeField] private bool requireSuit = true;
     [SerializeField, Min(0f)] private float reinteractCooldown = 0.3f;
@@ -81,10 +81,10 @@ public class IceDeposit : MonoBehaviour, IInteractable
     {
         if (isGathering) return;
 
-        ResourceManager resources = ResourceManager.Instance;
-        if (resources == null)
+        InventorySystem inventory = InventorySystem.Instance;
+        if (inventory == null)
         {
-            Debug.LogError("IceDeposit: ResourceManager tidak ada di scene.", this);
+            Debug.LogError("IceDeposit: InventorySystem tidak ada di scene. Jalankan menu Mars > Setup Inventory and Storage.", this);
             return;
         }
 
@@ -94,12 +94,10 @@ public class IceDeposit : MonoBehaviour, IInteractable
             return;
         }
 
-        float current = resources.Get(ResourceType.Ice);
-        float max = resources.GetMax(ResourceType.Ice);
-        if (current >= max - 0.001f)
+        if (inventory.BagSpace(ItemType.Ice) < icePerGather)
         {
-            ShowMessage("Inventory Ice penuh (" + Mathf.RoundToInt(current) + " / " + Mathf.RoundToInt(max) +
-                "). Proses es di Water Purifier dulu.");
+            ShowMessage("Tas penuh (Es " + inventory.GetBag(ItemType.Ice) + " / " + inventory.GetBagMax(ItemType.Ice) +
+                "). Simpan es di storage dulu atau masukkan ke Water Purifier.");
             return;
         }
 
@@ -110,11 +108,11 @@ public class IceDeposit : MonoBehaviour, IInteractable
 
     private void FinishGathering()
     {
-        ResourceManager resources = ResourceManager.Instance;
-        float added = resources != null ? resources.Add(ResourceType.Ice, icePerGather) : 0f;
+        InventorySystem inventory = InventorySystem.Instance;
+        int added = inventory != null ? inventory.AddToBag(ItemType.Ice, icePerGather) : 0;
 
-        if (added <= 0f)
-            Debug.LogWarning("IceDeposit: tidak ada Ice yang masuk (inventory penuh atau ResourceManager hilang).", this);
+        if (added <= 0)
+            Debug.LogWarning("IceDeposit: tidak ada es yang masuk (tas penuh atau InventorySystem hilang).", this);
 
         CancelGathering();
     }
