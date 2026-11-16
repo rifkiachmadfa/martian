@@ -10,7 +10,7 @@
 |---|---|
 | Repo | https://github.com/rifkiachmadfa/martian.git |
 | Branch | `main` |
-| Revisi terakhir diperiksa | `d96d9b6f` (2026-11-16, clone bersih `main`) |
+| Revisi terakhir diperiksa | `16ca3c15` (2026-11-16, clone `main`); patch Milestone 10 dibuat di atas revisi ini |
 | Unity | 6000.6.8f1 |
 | Paket penting | Input System 1.20.1 (kode memakai `Input.GetAxisRaw` / `KeyCode`), URP 17.6.0, 2D Animation 16.0.1, Tilemap, Cinemachine |
 | Scene | Satu scene: `Assets/Scenes/SampleScene.unity` |
@@ -37,7 +37,7 @@ Hasil tes (bila ada) dicatat terpisah di `09_TEST_CHECKLIST.md`, bukan di sini.
 
 ## 2. Ringkasan progres
 
-Dihitung dari checklist bagian 3 (revisi `d96d9b6f`).
+Dihitung dari checklist bagian 3 (revisi `16ca3c15` + patch Milestone 10).
 
 | # | Milestone | Status | Selesai | Sebagian | Belum | Total |
 |---|---|---|---|---|---|---|
@@ -50,15 +50,15 @@ Dihitung dari checklist bagian 3 (revisi `d96d9b6f`).
 | 7 | Farming Plot (tanam, siram, tumbuh, panen) | SEBAGIAN | 6 | 2 | 1 | 9 |
 | 8 | Oxygen Generator, alur Water/Energy/Oxygen | SEBAGIAN | 5 | 1 | 0 | 6 |
 | 9 | Solar Panel dan produksi Energy | SEBAGIAN | 7 | 0 | 1 | 8 |
-| 10 | Panel rusak dan minigame kabel | SEBAGIAN | 1 | 2 | 8 | 11 |
+| 10 | Panel rusak dan minigame kabel | SEBAGIAN | 10 | 1 | 0 | 11 |
 | 11 | TARS monitoring dan reminder | SEBAGIAN | 3 | 0 | 10 | 13 |
 | 12 | Integrasi loop dan tutorial Day 1 | BELUM | 0 | 0 | 11 | 11 |
 | 13 | Day 2–7, Game Over/Victory, balancing | SEBAGIAN | 1 | 1 | 12 | 14 |
 | 14 | Audio, animasi, polish | SEBAGIAN | 1 | 2 | 11 | 14 |
 | 15 | Playtest penuh dan build | BELUM | 0 | 0 | 4 | 4 |
-| | **Total** | | **77** | **15** | **66** | **158** |
+| | **Total** | | **86** | **14** | **58** | **158** |
 
-Usulan urutan berikutnya (**belum disetujui developer**): 13 (loop menang/kalah minimal: Food berkurang, Game Over, Victory, perilaku `Bed` di Day 7) agar game bisa dimainkan Day 1 sampai Day 7, lalu 10 (minigame kabel), 11 (`TARSSystem`), 12 (tutorial), 14, 15. Urutan jadwal GDD: 10, 11, 12, 13, 14, 15. Build WebGL percobaan sebaiknya lebih awal.
+Usulan urutan berikutnya (**belum disetujui developer**): 13 (loop menang/kalah minimal: Food berkurang, Game Over, Victory, perilaku `Bed` di Day 7) agar game bisa dimainkan Day 1 sampai Day 7, lalu 11 (`TARSSystem`; milestone 10 sudah dikerjakan, menunggu tes Unity), 12 (tutorial), 14, 15. Urutan jadwal GDD: 10, 11, 12, 13, 14, 15. Build WebGL percobaan sebaiknya lebih awal.
 Jika jadwal mundur: kurangi polish dan fitur Should Have dulu; jangan korbankan loop resource inti dan sistem tujuh hari.
 
 ## 3. Checklist per milestone
@@ -250,24 +250,24 @@ Acuan: GDD 19 hari 9; GDD 11.3. Status: **SEBAGIAN** (7 selesai, 0 sebagian, 1 b
 - [ ] `9.3.2` Sprite panel normal/rusak final
 
 ### Milestone 10 — Panel rusak dan minigame kabel
-Acuan: GDD 19 hari 10; GDD 11.4. Status: **SEBAGIAN** (1 selesai, 2 sebagian, 8 belum dari 11).
+Acuan: GDD 19 hari 10; GDD 11.4. Status: **SEBAGIAN** (10 selesai, 1 sebagian, 0 belum dari 11). Kode ditulis 2026-11-16; BELUM dikompilasi/dites di Unity.
 
-**10.1 Pemicu kerusakan** (0/3)
-- [~] `10.1.1` Kerusakan hanya lewat menu konteks Debug (sementara)
-- [ ] `10.1.2` Keputusan pemicu (acak jarang atau hari tertentu; belum dipilih)
-- [ ] `10.1.3` Pemicu kerusakan otomatis di gameplay
+**10.1 Pemicu kerusakan** (3/3)
+- [x] `10.1.1` Menu konteks Debug tetap ada untuk uji (`SolarPanel` dan `SolarPanelDamageScheduler`)
+- [x] `10.1.2` Keputusan pemicu: **satu kejadian acak per hari** (developer, 2026-11-16)
+- [x] `10.1.3` Pemicu otomatis: `SolarPanelDamageScheduler` (waktu acak dalam hari, satu panel normal dipilih acak, pengumuman dialog TARS)
 
-**10.2 Repair Point** (1/2)
+**10.2 Repair Point** (2/2)
 - [x] `10.2.1` `RepairPoint` terhubung ke satu `SolarPanel`
-- [~] `10.2.2` Perbaikan langsung (sementara) sampai minigame ada
+- [x] `10.2.2` `RepairPoint` membuka minigame; perbaikan langsung hanya sebagai cadangan bila `WiringMinigameUI` tidak ada di scene
 
-**10.3 Minigame kabel** (0/6)
-- [ ] `10.3.1` UI 3 sampai 4 kabel berwarna dan konektor
-- [ ] `10.3.2` Drag-and-drop dengan mouse
-- [ ] `10.3.3` Salah sambung boleh dicoba lagi
-- [ ] `10.3.4` Durasi sekitar 15 sampai 30 detik
-- [ ] `10.3.5` Timer hari berhenti selama minigame (`ExternalPause`)
-- [ ] `10.3.6` Sukses memanggil `SolarPanel.Repair()`
+**10.3 Minigame kabel** (5/6)
+- [x] `10.3.1` UI 3 sampai 4 kabel berwarna dan konektor (`WiringMinigameUI`, dibuat lewat kode di bawah Canvas)
+- [x] `10.3.2` Drag-and-drop dengan mouse
+- [x] `10.3.3` Salah sambung boleh dicoba lagi
+- [~] `10.3.4` Durasi sekitar 15 sampai 30 detik: tidak ada batas waktu; hanya ukuran teka-teki (4 kabel). Durasi nyata belum diukur
+- [x] `10.3.5` Timer hari berhenti selama minigame (`ExternalPause`, nilai sebelumnya dipulihkan)
+- [x] `10.3.6` Sukses memanggil `SolarPanel.Repair()` (lewat callback `RepairPoint`)
 
 ### Milestone 11 — TARS monitoring dan reminder
 Acuan: GDD 19 hari 11; GDD 12. Status: **SEBAGIAN** (3 selesai, 0 sebagian, 10 belum dari 13).
@@ -386,7 +386,7 @@ Acuan: GDD 19 hari 15; GDD 21. Status: **BELUM** (0 selesai, 0 sebagian, 4 belum
 | P-4 | Perilaku `Bed` di Day 7 belum ada (menunggu Victory). | Blok akhir game | Dikerjakan di milestone 13. |
 | P-5 | `OxygenGenerator` punya tombol E untuk menyalakan/mematikan. GDD 11.2 hanya menyebut mesin bekerja otomatis. Alasan: pemain perlu menghemat Water untuk tanaman (GDD 7.1). Default menyala, sehingga Water awal bisa habis dalam ±50 dtk bila tidak dimatikan. | Kecil di kode (`allowManualToggle`), memengaruhi balancing dan tutorial Day 1 | **Menunggu keputusan developer.** Jika ditolak, matikan `allowManualToggle`. |
 
-Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), pemicu kerusakan Solar Panel (belum dipilih), angka balancing semua mesin, dan urutan fase berikutnya.
+Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), angka balancing semua mesin (termasuk frekuensi kerusakan panel: satu per hari, Day 2 dan seterusnya, mungkin terlalu sering; cek saat playtest), dan urutan fase berikutnya.
 
 ## 5. Keputusan yang sudah diambil (jangan diubah tanpa persetujuan)
 
@@ -398,6 +398,7 @@ Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), pemicu kerusakan S
 - Alur kerja perubahan: AI menganalisis repo, lalu memberi patch `.patch`. Developer yang menerapkan (`git apply`). AI tidak commit atau push.
 - Terminal komunikasi hanya cerita (bukan quest); pesan bawaan adalah placeholder.
 - Sistem PHASE.md (2026-11-16): checklist per milestone dengan subphase; wajib diperbarui di setiap patch.
+- Pemicu kerusakan Solar Panel (2026-11-16, developer): satu event acak per hari. USULAN turunan (belum disetujui): mulai Day 2 (Day 1 tutorial bebas kerusakan, `firstDamageDay`), waktu kejadian acak 15-70 persen durasi hari, satu panel normal dipilih acak.
 
 ## 6. Inventaris implementasi saat ini
 
@@ -415,7 +416,9 @@ Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), pemicu kerusakan S
 | `Suit/SuitStation`, `SuitGate`, `IndoorZone`, `SuitReminder` | Interaksi suit, tembok pintu keluar, zona dalam habitat, pengingat "lepas suit" |
 | `Outdoor/IceDeposit` | Deposit es: E, pemain berhenti ±3 dtk, Ice +1 (batas kapasitas Ice), perlu suit (usulan) |
 | `Outdoor/SolarPanel` | Energy otomatis per tick; `Damage()`/`Repair()`, `IsDamaged`, `OnDamagedChanged`; banyak panel menjumlah |
-| `Outdoor/RepairPoint` | Memperbaiki satu `SolarPanel` (langsung, sementara) |
+| `Outdoor/RepairPoint` | Membuka `WiringMinigameUI`; memperbaiki satu `SolarPanel` setelah minigame sukses (cadangan langsung bila minigame tidak ada) |
+| `Outdoor/SolarPanelDamageScheduler` | Satu kejadian acak per hari: merusak satu panel normal pada waktu acak, mengumumkan lewat dialog TARS (sementara pengganti `TARSSystem`) |
+| `UI/WiringMinigameUI` | Minigame kabel drag-and-drop mouse; UI dibuat lewat kode di bawah Canvas; menjeda `TimeManager` dan mengunci gerak Player selama terbuka; Esc membatalkan |
 | `Machines/WaterPurifier` | Ice + Energy -> Water per batch (usulan 1 + 5 -> 4 dalam 4 dtk), `IsProcessing`, `OnProcessingChanged` |
 | `Machines/OxygenGenerator` | Water + Energy -> HabitatOxygen otomatis per siklus (usulan 1 + 2 -> 5 per 5 dtk), saklar E, `IsOn`/`IsRunning` |
 | `Farming/FarmingPlot` | Tanam, siram (usulan 2 Water), tumbuh 3 tahap saat hari berganti bila disiram, panen (usulan +20 Food) |
@@ -427,7 +430,7 @@ Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), pemicu kerusakan S
 
 ### Editor setup scripts (Assets/Editor) — pola kerja proyek
 Menu yang aman dijalankan berulang, tidak menimpa referensi yang sudah diisi:
-`Mars > Setup Dialogue and Prompt UI`, `Setup HUD and Time`, `Setup Bed and Fade`, `Setup Suit and Gate`, `Setup TARS Animation`, `Setup Interactive Objects` (baru: 8 objek placeholder + panel Ice).
+`Mars > Setup Dialogue and Prompt UI`, `Setup HUD and Time`, `Setup Bed and Fade`, `Setup Suit and Gate`, `Setup TARS Animation`, `Setup Interactive Objects` (8 objek placeholder + panel Ice), `Setup Panel Damage and Wiring Minigame` (baru: pasang `WiringMinigameUI` di Canvas, buat `SolarPanelDamageScheduler`, sambungkan `RepairPoint`).
 Milestone baru sebaiknya memakai pola yang sama (satu menu setup per milestone, objek placeholder di sekitar Player).
 
 ### Objek penting di SampleScene
@@ -446,7 +449,7 @@ Layer `Interactable` sudah ada (layer 3).
 - `Assets/Welcome` adalah sisa template Unity.
 - `ResourceDebugPanel` masih ada (alat uji sementara).
 - `SuitReminder` sementara menggantikan `TARSSystem`; pindahkan logikanya saat `TARSSystem` dibuat.
-- `RepairPoint` memperbaiki langsung sementara; ganti dengan minigame kabel.
+- `SolarPanelDamageScheduler` mengumumkan lewat `DialogueUI` sementara; pindahkan ke `TARSSystem` saat dibuat.
 - Belum ada `SaveSystem`; belum ada Game Over dan Victory.
 - Kode memakai Input Manager lama (`Input.GetAxisRaw`, `KeyCode`) meski paket Input System terpasang. Jangan ganti sistem input tanpa konfirmasi.
 
@@ -465,3 +468,4 @@ Layer `Interactable` sudah ada (layer 3).
 | 2026-11-15 | Patch objek interaktif (berbasis `a9357e29`): IceDeposit, WaterPurifier, OxygenGenerator, FarmingPlot, SolarPanel + RepairPoint, ResourceMonitor, CommunicationTerminal, menu setup, Ice di HUD. Belum dikompilasi/dites. Milestone 6–10 menjadi SEBAGIAN; penyimpangan P-5 ditambahkan. |
 | 2026-11-15 | Sinkronisasi dengan repo `afc2453c`: patch objek interaktif terkonfirmasi sudah di-commit (script, `.meta`, AI_CONTEXT). Terverifikasi dari clone: `SampleScene.unity` belum memuat objek interaktif; layer `Interactable` ada di `TagManager`; `interactive-objects.patch` dan `Assets/_Recovery` masih ter-commit. Tidak ada perubahan kode. |
 | 2026-11-16 | Sistem PHASE.md dirancang ulang: checklist per milestone dengan subphase dan fitur, ringkasan progres terhitung, aturan wajib pembaruan di setiap patch. Basis repo `d96d9b6f`. Tidak ada perubahan kode. |
+| 2026-11-16 | Milestone 10: `SolarPanelDamageScheduler` (satu kerusakan acak per hari), `WiringMinigameUI`, `RepairPoint` membuka minigame, menu `Setup Panel Damage and Wiring Minigame`. Basis `16ca3c15`. Belum dikompilasi/dites di Unity. Butir 10.x diperbarui, total 86/14/58. |

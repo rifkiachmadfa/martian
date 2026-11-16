@@ -143,6 +143,20 @@ Status [x] = dilaporkan developer 2026-11-16 (seluruh butir bagian ini lolos; bu
 - [x] Setelah mencapai tahap terakhir (3 tahap = dua pergantian hari dengan siram): prompt "Panen kentang"; E menambah Food 20 dan petak kosong lagi.
 - [x] Food penuh: panen ditunda dengan pesan.
 
+### Kerusakan panel acak dan minigame kabel (Milestone 10, BARU, belum dites)
+Setup: jalankan `Mars > Setup Panel Damage and Wiring Minigame`, Ctrl+S, tekan Play. Untuk uji cepat: Inspector `SolarPanelDamageScheduler` > klik kanan > "Debug: Picu kerusakan sekarang"; sisakan waktu dengan menu TimeManager.
+- [ ] Day 1 (`firstDamageDay` = 2): tidak ada panel yang rusak sendiri sepanjang hari.
+- [ ] Day 2: tepat satu panel rusak pada waktu acak (sekitar 15-70 persen hari). Panel berubah merah, dialog TARS "... mengalami gangguan. Produksi energi menurun." muncul, dan tidak muncul lagi di hari yang sama.
+- [ ] Tidur ke hari berikutnya: satu kejadian baru dijadwalkan; tidak lebih dari satu per hari. Bila semua panel sudah rusak, Console mencatat kejadian dilewati.
+- [ ] Dialog lain terbuka saat panel rusak: pesan TARS menunggu sampai dialog tertutup (tidak menumpuk).
+- [ ] Repair Point (panel rusak): E membuka minigame 4 kabel; konektor kanan acak; timer HUD berhenti dan Player tidak bisa bergerak; stok tidak berubah.
+- [ ] Seret kabel ke konektor berwarna sama: garis menetap. Seret ke warna salah: pesan "Salah sambung", kabel kembali, bisa diulang. Lepas di tempat kosong: kabel kembali.
+- [ ] Semua kabel benar: panel kembali normal (warna dan produksi Energy), minigame menutup, timer lanjut, Player bisa bergerak, dialog "Solar Panel diperbaiki".
+- [ ] Esc saat minigame: menutup, panel tetap rusak, timer lanjut, gerak pulih.
+- [ ] Prompt Repair Point saat panel normal: pesan "berfungsi normal", minigame tidak terbuka.
+- [ ] Catat durasi nyata satu minigame (target 15-30 detik) dan apakah kabel/konektor terbaca jelas pada resolusi Game view yang dipakai.
+- [ ] Hapus komponen `WiringMinigameUI` sementara: Console memberi peringatan dan Repair Point memperbaiki langsung (cadangan).
+
 ### Resource Monitor dan Terminal
 - [x] Resource Monitor: dialog berisi hari/waktu, stok semua resource (nilai sama dengan HUD), status suit, kondisi panel (jumlah normal/rusak), Water Purifier, Oxygen Generator. Fasilitas yang tidak ada di scene tidak muncul. Tidak mengubah stok apa pun.
 - [x] Terminal: E menampilkan pesan Day 1; setelah tidur, E menampilkan pesan hari berikutnya; tidak ada pesan yang berisi tugas atau mengubah stok.

@@ -385,6 +385,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RepairPoint
   panel: {fileID: 123038598}
   dialogueUI: {fileID: 0}
+  minigame: {fileID: 1505348190}
   reinteractCooldown: 0.3
 --- !u!61 &72456218
 BoxCollider2D:
@@ -2844,6 +2845,57 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.3399999, y: 2.16, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1111421476
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1111421478}
+  - component: {fileID: 1111421477}
+  m_Layer: 0
+  m_Name: SolarPanelDamageScheduler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1111421477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1111421476}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4e70e92141ef0f262d47cc97746cd5b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SolarPanelDamageScheduler
+  timeManager: {fileID: 202980128}
+  dialogueUI: {fileID: 1505348185}
+  minigame: {fileID: 1505348190}
+  firstDamageDay: 2
+  earliestFraction: 0.15
+  latestFraction: 0.7
+  announceWithDialogue: 1
+--- !u!4 &1111421478
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1111421476}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -16001,6 +16053,7 @@ GameObject:
   - component: {fileID: 1505348186}
   - component: {fileID: 1505348185}
   - component: {fileID: 1505348184}
+  - component: {fileID: 1505348190}
   m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
@@ -16130,6 +16183,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1505348190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1505348183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 992cb89946273fb3d17ccff7060ce71e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WiringMinigameUI
+  wireCount: 4
+  successHoldSeconds: 0.8
+  cancelKey: 27
+  canvas: {fileID: 0}
+  player: {fileID: 0}
 --- !u!1 &1588370289
 GameObject:
   m_ObjectHideFlags: 0
@@ -19746,3 +19816,4 @@ SceneRoots:
   - {fileID: 610598007}
   - {fileID: 15613655}
   - {fileID: 1867960656}
+  - {fileID: 1111421478}

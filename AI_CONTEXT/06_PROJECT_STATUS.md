@@ -1,6 +1,6 @@
 # Project Status
 
-Terakhir diperbarui: 2026-11-15
+Terakhir diperbarui: 2026-11-16
 Dasar audit: repo `rifkiachmadfa/martian`, branch `main`, commit `d96d9b6f` (dicek ulang 2026-11-16; kode tidak berubah sejak `afc2453c`). Patch objek interaktif sudah ter-commit [Repo]. Developer melaporkan tes interaksi objek interaktif lolos semua [Dev]; scene lokal belum di-commit.
 
 Label sumber: **[Repo]** terverifikasi dari file di repo, **[Dev]** dilaporkan developer (belum bisa dicek AI), **[?]** belum diverifikasi.
@@ -29,9 +29,9 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 | Ice Deposit (kumpul es, inventory Ice) | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Outdoor/IceDeposit.cs`; HUD menampilkan Ice lewat `HudUI.iceText`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
 | Water Purifier | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Machines/WaterPurifier.cs`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
 | Oxygen Generator | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Machines/OxygenGenerator.cs` (saklar E = usulan di luar GDD). Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
-| Solar Panel (produksi Energy, status rusak) | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Outdoor/SolarPanel.cs`. Pemicu kerusakan otomatis belum ada (hanya menu konteks Debug). Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
-| Repair Point | Script dibuat; tes interaksi dilaporkan lolos (perbaikan langsung) | [Repo setelah patch] `Assets/Script/Outdoor/RepairPoint.cs`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
-| Wiring minigame | Belum ada | [Repo] |
+| Solar Panel (produksi Energy, status rusak) | Script dibuat; tes interaksi dilaporkan lolos; pemicu kerusakan acak 1x per hari dibuat 2026-11-16 (belum dites) | [Repo setelah patch] `Assets/Script/Outdoor/SolarPanel.cs`. Pemicu otomatis: `Assets/Script/Outdoor/SolarPanelDamageScheduler.cs` [Repo setelah patch, belum dites di Unity]. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
+| Repair Point | Script dibuat; kini membuka minigame kabel (patch 2026-11-16, belum dites); tes lama (perbaikan langsung) dilaporkan lolos | [Repo setelah patch] `Assets/Script/Outdoor/RepairPoint.cs`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
+| Wiring minigame | Script dibuat (belum dites) | [Repo setelah patch] `Assets/Script/UI/WiringMinigameUI.cs`, `Assets/Editor/MarsRepairSetup.cs`. Belum dikompilasi/dites di Unity [?] |
 | Resource Monitor | Script dibuat; tes interaksi dilaporkan lolos | [Repo setelah patch] `Assets/Script/Station/ResourceMonitor.cs`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
 | Terminal komunikasi | Script dibuat; tes interaksi dilaporkan lolos (teks placeholder) | [Repo setelah patch] `Assets/Script/Station/CommunicationTerminal.cs`. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
 | Farming / Potato | Script dibuat; tes interaksi dilaporkan lolos (satu petak per objek, tanpa sprite) | [Repo setelah patch] `Assets/Script/Farming/FarmingPlot.cs`: tanam, siram, tumbuh saat hari berganti, panen. Tes interaksi: [Dev] lolos 2026-11-16 (butir tidak dirinci; scene lokal belum di-commit) |
@@ -56,6 +56,8 @@ Fondasi pemain dan NPC. Setara sekitar hari produksi 1–2 dari jadwal 15 hari: 
 - Objek interaktif (patch 2026-11-15): tidak ada compiler C# atau Unity di lingkungan AI; kode hanya diperiksa dengan membaca dan `git apply --check` [?]. Posisi, sprite, dan collider objek di scene ditentukan developer [?].
 - Keseimbangan: `OxygenGenerator` menyala sejak awal dan memakai Water (usulan 1 per 5 detik) sehingga Water awal (10) bisa habis dalam sekitar 50 detik bila tidak dimatikan; Energy tidak dihasilkan kecuali ada `SolarPanel` di scene. Angka perlu playtest [?].
 - Satu `FarmingPlot` = satu petak; petak tambahan dibuat dengan menduplikasi objek. Pertumbuhan hanya terjadi lewat `TimeManager.OnDayStarted` (jadi lewat Bed atau menu Debug TimeManager) [?].
+
+- Milestone 10 (2026-11-16): kode ditulis tanpa compiler/Unity [?]. Belum diverifikasi: kompilasi, menu `Setup Panel Damage and Wiring Minigame`, tampilan dan hit-test drag-and-drop pada Canvas (Scale With Screen Size), jeda timer/oksigen suit selama minigame, durasi nyata 15-30 detik, urutan dialog TARS saat panel rusak. Frekuensi kerusakan (1 per hari mulai Day 2) mungkin tinggi untuk balancing.
 
 ## Housekeeping
 - `phase-sync.patch` ter-commit di root repo (`interactive-objects.patch` sudah dihapus di `b09da2e3`). File `.patch` tidak perlu ikut repo; hapus dan tambahkan `*.patch` ke `.gitignore`.

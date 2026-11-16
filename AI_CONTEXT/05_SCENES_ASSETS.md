@@ -1,6 +1,6 @@
 # Scenes & Assets
 
-Terakhir diperbarui: 2026-11-15 (commit `a9357e29` + patch objek interaktif). Label: [Repo] terverifikasi, [Dev] dilaporkan developer.
+Terakhir diperbarui: 2026-11-16 (basis `16ca3c15` + patch Milestone 10). Label: [Repo] terverifikasi, [Dev] dilaporkan developer.
 
 ## Area desain yang direncanakan
 - Control Room
@@ -43,7 +43,10 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Editor/MarsSleepSetup.cs` | Menu Editor `Mars > Setup Bed and Fade`: membuat FadeOverlay dan Bed (+SpawnPoint), menyambungkan referensi tanpa menimpa isian manual |
 | `Assets/Script/Outdoor/IceDeposit.cs` | Deposit es (IInteractable): E, pemain berhenti beberapa detik, Ice +1 ke inventory (batas = kapasitas Ice). Perlu suit. Layer `Interactable`, Collider2D |
 | `Assets/Script/Outdoor/SolarPanel.cs` | Panel surya: Energy otomatis per tick; `Damage()`/`Repair()`, `IsDamaged`, event `OnDamagedChanged`. Bukan IInteractable. Beberapa panel menjumlah |
-| `Assets/Script/Outdoor/RepairPoint.cs` | Titik perbaikan (IInteractable) untuk satu `SolarPanel` (field `panel`). Perbaikan langsung sementara; minigame kabel nanti |
+| `Assets/Script/Outdoor/RepairPoint.cs` | Titik perbaikan (IInteractable) untuk satu `SolarPanel` (field `panel`). Membuka `WiringMinigameUI`; panel diperbaiki setelah minigame sukses (cadangan langsung bila minigame tidak ada) |
+| `Assets/Script/Outdoor/SolarPanelDamageScheduler.cs` | Satu kerusakan acak per hari pada satu panel normal; pengumuman dialog TARS. Objek `SolarPanelDamageScheduler` di scene (dibuat menu setup) |
+| `Assets/Script/UI/WiringMinigameUI.cs` | Minigame kabel (3-4 kabel, drag-and-drop mouse). Dipasang pada Canvas; UI dibuat lewat kode saat Awake (anak `WiringMinigameRoot`) |
+| `Assets/Editor/MarsRepairSetup.cs` | Menu Editor `Mars > Setup Panel Damage and Wiring Minigame`: pasang `WiringMinigameUI` di Canvas, buat `SolarPanelDamageScheduler`, sambungkan `RepairPoint` |
 | `Assets/Script/Machines/WaterPurifier.cs` | Water Purifier (IInteractable): Ice + Energy -> Water, proses beberapa detik, `IsProcessing`, `OnProcessingChanged`, indikator opsional |
 | `Assets/Script/Machines/OxygenGenerator.cs` | Oxygen Generator (IInteractable): Water + Energy -> HabitatOxygen otomatis per siklus; E = nyalakan/matikan (USULAN); `IsOn`, `IsRunning`, `StatusText` |
 | `Assets/Script/Farming/FarmingPlot.cs` | Satu petak kentang (IInteractable): tanam, siram (Water), tumbuh saat hari berganti bila disiram, panen (Food). Satu objek = satu petak |
@@ -69,6 +72,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 **Suit dan Gate:** dibuat lewat menu Mars > Setup Suit and Gate (placeholder di sekitar Player). WAJIB diposisikan developer: `IndoorZone` menutupi seluruh interior dengan tepi sejajar pintu; `SuitGate` di pintu dan menutup seluruh lebar pintu; `SuitStation` di Control Room dengan sprite. Posisi akhir: [Dev], belum diverifikasi [?].
 **Objek interaktif (patch 2026-11-15):** dibuat lewat menu Mars > Setup Interactive Objects: `IceDeposit`, `SolarPanel`, `RepairPoint`, `WaterPurifier`, `OxygenGenerator`, `FarmingPlot`, `ResourceMonitor`, `CommunicationTerminal` (SpriteRenderer kotak placeholder, BoxCollider2D trigger 1.5x1.5, layer `Interactable`, diletakkan di sekitar Player) dan `HudRoot/IcePanel` (+ `iceText`). WAJIB developer: memindahkan tiap objek ke lokasi akhirnya (Outdoor: IceDeposit, SolarPanel, RepairPoint; Farming Area: WaterPurifier, OxygenGenerator, FarmingPlot; Control Room: ResourceMonitor, CommunicationTerminal), mengganti sprite placeholder, dan menyimpan scene. Posisi akhir: [Dev], belum diverifikasi [?]. Objek belum ada di `SampleScene.unity` di repo [Repo].
 **Status scene objek interaktif (2026-11-16):** [Repo, d96d9b6f] `SampleScene.unity` yang ter-commit belum berisi objek tersebut. [Dev] scene lokal sudah berisi objek hasil setup dan tes interaksi lolos; belum di-commit.
+**Kerusakan panel dan minigame (patch 2026-11-16):** jalankan menu Mars > Setup Panel Damage and Wiring Minigame (komponen `WiringMinigameUI` pada Canvas; GameObject `SolarPanelDamageScheduler`; field Minigame pada `RepairPoint`). Simpan scene dengan Ctrl+S. [Belum dijalankan/dites]
 **Canvas:** dibuat lewat menu Mars > Setup Dialogue and Prompt UI (berisi `DialogueUI` dan `InteractionPromptUI`).
 
 ## Saat menambah/mengubah asset

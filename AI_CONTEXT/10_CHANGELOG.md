@@ -10,6 +10,13 @@ Format:
 - **Test:** pengujian dan hasil.
 - **Follow-up:** pekerjaan tersisa.
 
+## 2026-11-16 (Milestone 10: kerusakan panel acak dan minigame kabel)
+- **Changed:** Script baru `SolarPanelDamageScheduler` (satu kerusakan acak per hari), `WiringMinigameUI` (minigame kabel drag-and-drop), `Assets/Editor/MarsRepairSetup.cs` (menu `Mars > Setup Panel Damage and Wiring Minigame`). `RepairPoint` kini membuka minigame; `SolarPanel.Repair()` dipanggil hanya setelah sukses. Perbaikan langsung tetap sebagai cadangan bila minigame tidak ada di scene.
+- **Reason:** Milestone 10 (GDD 11.3, 11.4). Keputusan developer 2026-11-16: pemicu kerusakan = event acak, hanya 1x per hari.
+- **Files/systems:** `Assets/Script/Outdoor/{SolarPanelDamageScheduler,RepairPoint}.cs`, `Assets/Script/UI/WiringMinigameUI.cs`, `Assets/Editor/MarsRepairSetup.cs` (+ `.meta` baru), `AI_CONTEXT/*`. `SolarPanel`, `TimeManager`, scene, dan aset biner tidak diubah oleh patch (scene diubah lewat menu Editor oleh developer).
+- **Test:** Belum dikompilasi atau dijalankan di Unity (tidak ada Unity/compiler di lingkungan AI). Daftar tes ada di `09_TEST_CHECKLIST.md`.
+- **Follow-up:** Developer menjalankan menu setup, tes, lalu menyimpan scene. Angka usulan (Day 2 mulai, 15-70 persen hari, 4 kabel) perlu playtest. `TARSSystem` mengambil alih pengumuman panel rusak.
+
 ## 2026-11-16 (checklist dan PHASE.md sesuai hasil tes developer)
 - **Changed:** `09_TEST_CHECKLIST.md` bagian "Objek interaktif": seluruh butir lama ditandai [x] (dilaporkan developer), instruksi setup dihapus, dua butir baru (BARU) ditambahkan, butir Repair Point disesuaikan dengan kode. `PHASE.md`: revisi `d96d9b6f`; milestone 6–9 menjadi SELESAI* (dilaporkan); bagian 5 ditulis ulang; bagian 6 memuat usulan urutan; utang teknis diperbarui. `06`, `07`, `05` disesuaikan.
 - **Reason:** developer melaporkan tes interaksi lolos semua; dokumen masih menyebut belum dites. Pemeriksaan kode mendapati angka dan perilaku di checklist cocok dengan script.
