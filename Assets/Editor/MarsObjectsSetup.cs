@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Menu Editor: membuat objek interaktif placeholder (IceDeposit, WaterPurifier, OxygenGenerator, FarmingPlot,
-/// SolarPanel + RepairPoint, ResourceMonitor, CommunicationTerminal) dan panel Ice di HUD.
+/// SolarPanel + RepairPoint) dan panel Ice di HUD.
 /// Aman dijalankan berulang kali; objek yang sudah ada dan referensi yang sudah Anda isi tidak ditimpa.
 /// Mars > Setup Interactive Objects
 /// Objek baru diletakkan di sekitar Player dengan sprite kotak placeholder: Anda yang memindahkannya ke
@@ -72,12 +72,6 @@ public static class MarsObjectsSetup
         FarmingPlot plot = EnsureInteractable<FarmingPlot>("FarmingPlot", origin + new Vector3(-3f, 5f, 0f),
             Color.white, layer, report, "Pindahkan ke Farming Area. Duplikat objek ini untuk menambah petak.");
         SetRefIfEmpty(plot, "spriteRenderer", plot.GetComponent<SpriteRenderer>());
-
-        // Control Room
-        EnsureInteractable<ResourceMonitor>("ResourceMonitor", origin + new Vector3(-2f, -3f, 0f),
-            new Color(0.4f, 0.9f, 0.5f), layer, report, "Pindahkan ke Control Room.");
-        EnsureInteractable<CommunicationTerminal>("CommunicationTerminal", origin + new Vector3(0f, -3f, 0f),
-            new Color(1f, 0.6f, 0.3f), layer, report, "Pindahkan ke Control Room.");
 
         // HUD: panel Ice
         SetupIceHud(report);

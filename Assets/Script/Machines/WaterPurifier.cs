@@ -35,7 +35,7 @@ public class WaterPurifier : MonoBehaviour, IInteractable, IItemReceiver
     /// <summary>Sisa detik proses saat ini (0 bila tidak bekerja).</summary>
     public float RemainingSeconds => IsProcessing ? Mathf.Max(0f, processSeconds - timer) : 0f;
 
-    /// <summary>Ringkasan status untuk Resource Monitor.</summary>
+    /// <summary>Ringkasan status (dipakai dialog; disiapkan juga untuk TARSSystem).</summary>
     public string StatusText => IsProcessing ? "bekerja, sisa " + Mathf.CeilToInt(RemainingSeconds) + " dtk" : "siap";
 
     /// <summary>Dipanggil saat mesin mulai/berhenti bekerja (parameter: true bila bekerja).</summary>

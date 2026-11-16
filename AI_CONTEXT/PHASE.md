@@ -42,21 +42,21 @@ Dihitung dari checklist bagian 3 (revisi `16ca3c15` + patch Milestone 10).
 | # | Milestone | Status | Selesai | Sebagian | Belum | Total |
 |---|---|---|---|---|---|---|
 | 1 | Setup Unity, input, movement, kamera, collision | SEBAGIAN | 8 | 1 | 0 | 9 |
-| 2 | Tiga lokasi Tilemap dan perpindahan area | SEBAGIAN | 4 | 5 | 3 | 12 |
+| 2 | Tiga lokasi Tilemap dan perpindahan area | SEBAGIAN | 4 | 4 | 3 | 11 |
 | 3 | Interaction System, Resource System, data persisten | SEBAGIAN | 17 | 0 | 2 | 19 |
-| 4 | HUD, Resource Monitor, timer, pergantian hari | SEBAGIAN | 10 | 0 | 2 | 12 |
+| 4 | HUD, timer, pergantian hari | SEBAGIAN | 9 | 0 | 2 | 11 |
 | 5 | Astronaut Suit, Suit Station, oksigen suit | SEBAGIAN | 8 | 1 | 0 | 9 |
 | 6 | Ice Gathering dan Water Purifier | SEBAGIAN | 6 | 0 | 1 | 7 |
 | 7 | Farming Plot (tanam, siram, tumbuh, panen) | SEBAGIAN | 6 | 2 | 1 | 9 |
 | 8 | Oxygen Generator, alur Water/Energy/Oxygen | SEBAGIAN | 5 | 1 | 0 | 6 |
 | 9 | Solar Panel dan produksi Energy | SEBAGIAN | 7 | 0 | 1 | 8 |
 | 10 | Panel rusak dan minigame kabel | SEBAGIAN | 10 | 1 | 0 | 11 |
-| 11 | TARS monitoring dan reminder | SEBAGIAN | 3 | 0 | 10 | 13 |
+| 11 | TARS monitoring dan reminder | SEBAGIAN | 3 | 0 | 15 | 18 |
 | 12 | Integrasi loop dan tutorial Day 1 | BELUM | 0 | 0 | 11 | 11 |
-| 13 | Day 2–7, Game Over/Victory, balancing | SEBAGIAN | 1 | 1 | 12 | 14 |
+| 13 | Day 2–7, Game Over/Victory, balancing | SEBAGIAN | 0 | 1 | 12 | 13 |
 | 14 | Audio, animasi, polish | SEBAGIAN | 1 | 2 | 11 | 14 |
 | 15 | Playtest penuh dan build | BELUM | 0 | 0 | 4 | 4 |
-| | **Total** | | **86** | **14** | **58** | **158** |
+| | **Total** | | **84** | **13** | **63** | **160** |
 
 Usulan urutan berikutnya (**belum disetujui developer**): 13 (loop menang/kalah minimal: Food berkurang, Game Over, Victory, perilaku `Bed` di Day 7) agar game bisa dimainkan Day 1 sampai Day 7, lalu 11 (`TARSSystem`; milestone 10 sudah dikerjakan, menunggu tes Unity), 12 (tutorial), 14, 15. Urutan jadwal GDD: 10, 11, 12, 13, 14, 15. Build WebGL percobaan sebaiknya lebih awal.
 Jika jadwal mundur: kurangi polish dan fitur Should Have dulu; jangan korbankan loop resource inti dan sistem tujuh hari.
@@ -84,12 +84,11 @@ Acuan: GDD 19 hari 1. Status: **SEBAGIAN** (8 selesai, 1 sebagian, 0 belum dari 
 - [x] `1.4.1` Collision dinding lewat `TilemapCollider2D` di scene
 
 ### Milestone 2 — Tiga lokasi Tilemap dan perpindahan area
-Acuan: GDD 19 hari 2; GDD 3. Status: **SEBAGIAN** (4 selesai, 5 sebagian, 3 belum dari 12).
+Acuan: GDD 19 hari 2; GDD 3. Status: **SEBAGIAN** (4 selesai, 4 sebagian, 3 belum dari 11). Butir 2.1.3 (Resource Monitor dan Terminal) dihapus 2026-11-16, lihat 11.4.
 
-**2.1 Control Room** (2/3)
+**2.1 Control Room** (2/2)
 - [x] `2.1.1` Tilemap interior dan dinding (`Ground`, `Wall`, `Tangga`) serta `IndoorZone`
 - [x] `2.1.2` `Bed` + `SpawnPoint`, `SuitStation`, dan `TARS` ada di scene
-- [~] `2.1.3` `ResourceMonitor` dan `CommunicationTerminal` ada di scene lokal developer, belum di-commit
 
 **2.2 Outdoor** (1/2)
 - [x] `2.2.1` Tilemap permukaan Mars (`PasirMars`) dan `SuitGate` di pintu keluar
@@ -142,8 +141,8 @@ Acuan: GDD 19 hari 3; GDD 7, 16. Status: **SEBAGIAN** (17 selesai, 0 sebagian, 2
 - [ ] `3.4.2` `SaveSystem` (simpan antar hari/scene ke disk)
 - [ ] `3.4.3` Simpan state saat tidur
 
-### Milestone 4 — HUD, Resource Monitor, timer, pergantian hari
-Acuan: GDD 19 hari 4; GDD 5, 13. Status: **SEBAGIAN** (10 selesai, 0 sebagian, 2 belum dari 12).
+### Milestone 4 — HUD, timer, pergantian hari
+Acuan: GDD 19 hari 4; GDD 5, 13. Status: **SEBAGIAN** (9 selesai, 0 sebagian, 2 belum dari 11). Resource Monitor dihapus 2026-11-16; HUD dan storage menggantikannya.
 
 **4.1 TimeManager** (3/5)
 - [x] `4.1.1` Hari 1 sampai 7, timer 600 detik per hari (usulan)
@@ -156,9 +155,6 @@ Acuan: GDD 19 hari 4; GDD 5, 13. Status: **SEBAGIAN** (10 selesai, 0 sebagian, 2
 - [x] `4.2.1` HUD Day, timer, Food, Water, Oxygen, Energy lewat event (`HudUI`)
 - [x] `4.2.2` Panel Suit O2 (kuning di 30 persen, merah di 10 persen)
 - [x] `4.2.3` Panel Ice (opsional)
-
-**4.3 Resource Monitor** (1/1)
-- [x] `4.3.1` `ResourceMonitor`: dialog hanya-baca (waktu, stok, suit, panel, mesin)
 
 **4.4 Tidur dan pergantian hari** (3/3)
 - [x] `4.4.1` `Bed` + `FadeUI`: kunci gerak, fade hitam, `StartDay(hari+1)`, pindah ke `SpawnPoint`
@@ -230,7 +226,7 @@ Acuan: GDD 19 hari 8; GDD 11.2. Status: **SEBAGIAN** (5 selesai, 1 sebagian, 0 b
 
 **8.3 Alur** (2/2)
 - [x] `8.3.1` HabitatOxygen menjadi sumber pengisian suit
-- [x] `8.3.2` Status mesin dilaporkan di Resource Monitor
+- [x] `8.3.2` Status mesin tersedia lewat `StatusText` (dulu dibaca Resource Monitor; kini untuk TARS, lihat 11.4.2)
 
 ### Milestone 9 — Solar Panel dan produksi Energy
 Acuan: GDD 19 hari 9; GDD 11.3. Status: **SEBAGIAN** (7 selesai, 0 sebagian, 1 belum dari 8).
@@ -293,11 +289,19 @@ Acuan: GDD 19 hari 11; GDD 12. Status: **SEBAGIAN** (3 selesai, 0 sebagian, 10 b
 - [ ] `11.3.1` Pindahkan logika `SuitReminder` ke `TARSSystem`
 - [ ] `11.3.2` Variasi komentar TARS (Should Have)
 
+**11.4 Pengganti Resource Monitor dan Terminal komunikasi** (0/5) — WAJIB ikut saat mulai `TARSSystem`
+Latar: keduanya dihapus 2026-11-16 atas permintaan developer (HUD dan Storage sudah menampilkan stok). Fungsi yang belum tertutup HUD/Storage diambil TARS lewat dialog E pada NPC `TARS` (TarsWanderer), tanpa quest.
+- [ ] `11.4.1` Pesan dari Bumi per hari (cerita, bukan quest) disampaikan TARS di awal hari (`TimeManager.OnDayStarted`) atau saat TARS diajak bicara; teks ditulis developer (dulu array `CommunicationTerminal`, teks bawaannya placeholder dan ikut terhapus)
+- [ ] `11.4.2` Laporan fasilitas atas permintaan: kondisi Solar Panel (normal/rusak, Energy per detik via `SolarPanel.IsDamaged`/`CurrentEnergyPerSecond`), `WaterPurifier.StatusText`, `OxygenGenerator.StatusText` (HUD tidak menampilkan ini)
+- [ ] `11.4.3` Laporan kenyang dari `HungerSystem` (nilai, status kelaparan) bila pemain bertanya
+- [ ] `11.4.4` Ringkasan sisa waktu hari dan stok singkat (opsional, hanya jika HUD dianggap kurang)
+- [ ] `11.4.5` Pesan penutup Day 7 (konfirmasi penjemputan) tetap milik ending Victory (13.3.3), disampaikan lewat TARS
+
 ### Milestone 12 — Integrasi loop dan tutorial Day 1
 Acuan: GDD 19 hari 12; GDD 5.2. Status: **BELUM** (0 selesai, 0 sebagian, 11 belum dari 11).
 
 **12.1 Alur tutorial Day 1** (0/7)
-- [ ] `12.1.1` Mengenal Control Room, TARS, Resource Monitor
+- [ ] `12.1.1` Mengenal Control Room, TARS, HUD, dan Storage (Resource Monitor sudah dihapus)
 - [ ] `12.1.2` Mengambil dan mengisi Astronaut Suit
 - [ ] `12.1.3` Keluar dan mengumpulkan Ice dalam jumlah kecil
 - [ ] `12.1.4` Membawa Ice ke Water Purifier dan menghasilkan Water
@@ -333,8 +337,7 @@ Acuan: GDD 19 hari 13; GDD 5, 6, 17. Status: **SEBAGIAN** (1 selesai, 1 sebagian
 - [ ] `13.3.3` Konfirmasi Bumi dan pesan penutup TARS
 - [ ] `13.3.4` Layar Victory
 
-**13.4 Terminal komunikasi** (1/1)
-- [x] `13.4.1` `CommunicationTerminal`: pesan Bumi per hari (teks placeholder; bukan quest)
+**13.4 Terminal komunikasi** — DIHAPUS 2026-11-16; pesan Bumi pindah ke TARS (11.4.1)
 
 **13.5 Balancing** (0/2)
 - [ ] `13.5.1` Tetapkan angka final lewat playtest (stok awal, laju, kapasitas, ambang)
@@ -396,7 +399,7 @@ Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), angka balancing se
 - Resource hanya diubah lewat `ResourceManager`; HUD memakai event.
 - Angka balancing di kode adalah **usulan**, bukan final.
 - Alur kerja perubahan: AI menganalisis repo, lalu memberi patch `.patch`. Developer yang menerapkan (`git apply`). AI tidak commit atau push.
-- Terminal komunikasi hanya cerita (bukan quest); pesan bawaan adalah placeholder.
+- Resource Monitor dan Terminal komunikasi DIHAPUS (2026-11-16, permintaan developer; menyimpang dari GDD v1.2 bagian 3.1, 12.1.1 tutorial). Fungsinya pindah ke TARS (11.4). Pesan Bumi tetap cerita, bukan quest.
 - Sistem PHASE.md (2026-11-16): checklist per milestone dengan subphase; wajib diperbarui di setiap patch.
 - Pemicu kerusakan Solar Panel (2026-11-16, developer): satu event acak per hari. USULAN turunan (belum disetujui): mulai Day 2 (Day 1 tutorial bebas kerusakan, `firstDamageDay`), waktu kejadian acak 15-70 persen durasi hari, satu panel normal dipilih acak.
 
@@ -422,8 +425,6 @@ Keputusan terbuka lain: deposit es tak terbatas (usulan: ya), angka balancing se
 | `Machines/WaterPurifier` | Ice + Energy -> Water per batch (usulan 1 + 5 -> 4 dalam 4 dtk), `IsProcessing`, `OnProcessingChanged` |
 | `Machines/OxygenGenerator` | Water + Energy -> HabitatOxygen otomatis per siklus (usulan 1 + 2 -> 5 per 5 dtk), saklar E, `IsOn`/`IsRunning` |
 | `Farming/FarmingPlot` | Tanam, siram (usulan 2 Water), tumbuh 3 tahap saat hari berganti bila disiram, panen (usulan +20 Food) |
-| `Station/ResourceMonitor` | Dialog ringkasan hari, stok, suit, panel, mesin (hanya baca) |
-| `Station/CommunicationTerminal` | Pesan Bumi per hari (placeholder, bukan quest) |
 | `NPC/TarsWanderer` | TARS jalan 4 arah langkah pendek, cek rintangan (`Rigidbody2D.Cast`), animasi frame 1-2-3-2 per arah, menembus Player (`IgnoreCollision`), dialog saat E |
 | `Dialogue/DialogueUI` | Dialog baris demi baris (E/Spasi/klik) |
 | `UI/HudUI`, `UI/FadeUI` | HUD (hari, timer, Food, Water, Oxygen, Energy, Ice opsional, panel Suit Oxygen) dan layar fade |
@@ -435,7 +436,7 @@ Milestone baru sebaiknya memakai pola yang sama (satu menu setup per milestone, 
 
 ### Objek penting di SampleScene
 `Player`, `TARS`, `TarsArea`, `Bed`, `SpawnPoint`, `SuitStation`, `SuitGate`, `IndoorZone`, `SuitSystem`, `ResourceManager`, `TimeManager`, `DialogueManager`, `Canvas` (`HudRoot`, `DialogueRoot`, `PromptRoot`, `FadeOverlay`), `CinemachineCamera`, `Grid`, `Ground`, `PasirMars`, `Wall`, `Tangga`.
-Objek interaktif berikut ada di scene lokal developer (**Dilaporkan developer**); belum ada di `SampleScene.unity` yang ter-commit (tidak ada GUID script objek interaktif di scene): `IceDeposit`, `SolarPanel`, `RepairPoint`, `WaterPurifier`, `OxygenGenerator`, `FarmingPlot`, `ResourceMonitor`, `CommunicationTerminal`, `HudRoot/IcePanel` (masih di sekitar Player; developer memindahkan ke lokasi akhir).
+Objek interaktif berikut ada di scene lokal developer (**Dilaporkan developer**); belum ada di `SampleScene.unity` yang ter-commit (tidak ada GUID script objek interaktif di scene): `IceDeposit`, `SolarPanel`, `RepairPoint`, `WaterPurifier`, `OxygenGenerator`, `FarmingPlot`, `HudRoot/IcePanel` (masih di sekitar Player; developer memindahkan ke lokasi akhir). `ResourceMonitor` dan `CommunicationTerminal` dihapus 2026-11-16 (hapus juga GameObject-nya di scene).
 Layer `Interactable` sudah ada (layer 3).
 
 ### Aset
@@ -469,3 +470,4 @@ Layer `Interactable` sudah ada (layer 3).
 | 2026-11-15 | Sinkronisasi dengan repo `afc2453c`: patch objek interaktif terkonfirmasi sudah di-commit (script, `.meta`, AI_CONTEXT). Terverifikasi dari clone: `SampleScene.unity` belum memuat objek interaktif; layer `Interactable` ada di `TagManager`; `interactive-objects.patch` dan `Assets/_Recovery` masih ter-commit. Tidak ada perubahan kode. |
 | 2026-11-16 | Sistem PHASE.md dirancang ulang: checklist per milestone dengan subphase dan fitur, ringkasan progres terhitung, aturan wajib pembaruan di setiap patch. Basis repo `d96d9b6f`. Tidak ada perubahan kode. |
 | 2026-11-16 | Milestone 10: `SolarPanelDamageScheduler` (satu kerusakan acak per hari), `WiringMinigameUI`, `RepairPoint` membuka minigame, menu `Setup Panel Damage and Wiring Minigame`. Basis `16ca3c15`. Belum dikompilasi/dites di Unity. Butir 10.x diperbarui, total 86/14/58. |
+| 2026-11-16 | Hapus `ResourceMonitor` dan `CommunicationTerminal` (permintaan developer). Butir 11.4 (pengganti lewat TARS) ditambahkan. Total 84/13/63/160. Basis `63f64857`. Belum dikompilasi/dites di Unity. |

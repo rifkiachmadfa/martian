@@ -105,7 +105,7 @@ Status [x] berarti dilaporkan developer, belum diverifikasi AI.
 
 ## Objek interaktif (ditambahkan 2026-11-15; dilaporkan developer lolos 2026-11-16)
 Status [x] = dilaporkan developer 2026-11-16 (seluruh butir bagian ini lolos; butir tidak dirinci), belum diverifikasi AI. Scene hasil setup belum di-commit ke repo (revisi `d96d9b6f`). Butir bertanda "(BARU)" ditambahkan 2026-11-16 dan belum dites.
-- [x] Ke-8 objek interaktif ada di scene (IceDeposit, SolarPanel, RepairPoint, WaterPurifier, OxygenGenerator, FarmingPlot, ResourceMonitor, CommunicationTerminal) beserta `HudRoot/IcePanel`.
+- [x] Objek interaktif ada di scene (IceDeposit, SolarPanel, RepairPoint, WaterPurifier, OxygenGenerator, FarmingPlot; ResourceMonitor dan CommunicationTerminal sudah dihapus) beserta `HudRoot/IcePanel`.
 - [x] Console tidak menampilkan error kompilasi, missing reference, atau error dari script baru saat Play.
 - [x] HUD menampilkan "Ice: 0 / 5" di bawah panel resource.
 
@@ -157,7 +157,7 @@ Setup: jalankan `Mars > Setup Panel Damage and Wiring Minigame`, Ctrl+S, tekan P
 - [ ] Catat durasi nyata satu minigame (target 15-30 detik) dan apakah kabel/konektor terbaca jelas pada resolusi Game view yang dipakai.
 - [ ] Hapus komponen `WiringMinigameUI` sementara: Console memberi peringatan dan Repair Point memperbaiki langsung (cadangan).
 
-### Resource Monitor dan Terminal
+### Resource Monitor dan Terminal (DIHAPUS 2026-11-16; butir di bawah tinggal arsip, jangan dites lagi)
 - [x] Resource Monitor: dialog berisi hari/waktu, stok semua resource (nilai sama dengan HUD), status suit, kondisi panel (jumlah normal/rusak), Water Purifier, Oxygen Generator. Fasilitas yang tidak ada di scene tidak muncul. Tidak mengubah stok apa pun.
 - [x] Terminal: E menampilkan pesan Day 1; setelah tidur, E menampilkan pesan hari berikutnya; tidak ada pesan yang berisi tugas atau mengubah stok.
 - [x] Semua dialog objek baru bisa ditutup dengan E/Spasi/klik/X dan prompt tidak muncul ulang sendiri.
@@ -169,7 +169,6 @@ Setup: jalankan `Mars > Setup Hunger and Food Storage` dan `Mars > Setup Invento
 - [ ] Kentang di tas, kenyang di bawah 100: tekan 1 lalu E mengurangi kentang 1 dan menambah kenyang 12,5. Kenyang penuh: E tidak makan (prompt "Makan kentang" tidak muncul).
 - [ ] Debug: ContextMenu "Kenyang jadi 0" pada HungerSystem. Dialog TARS muncul di 30%, 10%, dan 0 (sekali tiap batas); setelah makan, batas bisa diumumkan lagi.
 - [ ] Kenyang 0 selama 60 detik tanpa makan: Console menampilkan peringatan kelaparan (Game Over belum ada). Makan sebelum 60 detik membatalkan hitung mundur.
-- [ ] Resource Monitor menampilkan baris Kenyang, isi Tas, dan isi Storage.
 - [ ] Suit Station: prompt hanya "Kenakan suit" lalu "Lepas suit" (tidak ada "Isi oksigen suit"); suit selalu bisa dilepas di dalam habitat dan tabung terisi otomatis; di luar habitat suit tidak bisa dilepas.
 
 ## Tas pemain, storage, bibit (ditambahkan 2026-11-16, BARU, belum dites di Unity)
@@ -182,7 +181,7 @@ Setup: jalankan `Mars > Setup Hunger and Food Storage` dan `Mars > Setup Invento
 - [ ] Farming Plot: petak kosong tanpa bibit terpilih menampilkan petunjuk; slot 3 terpilih + E menanam dan mengurangi bibit 1; tanpa bibit di tas ada pesan. Siram dan tumbuh seperti sebelumnya.
 - [ ] Panen: 4 kentang masuk tas dan bibit +1; bila ruang tas kentang kurang dari 4, panen ditunda dengan pesan dan tanaman tetap; bibit masuk storage bila tas bibit penuh.
 - [ ] Loop lengkap: ambil bibit dari storage, tanam, siram, tidur sampai matang, panen ke tas, simpan atau makan.
-- [ ] Interaksi lain (Bed, Resource Monitor, Suit Station, Repair Point) tetap berfungsi dengan E tanpa slot terpilih; dengan kentang terpilih dan kenyang penuh, E tetap berinteraksi biasa.
+- [ ] Interaksi lain (Bed, Suit Station, Repair Point) tetap berfungsi dengan E tanpa slot terpilih; dengan kentang terpilih dan kenyang penuh, E tetap berinteraksi biasa.
 - [ ] HUD tidak lagi menampilkan panel Ice lama.
 
 ## Konsumsi oksigen habitat (ditambahkan 2026-11-16, BARU, belum dites di Unity)
@@ -195,3 +194,9 @@ Setup: jalankan `Mars > Setup Hunger and Food Storage` dan `Mars > Setup Invento
 - [ ] Setelah generator mengisi lagi (>0) lalu habis lagi, peringatan muncul sekali lagi (bukan berulang tiap detik).
 - [ ] Oksigen suit tidak ikut berkurang oleh script ini (hanya berkurang oleh `SuitSystem` saat suit dikenakan).
 - [ ] Satu panel rusak: catat apakah Energy cukup menjaga generator; bahan balancing, bukan bug.
+
+## Penghapusan Resource Monitor dan Terminal (2026-11-16; BARU, belum dites di Unity)
+- [ ] Sebelum patch: GameObject `ResourceMonitor` dan `CommunicationTerminal` sudah dihapus dari Hierarchy dan scene disimpan.
+- [ ] Setelah patch: Unity mengimpor tanpa error kompilasi; Console tidak memberi peringatan "missing script" saat Play.
+- [ ] Menu `Mars > Setup Interactive Objects` dijalankan: tidak membuat ResourceMonitor/CommunicationTerminal; objek lain tidak berubah.
+- [ ] Interaksi lain (Bed, Suit Station, Storage, Water Purifier, Oxygen Generator, Repair Point) tetap berfungsi dengan E.

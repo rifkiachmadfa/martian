@@ -9,7 +9,7 @@ using UnityEngine;
 /// dan tidak mendefinisikan penyebab oksigen habitat berkurang. Angka laju di bawah adalah USULAN.
 /// Berkurang per tick (bukan tiap frame) agar HUD tidak menulis ulang teks tiap frame.
 /// Bila stok mencapai 0, event OnHabitatOxygenDepleted dipicu sekali (hanya log). Game Over (13.2.3) belum dibuat.
-/// Hanya logika; tampilan lewat HudUI/ResourceMonitor yang membaca ResourceManager.
+/// Hanya logika; tampilan lewat HudUI yang membaca ResourceManager.
 /// Komponen ini dibuat otomatis saat game mulai bila belum ada di scene; boleh juga dipasang manual pada satu GameObject.
 /// </summary>
 public class HabitatOxygenDrain : MonoBehaviour

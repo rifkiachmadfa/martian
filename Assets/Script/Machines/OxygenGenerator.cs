@@ -41,7 +41,7 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
     /// <summary>Dipanggil saat IsRunning berubah.</summary>
     public event Action<bool> OnRunningChanged;
 
-    /// <summary>Ringkasan status untuk dialog dan Resource Monitor.</summary>
+    /// <summary>Ringkasan status untuk dialog (disiapkan juga untuk TARSSystem).</summary>
     public string StatusText
     {
         get

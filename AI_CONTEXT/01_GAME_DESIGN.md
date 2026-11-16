@@ -8,7 +8,7 @@
 - Kalah jika kondisi survival yang ditetapkan game gagal; angka ambang/balancing final belum ditetapkan di dokumen konteks ini.
 
 ## Area
-1. **Control Room:** TARS, stasiun suit, monitor resource, tempat tidur, terminal komunikasi.
+1. **Control Room:** TARS, stasiun suit, storage, tempat tidur. (Resource Monitor dan terminal komunikasi dihapus 2026-11-16; fungsinya pindah ke TARS, lihat `PHASE.md` 11.4.)
 2. **Farming Area:** purifier, plot tanaman, oxygen generator.
 3. **Outdoor:** deposit Ice dan solar panel array/perbaikan.
 

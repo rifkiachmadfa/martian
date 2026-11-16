@@ -10,6 +10,13 @@ Format:
 - **Test:** pengujian dan hasil.
 - **Follow-up:** pekerjaan tersisa.
 
+## 2026-11-16 (Hapus Resource Monitor dan Terminal komunikasi)
+- **Changed:** Script `ResourceMonitor` dan `CommunicationTerminal` (beserta `.meta`) dihapus. `MarsObjectsSetup` tidak lagi membuat keduanya. Komentar di `WaterPurifier`, `OxygenGenerator`, `HabitatOxygenDrain` diperbarui (properti `StatusText` dipertahankan untuk TARS). AI_CONTEXT diperbarui; butir baru `PHASE.md` 11.4 mencatat fungsi yang harus diambil `TARSSystem`: pesan Bumi harian, laporan panel/mesin/kenyang, pesan penutup Day 7.
+- **Reason:** Permintaan developer: HUD dan Storage sudah mewakili Resource Monitor; terminal komunikasi akan diwakili TARS di milestone 11. Menyimpang dari GDD v1.2 bagian 3.1 dan tutorial 12.1.1 (dicatat di `08_DECISIONS.md`).
+- **Files/systems:** `Assets/Script/Station/{ResourceMonitor,CommunicationTerminal}.cs(+.meta)` (dihapus), `Assets/Editor/MarsObjectsSetup.cs`, `Assets/Script/Machines/{WaterPurifier,OxygenGenerator}.cs`, `Assets/Script/Survival/HabitatOxygenDrain.cs` (komentar saja), `AI_CONTEXT/*`. Scene TIDAK diubah patch: GameObject keduanya masih di `SampleScene.unity` dan harus dihapus manual di Unity SEBELUM patch diterapkan.
+- **Test:** `git apply --check` terhadap klon bersih `63f64857`. Tidak dikompilasi di Unity.
+- **Follow-up:** Kerjakan `PHASE.md` 11.4 bersama `TARSSystem`; revisi GDD docx 3.1, 12.1.1, 16.2 oleh developer.
+
 ## 2026-11-16 (Konsumsi oksigen habitat)
 - **Changed:** Script baru `HabitatOxygenDrain`: oksigen habitat (`HabitatOxygen`) berkurang 0,05 per detik (USULAN) tiap tick 1 detik selama gameplay berjalan, berhenti saat `TimeManager.IsPaused`. Komponen dibuat otomatis saat game mulai bila belum ada di scene (boleh dipasang manual). Event `OnHabitatOxygenDepleted` dipicu sekali saat stok 0 (hanya log).
 - **Reason:** Laporan developer 2026-11-16: oksigen habitat tidak berkurang. Analisis: tidak ada kode yang mengurangi `HabitatOxygen` selain pengisian suit, dan generator mengisinya sampai penuh. Developer menyetujui konsumsi pasif (revisi GDD; GDD v1.2 hanya melarang pengurangan pasif Water dan Energy).
