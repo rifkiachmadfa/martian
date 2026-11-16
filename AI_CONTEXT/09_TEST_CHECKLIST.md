@@ -184,3 +184,14 @@ Setup: jalankan `Mars > Setup Hunger and Food Storage` dan `Mars > Setup Invento
 - [ ] Loop lengkap: ambil bibit dari storage, tanam, siram, tidur sampai matang, panen ke tas, simpan atau makan.
 - [ ] Interaksi lain (Bed, Resource Monitor, Suit Station, Repair Point) tetap berfungsi dengan E tanpa slot terpilih; dengan kentang terpilih dan kenyang penuh, E tetap berinteraksi biasa.
 - [ ] HUD tidak lagi menampilkan panel Ice lama.
+
+## Konsumsi oksigen habitat (ditambahkan 2026-11-16, BARU, belum dites di Unity)
+- [ ] Tekan Play tanpa menambah objek ke scene: di Hierarchy muncul objek `HabitatOxygenDrain` (dibuat otomatis).
+- [ ] Matikan Oxygen Generator (E di mesin). Oksigen habitat di HUD turun sekitar 3 unit tiap 60 detik (0,05/detik, usulan).
+- [ ] Nyalakan lagi generator dengan Water dan Energy cukup: oksigen habitat naik kembali (+5 per 5 detik) sampai penuh, lalu mesin siaga; setelah turun sedikit mesin bekerja lagi.
+- [ ] Transisi tidur (layar hitam): oksigen habitat tidak berkurang selama jeda.
+- [ ] Dengan generator mati dan oksigen habitat dibuat 0 (ResourceDebugPanel): Console menampilkan peringatan "oksigen habitat habis" sekali; nilai tetap 0 dan tidak negatif; tidak ada Game Over.
+- [ ] Isi suit di Suit Station saat oksigen habitat 0: pesan "Oksigen habitat tidak cukup untuk mengisi suit".
+- [ ] Setelah generator mengisi lagi (>0) lalu habis lagi, peringatan muncul sekali lagi (bukan berulang tiap detik).
+- [ ] Oksigen suit tidak ikut berkurang oleh script ini (hanya berkurang oleh `SuitSystem` saat suit dikenakan).
+- [ ] Satu panel rusak: catat apakah Energy cukup menjaga generator; bahan balancing, bukan bug.
