@@ -4,7 +4,7 @@ using UnityEngine;
 /// Mengganti tampilan pemain saat Astronaut Suit dikenakan/dilepas.
 /// - Suit dikenakan: Animator Controller diganti ke controller astronaut (depan, belakang, samping).
 /// - Suit dilepas: Animator Controller semula dikembalikan.
-/// Sprite samping hanya ada satu sisi (menghadap kanan), jadi sisi sebaliknya dibuat dengan flipX.
+/// Sprite samping (pemain biasa maupun astronaut) hanya ada satu sisi (menghadap kanan), jadi sisi sebaliknya dibuat dengan flipX.
 /// Hanya tampilan; logika suit tetap di SuitSystem dan gerakan tetap di PlayerMovement.
 /// Pasang pada objek Player (yang punya Animator dan SpriteRenderer). Isi lewat menu Mars > Setup Suit Player Animation.
 /// </summary>
@@ -27,7 +27,6 @@ public class PlayerSuitVisual : MonoBehaviour
     private static readonly int DirectionXHash = Animator.StringToHash("DirectionX");
 
     private SuitSystem suit;
-    private bool equipped;
 
     private void Awake()
     {
@@ -58,8 +57,6 @@ public class PlayerSuitVisual : MonoBehaviour
 
     private void HandleEquippedChanged(bool isEquipped)
     {
-        equipped = isEquipped;
-
         if (animator == null) return;
 
         if (isEquipped && suitController == null)
@@ -77,8 +74,9 @@ public class PlayerSuitVisual : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (!equipped || spriteRenderer == null || animator == null || animator.runtimeAnimatorController != suitController) return;
+        if (spriteRenderer == null || animator == null || animator.runtimeAnimatorController == null) return;
 
+        // Berlaku untuk kedua controller (pemain biasa dan astronaut): sprite samping keduanya menghadap kanan.
         // Hanya arah kiri/kanan yang memakai sprite samping; arah atas/bawah tidak di-flip.
         float dx = animator.GetFloat(DirectionXHash);
         if (Mathf.Abs(dx) > 0.5f)
