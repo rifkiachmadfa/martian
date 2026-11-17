@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: f262c2c4f9a2c49428d8b069701c69ce
+guid: 9a8091a07c489c047be2085b73a4df7d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 852937605884559863
-    second: EMSI FRONT (5)_0
+      213: 5979605787084994416
+    second: astronot walk front 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,13 +102,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: EMSI FRONT (5)_0
+      name: astronot walk front 1_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 4
-        width: 27
-        height: 28
+        x: 4
+        y: 5
+        width: 23
+        height: 27
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +117,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7f14256cb3e36db00800000000000000
-      internalID: 852937605884559863
+      spriteID: 077321438c3dbf250800000000000000
+      internalID: 5979605787084994416
       vertices: []
       indices: 
       edges: []
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      EMSI FRONT (5)_0: 852937605884559863
+      astronot walk front 1_0: 5979605787084994416
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

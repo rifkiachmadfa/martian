@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: a9e049cf5f282844e8d04b667b8433df
+guid: e151d9012b42a1047994e9d7cebbff5a
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8880372227651556338
-    second: EMSI FRONT (5) (2)_0
+      213: -1297565602591043177
+    second: astronot back 3_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,13 +102,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: EMSI FRONT (5) (2)_0
+      name: astronot back 3_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 4
-        width: 27
-        height: 28
+        x: 5
+        y: 5
+        width: 21
+        height: 27
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -117,8 +117,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2f35a66ad7b6d3b70800000000000000
-      internalID: 8880372227651556338
+      spriteID: 7919bc095fe1efde0800000000000000
+      internalID: -1297565602591043177
       vertices: []
       indices: 
       edges: []
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      EMSI FRONT (5) (2)_0: 8880372227651556338
+      astronot back 3_0: -1297565602591043177
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

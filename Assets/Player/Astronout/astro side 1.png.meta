@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 24e28655b5cf5324fb3109cf78e27a8d
+guid: e7601b5fea67d714395bc6c605b09b5f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 7386885564374537689
-    second: EMSI FRONT (5) (1)_0
+      213: -3620250192827234303
+    second: astro side 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -102,12 +102,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: EMSI FRONT (5) (1)_0
+      name: astro side 1_0
       rect:
         serializedVersion: 2
-        x: 1
+        x: 5
         y: 4
-        width: 27
+        width: 21
         height: 28
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -117,8 +117,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 9d5510d884d738660800000000000000
-      internalID: 7386885564374537689
+      spriteID: 1084e7a61a942cdc0800000000000000
+      internalID: -3620250192827234303
       vertices: []
       indices: 
       edges: []
@@ -137,7 +137,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      EMSI FRONT (5) (1)_0: 7386885564374537689
+      astro side 1_0: -3620250192827234303
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
