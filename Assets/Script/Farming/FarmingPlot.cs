@@ -49,6 +49,14 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
     [SerializeField] private Color matureTint = new Color(0.3f, 1f, 0.3f);
     [SerializeField, Min(0f)] private float reinteractCooldown = 0.3f;
 
+    [Header("Sprite tanaman (diisi lewat menu Mars > Setup Farming Sprites)")]
+    [Tooltip("Sprite tanaman selama belum bisa dipanen (sejak ditanam sampai tahap terakhir). Dipasang pada objek anak, jadi petak tetap terlihat sebagai tanah.")]
+    [SerializeField] private Sprite growingSprite;
+    [Tooltip("Sprite tanaman saat siap panen.")]
+    [SerializeField] private Sprite matureSprite;
+    [Tooltip("Pembesaran sprite tanaman (sprite aslinya kecil, 100 pixel per unit). Ubah bila terlalu kecil atau besar.")]
+    [SerializeField, Min(0.1f)] private float plantScale = 2.5f;
+
     [Header("Label status di atas petak (hitung mundur panen)")]
     [Tooltip("Menampilkan sisa waktu panen langsung di atas petak sejak ditanam, agar pemain tidak perlu menekan E berulang.")]
     [SerializeField] private bool showStatusLabel = true;
@@ -58,6 +66,7 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
     [SerializeField] private Color readyColor = new Color(0.55f, 1f, 0.55f);
 
     private TimeManager time;
+    private SpriteRenderer plantRenderer;
     private TextMesh statusLabel;
     private TextMesh statusShadow;
     private string lastStatus;
@@ -148,6 +157,24 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
     private void Awake()
     {
         if (spriteRenderer != null) baseColor = spriteRenderer.color;
+        if (growingSprite != null || matureSprite != null) CreatePlantRenderer();
+    }
+
+    // Tanaman digambar pada objek anak di atas petak agar petak tetap tampil sebagai tanah dan sprite tanaman tidak ikut meregang.
+    private void CreatePlantRenderer()
+    {
+        GameObject go = new GameObject("PlantSprite");
+        go.transform.SetParent(transform, false);
+        go.transform.localScale = new Vector3(plantScale, plantScale, 1f);
+
+        plantRenderer = go.AddComponent<SpriteRenderer>();
+        plantRenderer.enabled = false;
+        if (spriteRenderer != null)
+        {
+            plantRenderer.sharedMaterial = spriteRenderer.sharedMaterial;
+            plantRenderer.sortingLayerID = spriteRenderer.sortingLayerID;
+            plantRenderer.sortingOrder = spriteRenderer.sortingOrder + 1;
+        }
     }
 
     private void Start()
@@ -333,6 +360,16 @@ public class FarmingPlot : MonoBehaviour, IInteractable, IItemReceiver
 
     private void RefreshVisual()
     {
+        // Mode sprite tanaman: sebelum siap panen memakai growingSprite, siap panen memakai matureSprite. Tanah tetap berwarna kosong.
+        if (plantRenderer != null)
+        {
+            Sprite plant = !HasPlant ? null : (IsMature ? matureSprite : growingSprite);
+            plantRenderer.sprite = plant;
+            plantRenderer.enabled = plant != null;
+            if (spriteRenderer != null) spriteRenderer.color = baseColor * emptyTint;
+            return;
+        }
+
         if (spriteRenderer == null) return;
 
         Sprite sprite = null;
