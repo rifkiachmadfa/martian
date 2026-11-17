@@ -67,5 +67,5 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "martian.slnx"
+    "dotnet.defaultSolution": "martian-2026-11-16-09-11-14.slnx"
 }
