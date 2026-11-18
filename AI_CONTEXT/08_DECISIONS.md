@@ -67,3 +67,11 @@ Format keputusan baru:
 - Keputusan:
 - Alasan:
 - Dampak file/sistem:
+
+## Skin HUD: Pixel UI Sci-Fi Free (2026-11-18)
+- Tanggal: 2026-11-18
+- Konteks/masalah: Developer ingin HUD bergaya sci-fi pixel; paket Asset Store "Pixel UI Sci-Fi Free - HUD Kit Sampler" tidak bisa diimpor di Unity developer dan tidak bisa diunduh AI.
+- Opsi: (a) tunggu paket Asset Store; (b) pakai versi gratis pembuat yang sama dari GitHub (PNG + `slices.json`, CC BY 4.0); (c) gambar sprite sendiri.
+- Keputusan: (b), hanya subset yang dipakai HUD, disalin ke `Assets/UI/PixelUISciFi/` beserta `CREDITS.txt`. Skala piksel 2x, ikon/warna bar adalah USULAN. HUD tetap memakai `UnityEngine.UI.Text` dan font bawaan (font BMFont aset tidak dipakai).
+- Alasan: bisa diverifikasi isinya, lisensi jelas, tanpa dependensi Godot, perubahan HUD kecil dan opsional (bar bersifat tambahan).
+- Dampak file/sistem: `HudUI` (field bar opsional), `HudBar`, `MarsHudSkinSetup`, aset UI. Kewajiban atribusi CC BY 4.0 di credits game.

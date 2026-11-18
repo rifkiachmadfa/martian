@@ -17,6 +17,14 @@ public class HudUI : MonoBehaviour
     [SerializeField] private Text oxygenText;
     [SerializeField] private Text energyText;
 
+    [Header("Bar isi (opsional; diisi menu Mars > Apply HUD Skin (Pixel UI Sci-Fi))")]
+    [SerializeField] private HudBar foodBar;
+    [SerializeField] private HudBar waterBar;
+    [SerializeField] private HudBar oxygenBar;
+    [SerializeField] private HudBar energyBar;
+    [SerializeField] private HudBar hungerBar;
+    [SerializeField] private HudBar suitBar;
+
     [Header("Ice (TIDAK DIPAKAI LAGI sejak ada tas; ditampilkan InventoryHotbarUI. Biarkan kosong)")]
     [SerializeField] private Text iceText;
 
@@ -132,6 +140,7 @@ public class HudUI : MonoBehaviour
         hungerText.text = "Kenyang: " + rounded + " / " + Mathf.RoundToInt(hunger.MaxSatiety);
 
         float fraction = hunger.Fraction;
+        if (hungerBar != null) hungerBar.SetFraction(fraction);
         if (fraction <= hunger.DangerFraction) hungerText.color = new Color(1f, 0.35f, 0.3f);
         else if (fraction <= hunger.WarnFraction) hungerText.color = new Color(1f, 0.85f, 0.3f);
         else hungerText.color = Color.white;
@@ -159,6 +168,7 @@ public class HudUI : MonoBehaviour
         suitOxygenText.text = "Suit O2: " + rounded + " / " + Mathf.RoundToInt(max);
 
         float fraction = max > 0f ? current / max : 0f;
+        if (suitBar != null) suitBar.SetFraction(fraction);
         if (fraction <= suitDangerFraction) suitOxygenText.color = new Color(1f, 0.35f, 0.3f);
         else if (fraction <= suitWarnFraction) suitOxygenText.color = new Color(1f, 0.85f, 0.3f);
         else suitOxygenText.color = Color.white;
@@ -174,18 +184,22 @@ public class HudUI : MonoBehaviour
     {
         string label;
         Text target;
+        HudBar bar;
 
         switch (type)
         {
-            case ResourceType.Food: label = "Food"; target = foodText; break;
-            case ResourceType.Water: label = "Water"; target = waterText; break;
-            case ResourceType.HabitatOxygen: label = "Oxygen"; target = oxygenText; break;
-            case ResourceType.Energy: label = "Energy"; target = energyText; break;
+            case ResourceType.Food: label = "Food"; target = foodText; bar = foodBar; break;
+            case ResourceType.Water: label = "Water"; target = waterText; bar = waterBar; break;
+            case ResourceType.HabitatOxygen: label = "Oxygen"; target = oxygenText; bar = oxygenBar; break;
+            case ResourceType.Energy: label = "Energy"; target = energyText; bar = energyBar; break;
             case ResourceType.Ice: return; // Ice kini ada di tas (InventorySystem), tampil di InventoryHotbarUI
             case ResourceType.SuitOxygen: RefreshSuit(); return;
             default: return;
         }
 
-        target.text = label + ": " + Mathf.RoundToInt(resources.Get(type)) + " / " + Mathf.RoundToInt(resources.GetMax(type));
+        float value = resources.Get(type);
+        float max = resources.GetMax(type);
+        target.text = label + ": " + Mathf.RoundToInt(value) + " / " + Mathf.RoundToInt(max);
+        if (bar != null) bar.SetFraction(max > 0f ? value / max : 0f);
     }
 }

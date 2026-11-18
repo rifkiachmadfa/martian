@@ -34,6 +34,8 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Script/UI/FadeUI.cs` | Layar hitam untuk fade. Dipasang pada `Canvas/FadeOverlay` |
 | `Assets/Editor/MarsUISetup.cs` | Menu Editor: membuat/memperbaiki Canvas, dialog, prompt, dan menyambungkan ke TARS/Player. Helper `internal` dipakai `MarsHudSetup` |
 | `Assets/Editor/MarsHudSetup.cs` | Menu Editor `Mars > Setup HUD and Time`: membuat TimeManager, HudRoot (TimePanel, ResourcePanel), dan menyambungkan referensi |
+| `Assets/Script/UI/HudBar.cs` | Bar isi HUD (hanya tampilan): `SetFraction(0..1)` mengatur anchor isi. Dipasang pada objek `<Key>Bar` di panel HUD |
+| `Assets/Editor/MarsHudSkinSetup.cs` | Menu Editor `Mars > Apply HUD Skin (Pixel UI Sci-Fi)`: mengatur impor sprite, memberi skin panel, membuat ikon + bar per baris, menyambungkan field bar di `HudUI` |
 | `Assets/Script/Suit/SuitSystem.cs` | Status suit, isi ulang dari oksigen habitat, lepas suit, konsumsi oksigen suit selama dikenakan. Dipasang pada GameObject `SuitSystem` |
 | `Assets/Script/Suit/SuitStation.cs` | Suit Station (IInteractable): "Kenakan suit" atau "Lepas suit"; tabung diisi otomatis dari oksigen habitat saat dikenakan dan saat dilepas. Layer `Interactable`, Collider2D Is Trigger |
 | `Assets/Script/Suit/IndoorZone.cs` | Trigger area dalam habitat; di luar semua zona = pemain di luar |
@@ -80,6 +82,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Player/` | Sprite pemain (depan, atas), `Down.anim`, `Top/up.anim`, `Square.controller` |
 | `Assets/Robot/` | Sprite TARS: `Left/` (3), `Right/` (3), `Up/` (3). **Folder Down belum ada** |
 | `Assets/COPY SPRIGHT/` | Asset pack astronot (demo scene) |
+| `Assets/UI/PixelUISciFi/` | Pixel UI Sci-Fi Free (heyheythere, CC BY 4.0): `cyan/` (panel, progress), `bars/`, `icons/` (16x16), `CREDITS.txt`, `LICENSE.txt`. Border 9-slice dari `slices.json` aset |
 
 ## Setup objek di scene (agar bisa direproduksi)
 **TARS:** SpriteRenderer, Rigidbody2D (Dynamic, Gravity Scale 0, Freeze Rotation Z), BoxCollider2D (bukan trigger), layer `Interactable`, komponen `TarsWanderer` (isi Wander Area, Dialogue UI, Tars System (otomatis dicari), array frame per arah).
@@ -94,6 +97,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 **Kerusakan panel dan minigame (patch 2026-11-16):** jalankan menu Mars > Setup Panel Damage and Wiring Minigame (komponen `WiringMinigameUI` pada Canvas; GameObject `SolarPanelDamageScheduler`; field Minigame pada `RepairPoint`). Simpan scene dengan Ctrl+S. [Belum dijalankan/dites]
 **Popup mengambang (patch 2026-11-17):** jalankan menu Mars > Setup Floating Popups (GameObject `FloatingPopupManager`). Ikon final: impor PNG (Sprite, Filter Mode Point, Compression None), seret ke slot ikon; font piksel: seret TTF ke slot Font. Simpan scene dengan Ctrl+S. [Belum dijalankan/dites]
 **Panel mesin (patch 2026-11-18):** jalankan menu Mars > Setup Machine Panels (komponen `MachinePanelUI` pada Canvas; mengisi field Panel UI pada mesin dan RepairPoint). Simpan scene dengan Ctrl+S. [Belum dijalankan/dites]
+**Skin HUD (patch 2026-11-18):** jalankan menu Mars > Apply HUD Skin (Pixel UI Sci-Fi) setelah Setup HUD and Time (+ Suit/Hunger bila dipakai), lalu simpan scene. Menambah anak `<Key>Icon` dan `<Key>Bar` (`FillArea/Fill`) di tiap panel dan mengisi field bar `HudUI`. Posisi akhir: [Dev], belum diverifikasi [?].
 **Canvas:** dibuat lewat menu Mars > Setup Dialogue and Prompt UI (berisi `DialogueUI` dan `InteractionPromptUI`).
 
 ## Saat menambah/mengubah asset

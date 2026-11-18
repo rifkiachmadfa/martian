@@ -1,0 +1,5 @@
+Pixel UI Sci-Fi Free by heyheythere - https://heyheythere.itch.io/pixel-ui-scifi-free - CC BY 4.0
+License: https://creativecommons.org/licenses/by/4.0/
+Source files: https://github.com/Spyridon-Pikoulas/godot-pixel-ui-scifi-free (commit 3890bd0, v1.0.2)
+Used: cyan/panel, panel_inset, bracket, progress_bg, progress_fill; bars/*; icons/*.
+Not modified. Put the credit line above in the game's credits screen.

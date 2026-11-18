@@ -305,3 +305,13 @@ Siapkan: jalankan `Mars > Setup Machine Panels`, simpan scene. Pastikan tidak ad
 - [ ] Saat panel terbuka: E tidak memicu interaksi lain, tombol tas 1-3 tidak berfungsi (tidak makan kentang), pesan TARS tidak muncul (muncul setelah panel ditutup), dialog jadwal kerusakan panel menunggu.
 - [ ] Teks dan tombol terbaca, tidak terpotong, di resolusi 1920x1080 dan jendela Game yang lebih kecil; panel tampil di atas HUD.
 - [ ] Hapus komponen `MachinePanelUI` dari Canvas (uji saja): semua mesin kembali memakai dialog dan tidak ada error.
+## Skin HUD Pixel UI Sci-Fi (2026-11-18; BARU, belum dites di Unity)
+Siapkan: jalankan `Mars > Setup HUD and Time` (dan Suit/Hunger bila dipakai), lalu `Mars > Apply HUD Skin (Pixel UI Sci-Fi)`, simpan scene.
+- [ ] Console bersih dari error/warning saat menjalankan menu dan saat Play. Menu dijalankan dua kali: tidak ada objek ganda (satu `FoodIcon`, satu `FoodBar` per baris).
+- [ ] Sprite di `Assets/UI/PixelUISciFi/` terimpor sebagai Sprite, Filter Point, tanpa kompresi; panel dan latar bar tampil tajam (tidak blur) dan border tidak melar.
+- [ ] Di Game view 1920x1080: TimePanel (Day + timer), ResourcePanel (4 baris ikon + teks + bar), HungerPanel di bawahnya, SuitPanel kiri bawah tampil tanpa tumpang tindih dan teks tidak terpotong.
+- [ ] Bar Food/Water/Oxygen/Energy ikut berubah saat stok berubah (ambil es, proses Water, panen, Energy turun) dan sama dengan angka di teks; bar kosong menyembunyikan isi, bar penuh memenuhi latar.
+- [ ] Bar Kenyang turun seiring waktu dan naik saat makan; teks tetap berwarna kuning/merah di ambang peringatan.
+- [ ] SuitPanel hanya tampil saat suit dikenakan; bar Suit O2 turun di luar dan naik saat isi ulang.
+- [ ] Jendela Game lebih kecil / rasio lain (mis. 1280x720, 16:10): panel tetap di sudutnya dan terbaca.
+- [ ] Hapus semua field bar di Inspector `HudUI` (uji saja): HUD tetap berfungsi dengan teks saja, tanpa error.
