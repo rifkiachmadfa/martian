@@ -4,7 +4,7 @@ using UnityEngine;
 /// Dipasang di Player. Mencari objek IInteractable terdekat dan memanggilnya saat tombol E ditekan.
 /// Bila pemain memilih slot tas (tombol 1 sampai 3, InventorySystem), E memakai item: lebih dulu pada objek
 /// penerima di dekatnya (IItemReceiver, misalnya tanam bibit), lalu aksi bawaan item (makan kentang saat lapar);
-/// bila tidak ada yang cocok, E tetap berinteraksi biasa. Panel storage terbuka = tidak ada aksi.
+/// bila tidak ada yang cocok, E tetap berinteraksi biasa. Panel storage atau panel mesin terbuka = tidak ada aksi.
 /// </summary>
 public class InteractionDetector : MonoBehaviour
 {
@@ -39,7 +39,7 @@ public class InteractionDetector : MonoBehaviour
         CurrentTarget = FindClosestInteractable();
         CurrentPrompt = null;
 
-        if (StorageUI.IsOpen) return;
+        if (StorageUI.IsOpen || MachinePanelUI.IsOpen) return;
 
         InventorySystem inventory = InventorySystem.Instance;
         ActionKind kind = ActionKind.None;

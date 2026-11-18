@@ -8,8 +8,10 @@ using UnityEngine;
 /// Hemat Water (2026-11-17): mesin siaga sampai oksigen habitat turun di bawah batas restartBelowFraction, lalu
 /// mengisi sampai penuh dan siaga lagi (histeresis), bukan menambal penurunan kecil di bawah 100 terus-menerus.
 /// Siklus terakhir hanya memakai Water/Energy sebanding dengan oksigen yang benar-benar masuk.
-/// Tombol E menyalakan/mematikan mesin, supaya pemain bisa menghemat Water untuk tanaman (GDD 7.1 membahas
-/// pembagian Water). Tombol ini USULAN, belum ada di GDD; matikan dengan Allow Manual Toggle di Inspector.
+/// Tombol E membuka MachinePanelUI (status, oksigen habitat, Water, Energy, tombol NYALAKAN/MATIKAN), supaya
+/// pemain bisa menghemat Water untuk tanaman (GDD 7.1 membahas pembagian Water). Saklar ini USULAN, belum ada
+/// di GDD; matikan dengan Allow Manual Toggle di Inspector. Tanpa MachinePanelUI di scene, E tetap menyalakan/
+/// mematikan mesin dan menampilkan dialog seperti sebelumnya.
 /// Siklus ikut jeda TimeManager.IsPaused. Hanya logika: tampilan lewat OnRunningChanged / indikator opsional.
 /// Semua angka adalah USULAN. Pasang pada objek ber-layer Interactable dengan Collider2D.
 /// </summary>
@@ -17,6 +19,7 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
 {
     [Header("Referensi (otomatis dicari jika kosong)")]
     [SerializeField] private DialogueUI dialogueUI;
+    [SerializeField] private MachinePanelUI panelUI;
 
     [Header("Aturan mesin (USULAN, ubah lewat Inspector setelah playtest)")]
     [SerializeField, Min(0f)] private float waterCostPerCycle = 1f;
@@ -47,6 +50,21 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
     /// <summary>True bila mesin sedang benar-benar bekerja (menyala dan semua syarat terpenuhi).</summary>
     public bool IsRunning { get; private set; }
 
+    /// <summary>True bila pemain boleh menyalakan/mematikan mesin (Allow Manual Toggle).</summary>
+    public bool AllowManualToggle => allowManualToggle;
+
+    public float WaterCostPerCycle => waterCostPerCycle;
+    public float EnergyCostPerCycle => energyCostPerCycle;
+    public float OxygenPerCycle => oxygenPerCycle;
+    public float CycleSeconds => cycleSeconds;
+    public float RestartBelowFraction => restartBelowFraction;
+
+    /// <summary>Menyalakan/mematikan mesin. Tidak berefek bila Allow Manual Toggle dimatikan.</summary>
+    public void SetOn(bool on)
+    {
+        if (allowManualToggle) IsOn = on;
+    }
+
     /// <summary>Dipanggil saat IsRunning berubah.</summary>
     public event Action<bool> OnRunningChanged;
 
@@ -65,6 +83,7 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
     {
         get
         {
+            if (panelUI != null) return "Buka panel Oxygen Generator";
             if (!allowManualToggle) return "Periksa Oxygen Generator";
             return IsOn ? "Matikan Oxygen Generator" : "Nyalakan Oxygen Generator";
         }
@@ -78,6 +97,7 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
     private void Start()
     {
         if (dialogueUI == null) dialogueUI = FindFirstObjectByType<DialogueUI>();
+        if (panelUI == null) panelUI = FindFirstObjectByType<MachinePanelUI>();
         if (activeIndicator != null) activeIndicator.SetActive(false);
     }
 
@@ -125,12 +145,14 @@ public class OxygenGenerator : MonoBehaviour, IInteractable
 
     public bool CanInteract(GameObject interactor)
     {
-        if (Time.time < nextInteractTime) return false;
+        if (Time.time < nextInteractTime || MachinePanelUI.IsOpen) return false;
         return dialogueUI == null || !dialogueUI.IsOpen;
     }
 
     public void Interact(GameObject interactor)
     {
+        if (panelUI != null && panelUI.Open(this, () => nextInteractTime = Time.time + reinteractCooldown)) return;
+
         if (allowManualToggle) IsOn = !IsOn;
 
         string message = allowManualToggle

@@ -32,6 +32,9 @@ public class SolarPanel : MonoBehaviour
     /// <summary>True bila panel sedang rusak.</summary>
     public bool IsDamaged { get; private set; }
 
+    /// <summary>Energy per detik panel ini saat normal (dipakai MachinePanelUI untuk membandingkan).</summary>
+    public float NormalEnergyPerSecond => normalEnergyPerSecond;
+
     /// <summary>Energy per detik yang dihasilkan panel ini sekarang.</summary>
     public float CurrentEnergyPerSecond => normalEnergyPerSecond * (IsDamaged ? damagedOutputMultiplier : 1f);
 

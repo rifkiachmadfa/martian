@@ -292,3 +292,16 @@ Siapkan: jalankan `Mars > Setup Floating Popups`, simpan scene. Ikon bawaan plac
 - [ ] Label petak: petak kosong tanpa label; setelah tanam muncul "Belum disiram (M:SS)" (kuning) dengan durasi 1:00 sampai 2:00; setelah siram berubah "Matang M:SS" dan menghitung mundur; selesai "Siap panen!" (hijau); setelah panen label hilang.
 - [ ] Hitung mundur berhenti saat timer berhenti (tidur, minigame) dan lanjut sesudahnya; angka cocok dengan waktu matang sebenarnya (selisih maksimal 1 detik).
 - [ ] Popup "Water -2" / "Kentang +N" di petak tidak menimpa label; beberapa petak berdampingan tidak saling menimpa label.
+
+## Panel mesin: Water Purifier, Oxygen Generator, Solar Panel (2026-11-18; BARU, belum dites di Unity)
+Siapkan: jalankan `Mars > Setup Machine Panels`, simpan scene. Pastikan tidak ada es terpilih di tas (tekan slot sekali lagi bila perlu).
+- [ ] Console bersih dari error saat Play. Dekati tiap mesin: prompt "Buka panel ..."; E membuka panel di tengah layar, Player tidak bisa berjalan, Esc dan tombol Tutup menutup panel dan gerak pulih.
+- [ ] Water Purifier tanpa es di tas: tombol PROSES nonaktif dan alasan "Tidak ada es di tas" tampil. Dengan es dan Energy cukup: PROSES aktif; klik memulai proses: es di tas berkurang, Energy berkurang, bar proses naik dan sisa detik turun, lalu Water bertambah di bar tangki dan popup "Water +4" muncul.
+- [ ] Water Purifier: Energy kurang atau tangki Water penuh = PROSES nonaktif dengan alasan yang sesuai; klik saat sedang memproses tidak memulai proses kedua.
+- [ ] Pilih es (tombol 2) lalu E di dekat Water Purifier: jalan pintas lama masih memproses dan menampilkan dialog (tutorial langkah PurifyWater tetap selesai).
+- [ ] Oxygen Generator: status berwarna (hijau bekerja, kuning siaga, merah mati/berhenti); bar Oxygen habitat, Water, Energy ikut berubah saat mesin bekerja. NYALAKAN/MATIKAN mengubah status dan teks tombol; mesin mati tidak memakai Water/Energy; Allow Manual Toggle dimatikan di Inspector = tombol nonaktif berlabel OTOMATIS.
+- [ ] Solar Panel normal: status NORMAL, output panel dan total sama dengan nominal, tombol PERBAIKI nonaktif. Rusakkan panel (menu konteks Debug pada SolarPanel) saat panel terbuka: status berubah RUSAK, output turun, PERBAIKI aktif.
+- [ ] PERBAIKI: panel menutup dan minigame kabel terbuka; berhasil = panel terbuka lagi dengan status NORMAL dan pesan "Panel diperbaiki"; Esc di minigame = kembali bermain tanpa panel (panel tetap rusak).
+- [ ] Saat panel terbuka: E tidak memicu interaksi lain, tombol tas 1-3 tidak berfungsi (tidak makan kentang), pesan TARS tidak muncul (muncul setelah panel ditutup), dialog jadwal kerusakan panel menunggu.
+- [ ] Teks dan tombol terbaca, tidak terpotong, di resolusi 1920x1080 dan jendela Game yang lebih kecil; panel tampil di atas HUD.
+- [ ] Hapus komponen `MachinePanelUI` dari Canvas (uji saja): semua mesin kembali memakai dialog dan tidak ada error.

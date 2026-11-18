@@ -123,7 +123,7 @@ public class SolarPanelDamageScheduler : MonoBehaviour
             return;
         }
 
-        if (dialogueUI.IsOpen || (minigame != null && minigame.IsOpen)) return;
+        if (dialogueUI.IsOpen || MachinePanelUI.IsOpen || (minigame != null && minigame.IsOpen)) return;
 
         dialogueUI.Show("TARS", new[] { pendingMessage }, null);
         pendingMessage = null;

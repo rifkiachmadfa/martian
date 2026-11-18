@@ -47,7 +47,8 @@ public class InventorySystem : MonoBehaviour
     public bool CanAcceptInput =>
         (dialogueUI == null || !dialogueUI.IsOpen) &&
         (player == null || player.MovementEnabled) &&
-        !StorageUI.IsOpen;
+        !StorageUI.IsOpen &&
+        !MachinePanelUI.IsOpen;
 
     private void Awake()
     {

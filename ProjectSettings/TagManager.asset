@@ -53,6 +53,9 @@ TagManager:
   - name: Interactable
     uniqueID: 1160133427
     locked: 0
+  - name: Popup
+    uniqueID: 1310932311
+    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []

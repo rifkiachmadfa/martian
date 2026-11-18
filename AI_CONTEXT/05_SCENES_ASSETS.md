@@ -71,6 +71,8 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 | `Assets/Welcome/Welcome2DScript.cs` | Bawaan template Unity; bukan bagian game |
 | `Assets/Script/UI/FloatingPopupManager.cs` | Popup mengambang ikon + teks di dunia game (SpriteRenderer + TextMesh, pool, ikon pixel 8x8 bawaan lewat kode); API statis `ShowAmount`, `Show`, `AnchorAbove`, `CreateWorldLabel` (label tetap untuk `FarmingPlot`); enum `PopupIcon` di file yang sama. Satu instance di scene |
 | `Assets/Editor/MarsPopupSetup.cs` | Menu Editor `Mars > Setup Floating Popups`: membuat objek `FloatingPopupManager` (tidak menimpa yang sudah ada) |
+| `Assets/Script/UI/MachinePanelUI.cs` | Panel kontrol mesin (Water Purifier, Oxygen Generator, Solar Panel) dengan tombol dan bar; UI dibuat lewat kode di bawah Canvas; `MachinePanelUI.IsOpen` statis |
+| `Assets/Editor/MarsMachinePanelSetup.cs` | Menu Editor `Mars > Setup Machine Panels`: memasang `MachinePanelUI` pada Canvas dan menyambungkan `WaterPurifier`, `OxygenGenerator`, `RepairPoint` |
 
 ## Aset
 | Path | Isi |
@@ -91,6 +93,7 @@ Scene lain di repo (`URP2DSceneTemplate`, demo asset pack `COPY SPRIGHT`) bukan 
 **Status scene objek interaktif (2026-11-16):** [Repo, d96d9b6f] `SampleScene.unity` yang ter-commit belum berisi objek tersebut. [Dev] scene lokal sudah berisi objek hasil setup dan tes interaksi lolos; belum di-commit.
 **Kerusakan panel dan minigame (patch 2026-11-16):** jalankan menu Mars > Setup Panel Damage and Wiring Minigame (komponen `WiringMinigameUI` pada Canvas; GameObject `SolarPanelDamageScheduler`; field Minigame pada `RepairPoint`). Simpan scene dengan Ctrl+S. [Belum dijalankan/dites]
 **Popup mengambang (patch 2026-11-17):** jalankan menu Mars > Setup Floating Popups (GameObject `FloatingPopupManager`). Ikon final: impor PNG (Sprite, Filter Mode Point, Compression None), seret ke slot ikon; font piksel: seret TTF ke slot Font. Simpan scene dengan Ctrl+S. [Belum dijalankan/dites]
+**Panel mesin (patch 2026-11-18):** jalankan menu Mars > Setup Machine Panels (komponen `MachinePanelUI` pada Canvas; mengisi field Panel UI pada mesin dan RepairPoint). Simpan scene dengan Ctrl+S. [Belum dijalankan/dites]
 **Canvas:** dibuat lewat menu Mars > Setup Dialogue and Prompt UI (berisi `DialogueUI` dan `InteractionPromptUI`).
 
 ## Saat menambah/mengubah asset

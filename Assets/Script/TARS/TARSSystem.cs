@@ -486,7 +486,7 @@ public class TARSSystem : MonoBehaviour
         if (pending.Count == 0 || Time.time < nextShowTime) return;
         if (dialogueUI != null && dialogueUI.IsOpen) return;
         if (time != null && time.ExternalPause) return;   // tidur atau minigame sedang berjalan
-        if (StorageUI.IsOpen) return;
+        if (StorageUI.IsOpen || MachinePanelUI.IsOpen) return;
 
         for (int i = pending.Count - 1; i >= 0; i--)
         {

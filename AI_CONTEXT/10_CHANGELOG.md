@@ -10,6 +10,13 @@ Format:
 - **Test:** pengujian dan hasil.
 - **Follow-up:** pekerjaan tersisa.
 
+## 2026-11-18 (UI: panel mesin Water Purifier, Oxygen Generator, Solar Panel)
+- **Changed:** Menambah `MachinePanelUI` (Canvas, UI dibuat lewat kode): panel sendiri untuk tiap mesin, bukan dialog TARS. Water Purifier: status, bar proses, Energy, tangki Water, tombol PROSES (nonaktif disertai alasan bila Es/Energy kurang atau tangki penuh). Oxygen Generator: status berwarna, oksigen habitat, Water, Energy, tombol NYALAKAN/MATIKAN. Solar Panel (lewat `RepairPoint`): status NORMAL/RUSAK, output panel, output total, Energy, tombol PERBAIKI yang menutup panel lalu membuka minigame kabel; setelah berhasil panel dibuka lagi. `WaterPurifier.GetStartBlocker/TryStartProcess` (logika mulai proses dipisah dari dialog), `OxygenGenerator.SetOn` dan getter aturan, `SolarPanel.NormalEnergyPerSecond`. Jalan pintas lama (pilih es + E pada Water Purifier) tetap ada. Panel terbuka mengunci gerak Player dan memblokir E/tombol tas, pesan TARS, serta dialog jadwal kerusakan; waktu dan mesin tetap berjalan. Tanpa `MachinePanelUI` di scene, semua mesin berperilaku seperti sebelumnya (dialog).
+- **Reason:** Permintaan developer: mesin dan panel surya perlu UI sendiri yang lebih realistis dan interaktif (seperti Storage), bukan dialog yang sama dengan TARS.
+- **Files/systems:** `Assets/Script/UI/MachinePanelUI.cs` (+ `.meta`), `Assets/Editor/MarsMachinePanelSetup.cs` (+ `.meta`) baru; `WaterPurifier.cs`, `OxygenGenerator.cs`, `SolarPanel.cs`, `RepairPoint.cs`, `InteractionDetector.cs`, `InventorySystem.cs`, `TARSSystem.cs`, `SolarPanelDamageScheduler.cs`. Scene diubah lewat menu `Mars > Setup Machine Panels` oleh developer, bukan oleh patch.
+- **Test:** Hanya `git apply --check` dan cek sintaksis C# terhadap stub Unity; belum dikompilasi atau dijalankan di Unity [?].
+- **Follow-up:** Tes visual (ukuran dan tata letak panel di Canvas 1920x1080); tentukan apakah jalan pintas es + E dipertahankan; teks tutorial langkah PurifyWater masih menyebut jalan pintas itu.
+
 ## 2026-11-17 (UI: label hitung mundur panen di atas petak)
 - **Changed:** `FarmingPlot` menampilkan label tetap di atas petak: "Belum disiram (M:SS)" setelah ditanam, "Matang M:SS" menghitung mundur setelah disiram, "Siap panen!" saat matang. Durasi tumbuh acak (60 sampai 120 dtk) kini diundi saat tanam (sebelumnya saat siram); pertumbuhan tetap baru berjalan setelah disiram. Popup petak dinaikkan 0,45 agar tidak menimpa label. `FloatingPopupManager.CreateWorldLabel` ditambahkan. Flag `showStatusLabel` untuk mematikan.
 - **Reason:** Permintaan developer: pemain tahu durasi panen tanpa menekan E berulang.
